@@ -16,6 +16,8 @@ const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
   ".ico": "image/x-icon",
@@ -33,6 +35,9 @@ function sendJson(res, statusCode, payload) {
 }
 
 function parseJsonBody(req) {
+  if (req.body && typeof req.body === "object") {
+    return Promise.resolve(req.body);
+  }
   return new Promise((resolve, reject) => {
     let body = "";
     req.on("data", (chunk) => {
@@ -45,7 +50,7 @@ function parseJsonBody(req) {
     req.on("end", () => {
       try {
         resolve(body ? JSON.parse(body) : {});
-      } catch (err) {
+      } catch {
         reject(new Error("Invalid JSON body"));
       }
     });
@@ -53,7 +58,7 @@ function parseJsonBody(req) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
+async function requestHandler(req, res) {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
       "Access-Control-Allow-Origin": "*",
@@ -63,8 +68,39 @@ const server = http.createServer(async (req, res) => {
     return res.end();
   }
 
-  const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const host = req.headers.host || "isthereaiinmyplaylist.com";
+  const proto = req.headers["x-forwarded-proto"] || "https";
+  const parsedUrl = new URL(req.url, `${proto}://${host}`);
   const pathname = parsedUrl.pathname;
+
+  // Dynamic robots.txt so it always points to the active domain's sitemap
+  if (pathname === "/robots.txt" && req.method === "GET") {
+    const robots = [
+      "User-agent: *",
+      "Allow: /",
+      "Disallow: /api/",
+      "",
+      `Sitemap: ${proto}://${host}/sitemap.xml`,
+    ].join("\n");
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    return res.end(robots);
+  }
+
+  // Dynamic sitemap.xml for Google Search Console indexing
+  if (pathname === "/sitemap.xml" && req.method === "GET") {
+    const today = new Date().toISOString().split("T")[0];
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${proto}://${host}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`;
+    res.writeHead(200, { "Content-Type": "application/xml; charset=utf-8" });
+    return res.end(sitemap);
+  }
 
   // API: Analyze playlist, single track, or artist
   if (pathname === "/api/analyze" && req.method === "POST") {
@@ -131,7 +167,6 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": contentType });
     fs.createReadStream(filePath).pipe(res);
   } else {
-    // Fallback to index.html for SPA navigation
     const indexFile = path.join(PUBLIC_DIR, "index.html");
     if (fs.existsSync(indexFile)) {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
@@ -141,10 +176,17 @@ const server = http.createServer(async (req, res) => {
       res.end("Not found");
     }
   }
-});
+}
 
-server.listen(PORT, () => {
-  console.log(
-    `🎵 IsThereAIInMyPlaylist server running at http://localhost:${PORT}`
-  );
-});
+// Start standalone HTTP server when run directly (local dev / Render / Railway),
+// and export handler for Vercel Serverless deployment
+if (require.main === module) {
+  const server = http.createServer(requestHandler);
+  server.listen(PORT, () => {
+    console.log(
+      `🎵 IsThereAIInMyPlaylist server running at http://localhost:${PORT}`
+    );
+  });
+}
+
+module.exports = requestHandler;
