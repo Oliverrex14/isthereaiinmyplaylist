@@ -174,19 +174,6 @@ async function requestHandler(req, res) {
 
   const clientIp = getClientIp(req);
 
-  // Serve /favicon.ico as our SVG icon so browsers requesting /favicon.ico never get a 404
-  if (pathname === "/favicon.ico" && req.method === "GET") {
-    const svgPath = path.join(PUBLIC_DIR, "favicon.svg");
-    if (fs.existsSync(svgPath)) {
-      res.writeHead(200, {
-        ...SECURITY_HEADERS,
-        "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=86400",
-      });
-      return fs.createReadStream(svgPath).pipe(res);
-    }
-  }
-
   // Google Search Console HTML file verification
   if (pathname === "/googlecdef3fd0e19d3000.html" && req.method === "GET") {
     res.writeHead(200, {

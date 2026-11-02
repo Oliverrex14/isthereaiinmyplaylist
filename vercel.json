@@ -19,10 +19,6 @@
   ],
   "rewrites": [
     {
-      "source": "/favicon.ico",
-      "destination": "/favicon.svg"
-    },
-    {
       "source": "/googlecdef3fd0e19d3000.html",
       "destination": "/api/index"
     },
