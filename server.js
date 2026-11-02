@@ -131,7 +131,7 @@ async function requestHandler(req, res) {
   }
 
   // API: Analyze playlist, single track, or artist
-  if (pathname === "/api/analyze" && req.method === "POST") {
+  if (pathname.startsWith("/api/analyze") && req.method === "POST") {
     try {
       const body = await parseJsonBody(req);
       const rawInput = (body.url || "").trim();
@@ -158,13 +158,13 @@ async function requestHandler(req, res) {
   }
 
   // API: Get Known AI Database
-  if (pathname === "/api/database" && req.method === "GET") {
+  if (pathname.startsWith("/api/database") && req.method === "GET") {
     const db = loadAiDatabase();
     return sendJson(res, 200, db);
   }
 
   // API: Submit Community AI Report
-  if (pathname === "/api/report" && req.method === "POST") {
+  if (pathname.startsWith("/api/report") && req.method === "POST") {
     try {
       const body = await parseJsonBody(req);
       if (!body.artist && !body.title) {
