@@ -130,9 +130,9 @@ function formatCompactNumber(num) {
 }
 
 function getScoreColor(score) {
-  if (score >= 68) return "#e5484d";
-  if (score >= 38) return "#f59e0b";
-  return "#30a46c";
+  if (score >= 68) return "#d91b1b";
+  if (score >= 38) return "#c76a00";
+  return "#0b7a3e";
 }
 
 playlistUrlInput.addEventListener("input", () => {
