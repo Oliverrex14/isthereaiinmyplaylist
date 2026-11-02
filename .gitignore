@@ -1,4 +1,36 @@
+# Dependencies
 node_modules/
-.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment & Secrets
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Vercel & Build artifacts
+.vercel/
+dist/
+build/
+.cache/
+
+# macOS & Editor files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Runtime & Logs
 *.log
+pids
+*.pid
+*.seed
+*.pid.lock
