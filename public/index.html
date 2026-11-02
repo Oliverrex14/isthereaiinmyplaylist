@@ -388,11 +388,17 @@
     </div>
   </footer>
 
-  <script src="/app.js"></script>
-  <!-- Vercel Web Analytics -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  <script type="importmap">
+    {
+      "imports": {
+        "@vercel/analytics": "/vercel-analytics.mjs"
+      }
+    }
   </script>
-  <script defer src="/_vercel/insights/script.js"></script>
+  <script type="module">
+    import { inject } from "@vercel/analytics";
+    inject();
+  </script>
+  <script src="/app.js"></script>
 </body>
 </html>
