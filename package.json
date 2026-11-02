@@ -1,0 +1,21 @@
+{
+  "name": "isthereaiinmyplaylist",
+  "version": "1.0.0",
+  "description": "Detect AI-generated songs in public Spotify, Apple Music, and YouTube playlists using multi-layer heuristics, metadata verification, community database, and audio analysis.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "ai-music-detector",
+    "spotify",
+    "apple-music",
+    "youtube-playlist",
+    "suno",
+    "udio",
+    "playlist-analyzer"
+  ],
+  "author": "Oliver Tobiášek",
+  "license": "MIT"
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Is There AI In My Playlist? | Detektor AI hudby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <span class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2v20M17 5v14M7 5v14M22 9v6M2 9v6"/>
+          </svg>
+        </span>
+        <span class="brand-text">IsThere<span class="gradient-text">AI</span>InMyPlaylist</span>
+      </a>
+      <div class="nav-actions">
+        <button id="openDbBtn" class="btn btn-ghost">
+          <span>AI Databáze</span>
+          <span id="dbCountBadge" class="badge-pill">15</span>
+        </button>
+        <button id="openReportBtn" class="btn btn-secondary">
+          + Nahlásit AI skladbu
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="platform-pills">
+        <span class="platform-pill spotify-pill">
+          <span class="dot"></span> Spotify
+        </span>
+        <span class="platform-pill apple-pill">
+          <span class="dot"></span> Apple Music
+        </span>
+        <span class="platform-pill youtube-pill">
+          <span class="dot"></span> YouTube &amp; YT Music
+        </span>
+      </div>
+
+      <h1 class="hero-title">
+        Zjisti, jestli posloucháš lidi, nebo <span class="gradient-text">umělou inteligenci</span>.
+      </h1>
+      <p class="hero-subtitle">
+        Vlož odkaz na veřejný playlist ze <strong>Spotify</strong>, <strong>Apple Music</strong> nebo <strong>YouTube</strong>.
+        Proklepneme každou skladbu pomocí 4vrstvé detekce (Suno/Udio tagy, AI databáze, historie interpreta &amp; frekvence vydávání i audio spektrum).
+      </p>
+
+      <!-- Search / Input Box -->
+      <form id="analyzeForm" class="search-card">
+        <div class="input-wrapper">
+          <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          <input
+            type="text"
+            id="playlistUrlInput"
+            placeholder="Vlož odkaz na veřejný playlist (Spotify, Apple Music nebo YouTube)..."
+            autocomplete="off"
+            required
+          />
+          <button type="button" id="clearInputBtn" class="clear-btn hidden" title="Vymazat">✕</button>
+        </div>
+        <button type="submit" id="analyzeBtn" class="btn btn-primary btn-lg">
+          <span class="btn-label">Analyzovat playlist</span>
+        </button>
+      </form>
+
+      <!-- Quick Presets -->
+      <div class="quick-presets">
+        <span class="preset-label">Rychlá ukázka jedním kliknutím:</span>
+        <button type="button" class="preset-chip" data-url="demo:mixed">
+          🤖 Testovací Mix (AI + Reální interpreti)
+        </button>
+        <button type="button" class="preset-chip" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M">
+          🟢 Spotify: Today's Top Hits
+        </button>
+        <button type="button" class="preset-chip" data-url="https://music.apple.com/us/playlist/todays-hits/pl.f4d106fed2bd41149aaacabb233eb5eb">
+          🍎 Apple Music: Today's Hits
+        </button>
+        <button type="button" class="preset-chip" data-url="https://www.youtube.com/playlist?list=PL4fGSI1pDJn6puJdseH2Rt9sMvt9E2M4i">
+          ▶️ YouTube: Top Music Videos
+        </button>
+      </div>
+    </section>
+
+    <!-- Error Alert -->
+    <div id="errorAlert" class="error-banner hidden">
+      <div class="error-icon">⚠️</div>
+      <div class="error-text" id="errorText"></div>
+    </div>
+
+    <!-- Loading Progress State -->
+    <section id="loadingSection" class="loading-card hidden">
+      <div class="scanner-loader">
+        <div class="scanner-ring"></div>
+        <div class="scanner-Wave">🎵</div>
+      </div>
+      <h3 id="loadingTitle">Stahuji skladby z playlistu...</h3>
+      <p id="loadingStep" class="loading-step">Ověřuji metadata interpretů, diskografii a licenční záznamy (Deezer, iTunes, AI DB)...</p>
+      <div class="progress-bar-track">
+        <div id="loadingBar" class="progress-bar-fill"></div>
+      </div>
+    </section>
+
+    <!-- Results Dashboard -->
+    <section id="resultsSection" class="results-section hidden">
+      <!-- Playlist Header & Summary Cards -->
+      <div class="playlist-overview-card">
+        <div class="playlist-meta">
+          <div id="playlistCoverWrap" class="playlist-cover">
+            <span class="cover-placeholder">🎵</span>
+          </div>
+          <div class="playlist-info">
+            <span id="playlistPlatformBadge" class="platform-tag">Spotify</span>
+            <h2 id="playlistTitle">Název playlistu</h2>
+            <p id="playlistSubtitle" class="playlist-owner">Autor playlistu</p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box stat-total">
+            <span class="stat-label">Celkem skladeb</span>
+            <span id="statTotal" class="stat-value">0</span>
+          </div>
+          <div class="stat-box stat-ai">
+            <span class="stat-label">🤖 AI Detekováno</span>
+            <span id="statAi" class="stat-value">0</span>
+          </div>
+          <div class="stat-box stat-suspicious">
+            <span class="stat-label">⚠️ Podezřelé</span>
+            <span id="statSuspicious" class="stat-value">0</span>
+          </div>
+          <div class="stat-box stat-human">
+            <span class="stat-label">✅ Čisté (Člověk)</span>
+            <span id="statHuman" class="stat-value">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall Verdict Banner -->
+      <div id="overallVerdictBanner" class="verdict-banner">
+        <div class="verdict-left">
+          <span id="verdictEmoji" class="verdict-emoji">🔍</span>
+          <div>
+            <h3 id="verdictHeadline">Výsledek analýzy</h3>
+            <p id="verdictDescription">Podrobnosti o nalezených skladbách v playlistu.</p>
+          </div>
+        </div>
+        <div class="verdict-meter-wrap">
+          <div class="meter-label">
+            <span>Podíl AI v playlistu</span>
+            <strong id="verdictPercent">0 %</strong>
+          </div>
+          <div class="meter-bar">
+            <div id="verdictBarFill" class="meter-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs & Search within playlist -->
+      <div class="controls-bar">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">
+            Všechny <span id="tabCountAll" class="tab-count">0</span>
+          </button>
+          <button class="filter-tab" data-filter="ai">
+            🤖 AI Skladby <span id="tabCountAi" class="tab-count">0</span>
+          </button>
+          <button class="filter-tab" data-filter="suspicious">
+            ⚠️ Podezřelé <span id="tabCountSuspicious" class="tab-count">0</span>
+          </button>
+          <button class="filter-tab" data-filter="human">
+            ✅ Čisté <span id="tabCountHuman" class="tab-count">0</span>
+          </button>
+        </div>
+
+        <div class="table-search">
+          <input type="text" id="trackFilterInput" placeholder="Hledat skladbu nebo interpreta..." />
+        </div>
+      </div>
+
+      <!-- Track List -->
+      <div id="tracksList" class="tracks-list"></div>
+    </section>
+
+    <!-- How it works section -->
+    <section class="how-it-works">
+      <h2>Jak naše 4vrstvá detekce pozná AI písničku?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🏷️</div>
+          <h3>1. Klíčová slova &amp; generátory</h3>
+          <p>Detekuje stopy po nástrojích <strong>Suno, Udio, RVC v2, Kits.ai, Boomy, Riffusion</strong> a označení typu <em>AI Cover</em> v názvech a kanálech.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🗃️</div>
+          <h3>2. Databáze AI &amp; Ghost umělců</h3>
+          <p>Porovnává interprety s databází známých AI projektů (např. <em>The Velvet Sundown, Endel, AIVA</em>) a komunitními hlášeními.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🕵️‍♂️</div>
+          <h3>3. Historie &amp; kadence vydávání</h3>
+          <p>Ověřuje v katalozích <strong>Deezer &amp; Apple iTunes</strong>, zda interpret existoval před rokem 2023, jakou má komunitu a zda nevydává desítky singlů měsíčně přes DIY distributory.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎛️</div>
+          <h3>4. Audio ukázka &amp; stopáž</h3>
+          <p>Kontroluje typická časová okna AI modelů (např. 2:00 / 4:00 limity) a v případě dostupného preview analyzuje spektrální entropii zvuku.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Report AI Song -->
+  <div id="reportModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Nahlásit AI interpreta nebo skladbu</h3>
+        <button id="closeReportModal" class="modal-close">✕</button>
+      </div>
+      <p class="modal-desc">
+        Narazil jsi na interpreta nebo písničku vygenerovanou umělou inteligencí? Přidej ji do databáze – okamžitě se propíše do dalších kontrol playlistů.
+      </p>
+      <form id="reportForm" class="modal-form">
+        <div class="form-group">
+          <label for="reportArtist">Jméno interpreta / kanálu *</label>
+          <input type="text" id="reportArtist" placeholder="např. The Velvet Sundown" required />
+        </div>
+        <div class="form-group">
+          <label for="reportTitle">Název skladby (volitelné)</label>
+          <input type="text" id="reportTitle" placeholder="např. Dust on the Wind" />
+        </div>
+        <div class="form-group">
+          <label for="reportPlatform">Platforma</label>
+          <select id="reportPlatform">
+            <option value="Spotify">Spotify</option>
+            <option value="Apple Music">Apple Music</option>
+            <option value="YouTube">YouTube / YT Music</option>
+            <option value="All">Všechny platformy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reportReason">Důvod / důkaz (např. Suno vokály, 40 alb za měsíc)</label>
+          <input type="text" id="reportReason" placeholder="Generické AI vokály, neexistující historie interpreta..." />
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancelReportBtn" class="btn btn-ghost">Zrušit</button>
+          <button type="submit" class="btn btn-primary">Uložit do AI databáze</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Known AI Database -->
+  <div id="dbModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>Databáze sledovaných AI interpretů a labelů</h3>
+        <button id="closeDbModal" class="modal-close">✕</button>
+      </div>
+      <div id="dbModalContent" class="db-list"></div>
+    </div>
+  </div>
+
+  <!-- Audio Player for Previews -->
+  <audio id="previewAudioPlayer"></audio>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span><strong>IsThereAIInMyPlaylist</strong> — Detektor AI hudby pro Spotify, Apple Music &amp; YouTube</span>
+      <span class="footer-muted">Vytvořeno pro rychlou kontrolu veřejných playlistů</span>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
