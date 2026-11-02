@@ -3,249 +3,300 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Is There AI In My Playlist? | AI Music Detector</title>
+  <title>isthereaiinmyplaylist — Playlist Forensics &amp; Catalog Inspector</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="bg-glow glow-1"></div>
-  <div class="bg-glow glow-2"></div>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="topbar-left">
+        <a href="/" class="logo">
+          <span class="logo-mark"></span>
+          <span class="logo-name">isthereaiinmyplaylist</span>
+        </a>
+        <span class="version-tag">ENGINE v2.4 // MULTI-VECTOR</span>
+      </div>
 
-  <header class="navbar">
-    <div class="container nav-inner">
-      <a href="/" class="brand">
-        <span class="brand-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M12 2v20M17 5v14M7 5v14M22 9v6M2 9v6"/>
-          </svg>
-        </span>
-        <span class="brand-text">IsThere<span class="gradient-text">AI</span>InMyPlaylist</span>
-      </a>
-      <div class="nav-actions">
-        <button id="openDbBtn" class="btn btn-ghost">
-          <span>AI Database</span>
-          <span id="dbCountBadge" class="badge-pill">15</span>
+      <div class="topbar-right">
+        <button id="openDbBtn" class="btn btn-outline">
+          <span>KNOWN AI INDEX</span>
+          <span id="dbCountBadge" class="mono-badge">15</span>
         </button>
-        <button id="openReportBtn" class="btn btn-secondary">
-          + Report AI Track
+        <button id="openReportBtn" class="btn btn-solid">
+          SUBMIT ARTIST / TRACK
         </button>
       </div>
     </div>
   </header>
 
-  <main class="container main-content">
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="platform-pills">
-        <span class="platform-pill spotify-pill">
-          <span class="dot"></span> Spotify
-        </span>
-        <span class="platform-pill apple-pill">
-          <span class="dot"></span> Apple Music
-        </span>
-        <span class="platform-pill youtube-pill">
-          <span class="dot"></span> YouTube &amp; YT Music
-        </span>
+  <main class="container workspace">
+    <!-- Input / Scanner Header -->
+    <section class="scanner-panel">
+      <div class="scanner-header">
+        <div>
+          <div class="eyebrow">CATALOG &amp; METADATA FORENSICS</div>
+          <h1 class="page-title">Playlist Authenticity Inspector</h1>
+        </div>
+        <div class="supported-sources">
+          <span class="source-tag"><i class="dot dot-spotify"></i>SPOTIFY</span>
+          <span class="source-tag"><i class="dot dot-apple"></i>APPLE MUSIC</span>
+          <span class="source-tag"><i class="dot dot-youtube"></i>YOUTUBE</span>
+        </div>
       </div>
 
-      <h1 class="hero-title">
-        Find out if you're listening to humans or <span class="gradient-text">artificial intelligence</span>.
-      </h1>
-      <p class="hero-subtitle">
-        Paste a link to any public playlist from <strong>Spotify</strong>, <strong>Apple Music</strong>, or <strong>YouTube</strong>.
-        We inspect every track using our 4-layer detection engine (Suno/Udio tags, AI artist database, artist release history &amp; velocity, and audio spectrum analysis).
+      <p class="scanner-lead">
+        Inspect public playlists for synthetic / AI-generated tracks. Cross-references <strong>MusicBrainz</strong>, <strong>Apple iTunes</strong>, and <strong>Deezer</strong> registries to measure release cadence, single-to-album ratios, copyright lines (℗/©), pre-2023 discography history, and audio stream entropy.
       </p>
 
-      <!-- Search / Input Box -->
-      <form id="analyzeForm" class="search-card">
-        <div class="input-wrapper">
-          <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-          </svg>
+      <form id="analyzeForm" class="query-bar">
+        <div class="query-input-wrap">
+          <span class="query-prefix">URL //</span>
           <input
             type="text"
             id="playlistUrlInput"
-            placeholder="Paste a public playlist URL (Spotify, Apple Music, or YouTube)..."
+            placeholder="https://open.spotify.com/playlist/... or music.apple.com/... or youtube.com/playlist?list=..."
             autocomplete="off"
             required
           />
-          <button type="button" id="clearInputBtn" class="clear-btn hidden" title="Clear">✕</button>
+          <button type="button" id="clearInputBtn" class="clear-btn hidden" title="Clear input">CLEAR</button>
         </div>
-        <button type="submit" id="analyzeBtn" class="btn btn-primary btn-lg">
-          <span class="btn-label">Scan Playlist</span>
+        <button type="submit" id="analyzeBtn" class="btn btn-accent">
+          RUN INSPECTION
         </button>
       </form>
 
-      <!-- Quick Presets -->
-      <div class="quick-presets">
-        <span class="preset-label">Try a 1-click sample:</span>
-        <button type="button" class="preset-chip" data-url="demo:mixed">
-          🤖 Demo Mix (AI + Real Artists)
+      <div class="sample-bar">
+        <span class="sample-label">LOAD TEST VECTOR:</span>
+        <button type="button" class="sample-btn" data-url="demo:mixed">
+          [TEST_MIX: AI + HUMAN]
         </button>
-        <button type="button" class="preset-chip" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M">
-          🟢 Spotify: Today's Top Hits
+        <button type="button" class="sample-btn" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M">
+          [SPOTIFY: TODAYS_TOP_HITS]
         </button>
-        <button type="button" class="preset-chip" data-url="https://music.apple.com/us/playlist/todays-hits/pl.f4d106fed2bd41149aaacabb233eb5eb">
-          🍎 Apple Music: Today's Hits
+        <button type="button" class="sample-btn" data-url="https://music.apple.com/us/playlist/todays-hits/pl.f4d106fed2bd41149aaacabb233eb5eb">
+          [APPLE_MUSIC: TODAYS_HITS]
         </button>
-        <button type="button" class="preset-chip" data-url="https://www.youtube.com/playlist?list=PL4fGSI1pDJn6puJdseH2Rt9sMvt9E2M4i">
-          ▶️ YouTube: Top Music Videos
+        <button type="button" class="sample-btn" data-url="https://www.youtube.com/playlist?list=PL4fGSI1pDJn6puJdseH2Rt9sMvt9E2M4i">
+          [YOUTUBE: TOP_CHARTS]
         </button>
       </div>
     </section>
 
-    <!-- Error Alert -->
-    <div id="errorAlert" class="error-banner hidden">
-      <div class="error-icon">⚠️</div>
-      <div class="error-text" id="errorText"></div>
+    <!-- Error Notice -->
+    <div id="errorAlert" class="alert-box hidden">
+      <span class="alert-tag">ERROR</span>
+      <span id="errorText"></span>
     </div>
 
-    <!-- Loading Progress State -->
-    <section id="loadingSection" class="loading-card hidden">
-      <div class="scanner-loader">
-        <div class="scanner-ring"></div>
-        <div class="scanner-Wave">🎵</div>
+    <!-- Loading Telemetry State -->
+    <section id="loadingSection" class="loading-panel hidden">
+      <div class="loading-row">
+        <span class="spinner-square"></span>
+        <div>
+          <div id="loadingTitle" class="loading-title">EXECUTING PLAYLIST INSPECTION...</div>
+          <div id="loadingStep" class="loading-sub">Querying external music registries...</div>
+        </div>
       </div>
-      <h3 id="loadingTitle">Fetching playlist tracks...</h3>
-      <p id="loadingStep" class="loading-step">Verifying artist metadata, discography, and copyright records (Deezer, iTunes, AI DB)...</p>
-      <div class="progress-bar-track">
-        <div id="loadingBar" class="progress-bar-fill"></div>
+      <div class="progress-track">
+        <div id="loadingBar" class="progress-fill"></div>
       </div>
     </section>
 
-    <!-- Results Dashboard -->
-    <section id="resultsSection" class="results-section hidden">
-      <!-- Playlist Header & Summary Cards -->
-      <div class="playlist-overview-card">
-        <div class="playlist-meta">
-          <div id="playlistCoverWrap" class="playlist-cover">
-            <span class="cover-placeholder">🎵</span>
+    <!-- Results Workspace -->
+    <section id="resultsSection" class="results-workspace hidden">
+      <!-- Target Playlist Header -->
+      <div class="report-header-bar">
+        <div class="report-target">
+          <div id="playlistCoverWrap" class="target-thumb">
+            <span class="thumb-fallback">RAW</span>
           </div>
-          <div class="playlist-info">
-            <span id="playlistPlatformBadge" class="platform-tag">Spotify</span>
-            <h2 id="playlistTitle">Playlist Title</h2>
-            <p id="playlistSubtitle" class="playlist-owner">Playlist Owner</p>
-          </div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-box stat-total">
-            <span class="stat-label">Total Tracks</span>
-            <span id="statTotal" class="stat-value">0</span>
-          </div>
-          <div class="stat-box stat-ai">
-            <span class="stat-label">🤖 AI Detected</span>
-            <span id="statAi" class="stat-value">0</span>
-          </div>
-          <div class="stat-box stat-suspicious">
-            <span class="stat-label">⚠️ Suspicious</span>
-            <span id="statSuspicious" class="stat-value">0</span>
-          </div>
-          <div class="stat-box stat-human">
-            <span class="stat-label">✅ Human (Clean)</span>
-            <span id="statHuman" class="stat-value">0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Overall Verdict Banner -->
-      <div id="overallVerdictBanner" class="verdict-banner">
-        <div class="verdict-left">
-          <span id="verdictEmoji" class="verdict-emoji">🔍</span>
           <div>
-            <h3 id="verdictHeadline">Analysis Result</h3>
-            <p id="verdictDescription">Detailed breakdown of tracks in this playlist.</p>
+            <div class="target-meta-line">
+              <span id="playlistPlatformBadge" class="mono-tag">SPOTIFY</span>
+              <span id="playlistSubtitle" class="target-owner">Owner</span>
+            </div>
+            <h2 id="playlistTitle" class="target-title">Playlist Title</h2>
           </div>
         </div>
-        <div class="verdict-meter-wrap">
-          <div class="meter-label">
-            <span>AI Ratio in Playlist</span>
-            <strong id="verdictPercent">0%</strong>
+
+        <div class="verdict-summary-box" id="overallVerdictBanner">
+          <div class="verdict-status-line">
+            <span class="status-indicator" id="verdictIndicator"></span>
+            <strong id="verdictHeadline">INSPECTION COMPLETE</strong>
           </div>
-          <div class="meter-bar">
-            <div id="verdictBarFill" class="meter-fill" style="width: 0%"></div>
-          </div>
+          <p id="verdictDescription" class="verdict-subtext"></p>
         </div>
       </div>
 
-      <!-- Filter Tabs & Search within playlist -->
-      <div class="controls-bar">
-        <div class="filter-tabs">
+      <!-- 8-Metric Telemetry Grid -->
+      <div class="telemetry-grid">
+        <div class="metric-cell">
+          <span class="metric-key">01 / TOTAL TRACKS</span>
+          <span id="statTotal" class="metric-val">0</span>
+          <span class="metric-foot">Inspected items</span>
+        </div>
+        <div class="metric-cell cell-danger">
+          <span class="metric-key">02 / FLAGGED AI</span>
+          <span id="statAi" class="metric-val">0</span>
+          <span id="statAiPct" class="metric-foot">0% of playlist</span>
+        </div>
+        <div class="metric-cell cell-warn">
+          <span class="metric-key">03 / SUSPICIOUS</span>
+          <span id="statSuspicious" class="metric-val">0</span>
+          <span class="metric-foot">Unverified / anomalies</span>
+        </div>
+        <div class="metric-cell cell-safe">
+          <span class="metric-key">04 / VERIFIED HUMAN</span>
+          <span id="statHuman" class="metric-val">0</span>
+          <span class="metric-foot">Passed registry checks</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-key">05 / MEAN AI RISK</span>
+          <span id="statAvgRisk" class="metric-val">0%</span>
+          <span class="metric-foot">Composite probability</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-key">06 / PRE-2023 CATALOG</span>
+          <span id="statPreAi" class="metric-val">0%</span>
+          <span class="metric-foot">Pre-dates generative AI</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-key">07 / MUSICBRAINZ ID</span>
+          <span id="statMbVerified" class="metric-val">0%</span>
+          <span class="metric-foot">Open encyclopedia match</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-key">08 / HIGH-VELOCITY</span>
+          <span id="statHighVelocity" class="metric-val">0</span>
+          <span class="metric-foot">10+ releases in 12 mo</span>
+        </div>
+      </div>
+
+      <!-- Distribution Bar -->
+      <div class="ratio-strip-card">
+        <div class="ratio-strip-header">
+          <span>COMPOSITION BREAKDOWN</span>
+          <span id="verdictPercent" class="mono-text">0% AI</span>
+        </div>
+        <div class="ratio-bar-track">
+          <div id="barSegAi" class="ratio-seg seg-ai" style="width: 0%"></div>
+          <div id="barSegSuspicious" class="ratio-seg seg-warn" style="width: 0%"></div>
+          <div id="barSegHuman" class="ratio-seg seg-safe" style="width: 100%"></div>
+        </div>
+        <div class="ratio-legend">
+          <span><i class="legend-dot seg-ai"></i>Flagged AI (≥68%)</span>
+          <span><i class="legend-dot seg-warn"></i>Suspicious (38–67%)</span>
+          <span><i class="legend-dot seg-safe"></i>Verified Human (&lt;38%)</span>
+          <span id="statExtraTelemetry" class="ratio-right-meta"></span>
+        </div>
+      </div>
+
+      <!-- Filter & Sort Controls -->
+      <div class="toolbar">
+        <div class="filter-group">
           <button class="filter-tab active" data-filter="all">
-            All Tracks <span id="tabCountAll" class="tab-count">0</span>
+            ALL <span id="tabCountAll" class="count-num">0</span>
           </button>
           <button class="filter-tab" data-filter="ai">
-            🤖 AI Tracks <span id="tabCountAi" class="tab-count">0</span>
+            FLAGGED AI <span id="tabCountAi" class="count-num">0</span>
           </button>
           <button class="filter-tab" data-filter="suspicious">
-            ⚠️ Suspicious <span id="tabCountSuspicious" class="tab-count">0</span>
+            SUSPICIOUS <span id="tabCountSuspicious" class="count-num">0</span>
           </button>
           <button class="filter-tab" data-filter="human">
-            ✅ Human <span id="tabCountHuman" class="tab-count">0</span>
+            HUMAN <span id="tabCountHuman" class="count-num">0</span>
           </button>
         </div>
 
-        <div class="table-search">
-          <input type="text" id="trackFilterInput" placeholder="Search track or artist..." />
+        <div class="toolbar-right">
+          <select id="sortSelect" class="sort-select" title="Sort tracks">
+            <option value="index">Sort: Playlist Order</option>
+            <option value="risk-desc">Sort: Highest AI Risk</option>
+            <option value="risk-asc">Sort: Lowest AI Risk</option>
+            <option value="velocity-desc">Sort: Release Velocity (12m)</option>
+            <option value="fans-asc">Sort: Lowest Followers</option>
+          </select>
+          <input
+            type="text"
+            id="trackFilterInput"
+            class="search-filter-input"
+            placeholder="Filter by title, artist, distributor..."
+          />
         </div>
+      </div>
+
+      <!-- Track Forensics Table Header -->
+      <div class="table-head">
+        <div class="col-idx">#</div>
+        <div class="col-track">TRACK &amp; ARTIST</div>
+        <div class="col-debut">DEBUT / SPAN</div>
+        <div class="col-cadence">VELOCITY (12M)</div>
+        <div class="col-catalog">SINGLES RATIO</div>
+        <div class="col-audience">FOLLOWERS</div>
+        <div class="col-registry">REGISTRY</div>
+        <div class="col-risk">AI PROBABILITY</div>
+        <div class="col-actions">INSPECT</div>
       </div>
 
       <!-- Track List -->
-      <div id="tracksList" class="tracks-list"></div>
+      <div id="tracksList" class="tracks-table-body"></div>
     </section>
 
-    <!-- How it works section -->
-    <section class="how-it-works">
-      <h2>How Our 4-Layer AI Detection Engine Works</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🏷️</div>
-          <h3>1. Keywords &amp; Generators</h3>
-          <p>Detects traces of <strong>Suno, Udio, RVC v2, Kits.ai, Boomy, Riffusion</strong>, and explicit tags like <em>AI Cover</em> or <em>[AI]</em> across titles and channels.</p>
+    <!-- Technical Methodology -->
+    <section class="methodology-section">
+      <div class="section-head">
+        <span class="eyebrow">MEASUREMENT VECTORS</span>
+        <h2>How the 8-Point Forensics Pipeline Scores Each Track</h2>
+      </div>
+      <div class="method-grid">
+        <div class="method-box">
+          <div class="method-num">VECTOR 01 // TIMELINE</div>
+          <h3>Pre-AI Era Discography</h3>
+          <p>Cross-checks Apple iTunes and Deezer release timestamps. Artists with verifiable catalog entries prior to 2023 pre-date modern commercial music generators (Suno/Udio).</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🗃️</div>
-          <h3>2. Known AI &amp; Ghost Artists DB</h3>
-          <p>Cross-references artists against our database of known synthetic projects (e.g. <em>The Velvet Sundown, Endel, AIVA</em>) and community reports.</p>
+        <div class="method-box">
+          <div class="method-num">VECTOR 02 // VELOCITY</div>
+          <h3>Release Cadence &amp; Single Ratio</h3>
+          <p>Measures total releases in the trailing 12 months and calculates the Single-to-Album ratio. Synthetic stream farms typically upload 15–50+ single-track releases per year.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🕵️‍♂️</div>
-          <h3>3. Artist History &amp; Release Velocity</h3>
-          <p>Queries <strong>Deezer &amp; Apple iTunes</strong> catalogs to verify if an artist existed prior to 2023, checks fanbase size, and flags mass-uploaded DIY releases.</p>
+        <div class="method-box">
+          <div class="method-num">VECTOR 03 // REGISTRY</div>
+          <h3>MusicBrainz &amp; Copyright (℗/©)</h3>
+          <p>Verifies whether the artist has a documented entity ID in the MusicBrainz database and inspects ℗/© phonographic copyright strings for anonymous DIY distributors.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎛️</div>
-          <h3>4. Audio Preview &amp; Duration</h3>
-          <p>Checks typical AI model duration windows (e.g. 2:00 / 4:00 limits) and inspects spectral byte entropy on available audio preview streams.</p>
+        <div class="method-box">
+          <div class="method-num">VECTOR 04 // TELEMETRY</div>
+          <h3>Audio Stream &amp; Duration Window</h3>
+          <p>Flags track durations clustering around 2:00 (120s) and 4:00 (240s) model context limits, and computes byte-level Shannon entropy (H), zero-crossing rate, and frame variance on preview streams.</p>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Modal: Report AI Song -->
+  <!-- Modal: Submit AI Track -->
   <div id="reportModal" class="modal-backdrop hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Report an AI Artist or Track</h3>
+        <h3>SUBMIT SYNTHETIC ARTIST / TRACK</h3>
         <button id="closeReportModal" class="modal-close">✕</button>
       </div>
       <p class="modal-desc">
-        Found an artist or song generated by artificial intelligence? Add it to the database — it will immediately be flagged in future playlist scans.
+        Add a confirmed AI-generated artist or track to the local index. Subsequent scans will immediately cross-reference this entry.
       </p>
       <form id="reportForm" class="modal-form">
         <div class="form-group">
-          <label for="reportArtist">Artist / Channel Name *</label>
+          <label for="reportArtist">ARTIST OR CHANNEL NAME *</label>
           <input type="text" id="reportArtist" placeholder="e.g. The Velvet Sundown" required />
         </div>
         <div class="form-group">
-          <label for="reportTitle">Track Title (optional)</label>
+          <label for="reportTitle">TRACK TITLE (OPTIONAL)</label>
           <input type="text" id="reportTitle" placeholder="e.g. Dust on the Wind" />
         </div>
         <div class="form-group">
-          <label for="reportPlatform">Platform</label>
+          <label for="reportPlatform">SOURCE PLATFORM</label>
           <select id="reportPlatform">
             <option value="Spotify">Spotify</option>
             <option value="Apple Music">Apple Music</option>
@@ -254,35 +305,34 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="reportReason">Reason / Evidence (e.g. Suno vocals, 40 albums in a month)</label>
-          <input type="text" id="reportReason" placeholder="Synthetic AI vocals, no real artist history..." />
+          <label for="reportReason">EVIDENCE / NOTES</label>
+          <input type="text" id="reportReason" placeholder="e.g. Suno vocal artifacts, 35 singles in 2 months..." />
         </div>
         <div class="modal-actions">
-          <button type="button" id="cancelReportBtn" class="btn btn-ghost">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save to AI Database</button>
+          <button type="button" id="cancelReportBtn" class="btn btn-outline">CANCEL</button>
+          <button type="submit" class="btn btn-solid">SAVE TO INDEX</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal: Known AI Database -->
+  <!-- Modal: Known AI Index -->
   <div id="dbModal" class="modal-backdrop hidden">
     <div class="modal-card modal-lg">
       <div class="modal-header">
-        <h3>Tracked AI Artists &amp; Labels Database</h3>
+        <h3>INDEXED SYNTHETIC ARTISTS &amp; GENERATORS</h3>
         <button id="closeDbModal" class="modal-close">✕</button>
       </div>
       <div id="dbModalContent" class="db-list"></div>
     </div>
   </div>
 
-  <!-- Audio Player for Previews -->
   <audio id="previewAudioPlayer"></audio>
 
   <footer class="footer">
     <div class="container footer-inner">
-      <span><strong>IsThereAIInMyPlaylist</strong> — AI Music Detector for Spotify, Apple Music &amp; YouTube</span>
-      <span class="footer-muted">Built for instant verification of public playlists</span>
+      <span><strong>isthereaiinmyplaylist</strong> // Multi-Vector Playlist Forensics</span>
+      <span>Data sources: Spotify Embed • Apple Music • YouTube • MusicBrainz • Deezer • iTunes Search API</span>
     </div>
   </footer>
 

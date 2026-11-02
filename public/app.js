@@ -15,23 +15,33 @@ const playlistPlatformBadge = document.getElementById("playlistPlatformBadge");
 const playlistTitle = document.getElementById("playlistTitle");
 const playlistSubtitle = document.getElementById("playlistSubtitle");
 
+// 8 Telemetry cells
 const statTotal = document.getElementById("statTotal");
 const statAi = document.getElementById("statAi");
+const statAiPct = document.getElementById("statAiPct");
 const statSuspicious = document.getElementById("statSuspicious");
 const statHuman = document.getElementById("statHuman");
+const statAvgRisk = document.getElementById("statAvgRisk");
+const statPreAi = document.getElementById("statPreAi");
+const statMbVerified = document.getElementById("statMbVerified");
+const statHighVelocity = document.getElementById("statHighVelocity");
 
 const overallVerdictBanner = document.getElementById("overallVerdictBanner");
-const verdictEmoji = document.getElementById("verdictEmoji");
 const verdictHeadline = document.getElementById("verdictHeadline");
 const verdictDescription = document.getElementById("verdictDescription");
 const verdictPercent = document.getElementById("verdictPercent");
-const verdictBarFill = document.getElementById("verdictBarFill");
+
+const barSegAi = document.getElementById("barSegAi");
+const barSegSuspicious = document.getElementById("barSegSuspicious");
+const barSegHuman = document.getElementById("barSegHuman");
+const statExtraTelemetry = document.getElementById("statExtraTelemetry");
 
 const tabCountAll = document.getElementById("tabCountAll");
 const tabCountAi = document.getElementById("tabCountAi");
 const tabCountSuspicious = document.getElementById("tabCountSuspicious");
 const tabCountHuman = document.getElementById("tabCountHuman");
 
+const sortSelect = document.getElementById("sortSelect");
 const trackFilterInput = document.getElementById("trackFilterInput");
 const tracksList = document.getElementById("tracksList");
 const previewAudioPlayer = document.getElementById("previewAudioPlayer");
@@ -52,6 +62,7 @@ const dbCountBadge = document.getElementById("dbCountBadge");
 let currentTracks = [];
 let activeFilter = "all";
 let activePlayingUrl = null;
+const expandedRows = new Set();
 
 function escapeHtml(str) {
   return String(str || "")
@@ -62,20 +73,26 @@ function escapeHtml(str) {
 }
 
 function formatDuration(ms) {
-  if (!ms || ms <= 0) return "";
+  if (!ms || ms <= 0) return "--:--";
   const totalSec = Math.round(ms / 1000);
   const min = Math.floor(totalSec / 60);
   const sec = totalSec % 60;
   return `${min}:${String(sec).padStart(2, "0")}`;
 }
 
-function getScoreColor(score) {
-  if (score >= 68) return "#ef4444";
-  if (score >= 38) return "#f59e0b";
-  return "#10b981";
+function formatCompactNumber(num) {
+  if (num === null || num === undefined) return "N/A";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
+  return String(num);
 }
 
-// Show/hide clear button
+function getScoreColor(score) {
+  if (score >= 68) return "#e5484d";
+  if (score >= 38) return "#f59e0b";
+  return "#30a46c";
+}
+
 playlistUrlInput.addEventListener("input", () => {
   if (playlistUrlInput.value.trim().length > 0) {
     clearInputBtn.classList.remove("hidden");
@@ -90,23 +107,19 @@ clearInputBtn.addEventListener("click", () => {
   playlistUrlInput.focus();
 });
 
-// Preset chips
-document.querySelectorAll(".preset-chip").forEach((chip) => {
-  chip.addEventListener("click", () => {
-    const url = chip.getAttribute("data-url");
+document.querySelectorAll(".sample-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const url = btn.getAttribute("data-url");
     playlistUrlInput.value = url;
     clearInputBtn.classList.remove("hidden");
     runAnalysis(url);
   });
 });
 
-// Analyze form submit
 analyzeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = playlistUrlInput.value.trim();
-  if (url) {
-    runAnalysis(url);
-  }
+  if (url) runAnalysis(url);
 });
 
 async function runAnalysis(url) {
@@ -115,19 +128,19 @@ async function runAnalysis(url) {
   loadingSection.classList.remove("hidden");
   analyzeBtn.disabled = true;
 
-  // Stop any playing audio
   previewAudioPlayer.pause();
   activePlayingUrl = null;
+  expandedRows.clear();
 
   const steps = [
-    { pct: 25, text: "Connecting to platform and fetching playlist tracklist..." },
-    { pct: 55, text: "Scanning titles for AI generator tags (Suno, Udio, RVC) and AI artist database..." },
-    { pct: 82, text: "Verifying artist release history, listener base, and release velocity (Deezer & iTunes API)..." },
-    { pct: 94, text: "Inspecting audio preview streams and computing final AI probability scores..." },
+    { pct: 25, text: "Parsing playlist tracklist and duration markers..." },
+    { pct: 52, text: "Cross-referencing MusicBrainz artist registry & known synthetic index..." },
+    { pct: 78, text: "Calculating release velocity, single-to-album ratio & copyright strings (iTunes/Deezer)..." },
+    { pct: 92, text: "Measuring audio stream byte entropy (H), zero-crossing rate & compiling report..." },
   ];
 
   let stepIdx = 0;
-  loadingBar.style.width = "18%";
+  loadingBar.style.width = "15%";
   const stepTimer = setInterval(() => {
     if (stepIdx < steps.length) {
       loadingBar.style.width = `${steps[stepIdx].pct}%`;
@@ -147,7 +160,7 @@ async function runAnalysis(url) {
     clearInterval(stepTimer);
 
     if (!res.ok || data.error) {
-      throw new Error(data.error || "Failed to analyze the playlist.");
+      throw new Error(data.error || "Failed to inspect playlist.");
     }
 
     loadingBar.style.width = "100%";
@@ -167,66 +180,76 @@ function renderResults(data) {
   currentTracks = data.tracks || [];
   activeFilter = "all";
   trackFilterInput.value = "";
+  sortSelect.value = "index";
 
-  // Update active tab UI
   document.querySelectorAll(".filter-tab").forEach((btn) => {
     btn.classList.toggle("active", btn.getAttribute("data-filter") === "all");
   });
 
-  // Header metadata
-  playlistPlatformBadge.textContent = data.platformName || data.platform;
-  playlistTitle.textContent = data.title || "Playlist";
-  playlistSubtitle.textContent = `${data.owner || ""} • ${data.summary.totalTracks} tracks`;
+  playlistPlatformBadge.textContent = (data.platformName || data.platform || "PLAYLIST").toUpperCase();
+  playlistTitle.textContent = data.title || "Untitled Playlist";
+  playlistSubtitle.textContent = `${data.owner || "Public"} // ${data.summary.totalTracks} items`;
 
   if (data.coverUrl) {
     playlistCoverWrap.innerHTML = `<img src="${escapeHtml(data.coverUrl)}" alt="Cover" />`;
   } else {
-    playlistCoverWrap.innerHTML = `<span class="cover-placeholder">🎵</span>`;
+    playlistCoverWrap.innerHTML = `<span class="thumb-fallback">RAW</span>`;
   }
 
-  // Stats
   const s = data.summary;
   statTotal.textContent = s.totalTracks;
   statAi.textContent = s.aiCount;
+  statAiPct.textContent = `${s.aiPercentage}% of playlist`;
   statSuspicious.textContent = s.suspiciousCount;
   statHuman.textContent = s.humanCount;
+  statAvgRisk.textContent = `${s.avgAiScore}%`;
+  statPreAi.textContent = `${s.preAiPercentage ?? 0}%`;
+  statMbVerified.textContent = `${s.mbVerifiedPercentage ?? 0}%`;
+  statHighVelocity.textContent = s.highVelocityCount ?? 0;
 
   tabCountAll.textContent = s.totalTracks;
   tabCountAi.textContent = s.aiCount;
   tabCountSuspicious.textContent = s.suspiciousCount;
   tabCountHuman.textContent = s.humanCount;
 
-  // Overall verdict banner
-  overallVerdictBanner.className = "verdict-banner";
-  verdictPercent.textContent = `${s.aiPercentage}% AI (${s.aiCount} of ${s.totalTracks})`;
-  verdictBarFill.style.width = `${Math.max(4, s.aiPercentage)}%`;
+  // Composition bar segments
+  const total = Math.max(1, s.totalTracks);
+  const aiW = ((s.aiCount / total) * 100).toFixed(1);
+  const warnW = ((s.suspiciousCount / total) * 100).toFixed(1);
+  const safeW = ((s.humanCount / total) * 100).toFixed(1);
 
+  barSegAi.style.width = `${aiW}%`;
+  barSegSuspicious.style.width = `${warnW}%`;
+  barSegHuman.style.width = `${safeW}%`;
+
+  verdictPercent.textContent = `${s.aiPercentage}% FLAGGED AI (${s.aiCount}/${s.totalTracks}) // MEAN RISK: ${s.avgAiScore}%`;
+
+  const avgDurFormatted = s.avgDurationSec
+    ? `${Math.floor(s.avgDurationSec / 60)}:${String(s.avgDurationSec % 60).padStart(2, "0")}`
+    : "N/A";
+  statExtraTelemetry.textContent = `MEDIAN FOLLOWERS: ${formatCompactNumber(
+    s.medianFollowers
+  )} // MEAN DURATION: ${avgDurFormatted} // POST-2024 DEBUTS: ${s.post2024Count ?? 0}`;
+
+  // Verdict Banner
+  overallVerdictBanner.className = "verdict-summary-box";
   if (s.aiCount > 0) {
-    overallVerdictBanner.classList.add("verdict-danger");
-    verdictEmoji.textContent = "🚨";
-    verdictHeadline.textContent = `Heads up! We detected ${s.aiCount} AI-generated ${
-      s.aiCount === 1 ? "song" : "songs"
-    } in this playlist.`;
+    overallVerdictBanner.classList.add("status-danger");
+    verdictHeadline.textContent = `${s.aiCount} SYNTHETIC / AI TRACK${s.aiCount === 1 ? "" : "S"} DETECTED`;
     verdictDescription.textContent =
       s.suspiciousCount > 0
-        ? `Additionally, ${s.suspiciousCount} more ${
-            s.suspiciousCount === 1 ? "track shows" : "tracks show"
-          } suspicious signals (new catalog with no prior history or anonymous DIY distribution).`
-        : "These tracks carry direct signatures of AI generators (Suno/Udio) or belong to confirmed AI projects.";
+        ? `Plus ${s.suspiciousCount} unverified track(s) showing post-2024 high-velocity single patterns.`
+        : "Flagged items match known synthetic generators (Suno/Udio) or confirmed AI artist catalogs.";
   } else if (s.suspiciousCount > 0) {
-    overallVerdictBanner.classList.add("verdict-warn");
-    verdictEmoji.textContent = "🧐";
-    verdictHeadline.textContent = `No confirmed AI tracks, but ${s.suspiciousCount} ${
-      s.suspiciousCount === 1 ? "track looks suspicious" : "tracks look suspicious"
-    }.`;
+    overallVerdictBanner.classList.add("status-warn");
+    verdictHeadline.textContent = `0 CONFIRMED AI // ${s.suspiciousCount} UNVERIFIED / SUSPICIOUS`;
     verdictDescription.textContent =
-      "Some artists in this playlist have no verifiable history prior to 2024 or have an unusually low footprint in global music databases.";
+      "No explicit AI tags, but several tracks lack pre-2024 history or MusicBrainz records.";
   } else {
-    overallVerdictBanner.classList.add("verdict-clean");
-    verdictEmoji.textContent = "✅";
-    verdictHeadline.textContent = "Great news! This playlist looks 100% human-made.";
+    overallVerdictBanner.classList.add("status-safe");
+    verdictHeadline.textContent = "100% VERIFIED HUMAN CATALOG";
     verdictDescription.textContent =
-      "Every track passed artist history verification, known AI database checks, and keyword scans with zero AI flags.";
+      "All tracks passed discography timeline, MusicBrainz registry, and release cadence checks.";
   }
 
   renderTracksList();
@@ -234,125 +257,232 @@ function renderResults(data) {
   resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function renderTracksList() {
+function getSortedAndFilteredTracks() {
   const query = trackFilterInput.value.trim().toLowerCase();
+  const sortMode = sortSelect.value;
 
   const filtered = currentTracks.filter((t) => {
     if (activeFilter !== "all" && t.verdict !== activeFilter) return false;
     if (query) {
-      const hay = `${t.title} ${t.artist} ${t.channelName || ""}`.toLowerCase();
+      const hay = `${t.title} ${t.artist} ${t.channelName || ""} ${
+        t.forensics?.primaryDistributor || ""
+      }`.toLowerCase();
       if (!hay.includes(query)) return false;
     }
     return true;
   });
 
-  if (filtered.length === 0) {
+  return filtered.sort((a, b) => {
+    if (sortMode === "risk-desc") return b.aiProbability - a.aiProbability;
+    if (sortMode === "risk-asc") return a.aiProbability - b.aiProbability;
+    if (sortMode === "velocity-desc") {
+      return (
+        (b.forensics?.releasesLast12Mo || 0) -
+        (a.forensics?.releasesLast12Mo || 0)
+      );
+    }
+    if (sortMode === "fans-asc") {
+      const fa = a.forensics?.deezerFans ?? 999999999;
+      const fb = b.forensics?.deezerFans ?? 999999999;
+      return fa - fb;
+    }
+    return a.index - b.index;
+  });
+}
+
+function renderTracksList() {
+  const rows = getSortedAndFilteredTracks();
+
+  if (rows.length === 0) {
     tracksList.innerHTML = `
-      <div class="track-card" style="text-align:center; padding: 32px; color: var(--text-muted);">
-        No tracks match the selected filter.
+      <div style="padding: 28px; text-align: center; font-family: var(--mono); font-size: 0.8rem; color: var(--text-muted);">
+        NO TRACKS MATCH CURRENT FILTER CRITERIA.
       </div>
     `;
     return;
   }
 
-  tracksList.innerHTML = filtered
+  tracksList.innerHTML = rows
     .map((track) => {
+      const f = track.forensics || {};
+      const sub = track.subScores || {};
       const color = getScoreColor(track.aiProbability);
       const dur = formatDuration(track.durationMs);
+      const isExpanded = expandedRows.has(track.id);
+
+      const debutStr = f.earliestYear ? String(f.earliestYear) : "UNLISTED";
+      const spanStr = f.careerSpanYears
+        ? `${f.careerSpanYears} yr span`
+        : "No prior catalog";
+
+      const velocityStr = `${f.releasesLast12Mo ?? 0} rel / 12m`;
+      const cadenceStr = f.releaseCadencePerYear
+        ? `${f.releaseCadencePerYear}/yr avg`
+        : "N/A";
+
+      const singleRatioStr =
+        f.singleToAlbumRatio !== null && f.singleToAlbumRatio !== undefined
+          ? `${f.singleToAlbumRatio}% singles`
+          : "N/A";
+      const catalogSubStr = `${f.singleCount ?? 0}S / ${f.albumCount ?? 0}A`;
+
+      const followersStr = formatCompactNumber(f.deezerFans);
+      const rankStr = f.deezerTrackRank
+        ? `Rank ${formatCompactNumber(f.deezerTrackRank)}`
+        : `${f.deezerAlbums ?? 0} releases`;
+
+      const registryStr = f.musicBrainzVerified ? "MB VERIFIED" : "UNVERIFIED";
+      const registrySubStr = f.musicBrainzVerified
+        ? `${f.mbType || "Artist"}${f.mbCountry ? " · " + f.mbCountry : ""}`
+        : "No MBID entry";
 
       const signalsHtml = (track.signals || [])
         .map(
           (sig) => `
-          <span class="signal-chip ${escapeHtml(sig.type)}">
-            <strong>${escapeHtml(sig.category)}:</strong> ${escapeHtml(sig.text)}
+          <span class="sig-tag ${escapeHtml(sig.type)}">
+            <strong>[${escapeHtml(sig.category)}]</strong> ${escapeHtml(sig.text)}
           </span>
         `
         )
         .join("");
 
       const previewBtnHtml = track.previewUrl
-        ? `<button type="button" class="preview-play-btn" data-preview="${escapeHtml(
+        ? `<button type="button" class="play-btn" data-preview="${escapeHtml(
             track.previewUrl
-          )}" title="Play audio preview">▶</button>`
-        : "";
+          )}" title="Play 30s audio sample">▶</button>`
+        : `<span class="play-btn" style="opacity:0.3;cursor:default" title="No audio stream available">–</span>`;
 
       return `
-        <div class="track-card track-${escapeHtml(track.verdict)}">
-          <div class="track-main-row">
-            <div class="track-left">
-              <span class="track-index">#${track.index}</span>
+        <div class="track-row-wrap row-${escapeHtml(track.verdict)}" data-track-id="${escapeHtml(track.id)}">
+          <div class="track-row">
+            <div class="col-idx cell-mono">#${String(track.index).padStart(2, "0")}</div>
+
+            <div class="col-track track-Identity">
               ${previewBtnHtml}
-              <div class="track-titles">
-                <div class="track-title-line">
-                  <a href="${escapeHtml(
-                    track.externalUrl
-                  )}" target="_blank" rel="noopener" class="track-title">
+              <div style="min-width:0">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <a href="${escapeHtml(track.externalUrl)}" target="_blank" rel="noopener" class="track-title-link">
                     ${escapeHtml(track.title)}
                   </a>
-                  ${track.isExplicit ? `<span class="explicit-tag">E</span>` : ""}
-                  ${dur ? `<span style="font-size:0.78rem;color:var(--text-muted)">(${dur})</span>` : ""}
+                  <span class="cell-mono" style="font-size:0.68rem">(${dur})</span>
                 </div>
-                <div class="track-artist">
+                <div class="track-artist-line">
                   ${escapeHtml(track.artist)}
-                  ${
-                    track.artistMeta?.earliestReleaseYear
-                      ? ` • <span style="font-size:0.78rem;">Active since ${track.artistMeta.earliestReleaseYear}</span>`
-                      : ""
-                  }
+                  <span style="color:var(--text-muted)"> // ${escapeHtml(f.primaryDistributor || "Unlisted Label")}</span>
                 </div>
               </div>
             </div>
 
-            <div class="track-right">
-              <div class="score-pill-wrap">
-                <span class="score-number" style="color: ${color}">
-                  ${track.aiProbability}% AI Risk
-                </span>
-                <div class="score-mini-bar">
-                  <div class="score-mini-fill" style="width: ${track.aiProbability}%; background: ${color}"></div>
-                </div>
-              </div>
-
-              <span class="verdict-badge ${escapeHtml(track.verdict)}">
-                ${
-                  track.verdict === "ai"
-                    ? "🤖 AI Detected"
-                    : track.verdict === "suspicious"
-                    ? "⚠️ Suspicious"
-                    : "✅ Human"
-                }
+            <div class="col-debut cell-mono">
+              <span style="color:${f.verifiedPreAiEra ? "var(--safe)" : f.earliestYear >= 2024 ? "var(--warn)" : "var(--text-primary)"}">
+                ${escapeHtml(debutStr)}
               </span>
+              <span class="cell-sub">${escapeHtml(spanStr)}</span>
+            </div>
 
+            <div class="col-cadence cell-mono">
+              <span style="color:${(f.releasesLast12Mo || 0) >= 12 ? "var(--danger)" : "var(--text-primary)"}">
+                ${escapeHtml(velocityStr)}
+              </span>
+              <span class="cell-sub">${escapeHtml(cadenceStr)}</span>
+            </div>
+
+            <div class="col-catalog cell-mono">
+              <span>${escapeHtml(singleRatioStr)}</span>
+              <span class="cell-sub">${escapeHtml(catalogSubStr)}</span>
+            </div>
+
+            <div class="col-audience cell-mono">
+              <span>${escapeHtml(followersStr)}</span>
+              <span class="cell-sub">${escapeHtml(rankStr)}</span>
+            </div>
+
+            <div class="col-registry cell-mono">
+              <span style="color:${f.musicBrainzVerified ? "var(--safe)" : "var(--text-muted)"}">
+                ${escapeHtml(registryStr)}
+              </span>
+              <span class="cell-sub">${escapeHtml(registrySubStr)}</span>
+            </div>
+
+            <div class="col-risk risk-cell">
+              <div class="risk-top">
+                <span style="color:${color}">${track.aiProbability}%</span>
+                <span style="font-size:0.64rem;color:${color}">${escapeHtml(track.verdictLabel)}</span>
+              </div>
+              <div class="risk-bar">
+                <div class="risk-fill" style="width:${track.aiProbability}%;background:${color}"></div>
+              </div>
+            </div>
+
+            <div class="col-actions action-group">
+              <button type="button" class="inspect-btn" data-toggle-id="${escapeHtml(track.id)}">
+                ${isExpanded ? "HIDE" : "METRICS"}
+              </button>
               <button
                 type="button"
-                class="flag-track-btn"
+                class="flag-btn"
                 data-artist="${escapeHtml(track.artist)}"
                 data-title="${escapeHtml(track.title)}"
-                title="Flag this track as AI-generated"
+                title="Submit to synthetic database"
               >
-                🚩 Flag AI
+                FLAG
               </button>
             </div>
           </div>
 
-          <div class="track-signals">
+          <div class="signals-strip">
             ${signalsHtml}
+          </div>
+
+          <div id="drawer-${escapeHtml(track.id)}" class="forensics-drawer ${isExpanded ? "" : "hidden"}">
+            <div class="drawer-col">
+              <div class="drawer-heading">SUB-VECTOR RISK SCORES</div>
+              <div class="drawer-kv"><span>Metadata / Tags:</span><strong>${sub.metadataScore ?? 0}/100</strong></div>
+              <div class="drawer-kv"><span>Catalog Velocity:</span><strong>${sub.catalogVelocityScore ?? 0}/100</strong></div>
+              <div class="drawer-kv"><span>Footprint Deficit:</span><strong>${sub.footprintRiskScore ?? 0}/100</strong></div>
+              <div class="drawer-kv"><span>Distribution Risk:</span><strong>${sub.distributionRiskScore ?? 0}/100</strong></div>
+            </div>
+
+            <div class="drawer-col">
+              <div class="drawer-heading">DISCOGRAPHY METRICS</div>
+              <div class="drawer-kv"><span>First Release Year:</span><strong>${f.earliestYear || "N/A"}</strong></div>
+              <div class="drawer-kv"><span>Latest Release Year:</span><strong>${f.latestYear || "N/A"}</strong></div>
+              <div class="drawer-kv"><span>Avg Tracks / Release:</span><strong>${f.avgTrackCountPerRelease ?? "N/A"}</strong></div>
+              <div class="drawer-kv"><span>Singles vs Albums:</span><strong>${f.singleCount ?? 0} / ${f.albumCount ?? 0}</strong></div>
+            </div>
+
+            <div class="drawer-col">
+              <div class="drawer-heading">REGISTRY &amp; LICENSING</div>
+              <div class="drawer-kv"><span>MusicBrainz Match:</span><strong>${f.musicBrainzVerified ? "Yes (" + (f.mbType || "Entity") + ")" : "No"}</strong></div>
+              <div class="drawer-kv"><span>Origin / Area:</span><strong>${escapeHtml(f.mbCountry || "Unlisted")}</strong></div>
+              <div class="drawer-kv"><span>Distributor / ℗:</span><strong>${escapeHtml(f.primaryDistributor || "Unlisted")}</strong></div>
+              <div class="drawer-kv"><span>Deezer Followers:</span><strong>${f.deezerFans !== null ? f.deezerFans.toLocaleString("en-US") : "Unlisted"}</strong></div>
+            </div>
+
+            <div class="drawer-col">
+              <div class="drawer-heading">AUDIO STREAM TELEMETRY</div>
+              <div class="drawer-kv"><span>Duration Sec:</span><strong>${f.durationSeconds ? f.durationSeconds + "s" : "N/A"}</strong></div>
+              <div class="drawer-kv"><span>2m/4m AI Window:</span><strong>${f.matchesGeneratorWindow ? "MATCH (Yes)" : "No"}</strong></div>
+              <div class="drawer-kv"><span>Shannon Entropy (H):</span><strong>${f.shannonEntropy ? f.shannonEntropy + " b/B" : "No stream"}</strong></div>
+              <div class="drawer-kv"><span>Zero-Crossing / σ²:</span><strong>${f.zeroCrossRatio ? f.zeroCrossRatio + " / " + f.byteVariance : "N/A"}</strong></div>
+            </div>
           </div>
         </div>
       `;
     })
     .join("");
 
-  // Attach preview audio handlers
-  tracksList.querySelectorAll(".preview-play-btn").forEach((btn) => {
+  // Bind audio preview buttons
+  tracksList.querySelectorAll("button.play-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const url = btn.getAttribute("data-preview");
+      if (!url) return;
       if (activePlayingUrl === url && !previewAudioPlayer.paused) {
         previewAudioPlayer.pause();
         btn.textContent = "▶";
         activePlayingUrl = null;
       } else {
-        document.querySelectorAll(".preview-play-btn").forEach((b) => (b.textContent = "▶"));
+        document.querySelectorAll("button.play-btn").forEach((b) => (b.textContent = "▶"));
         previewAudioPlayer.src = url;
         previewAudioPlayer.play();
         btn.textContent = "⏸";
@@ -361,8 +491,26 @@ function renderTracksList() {
     });
   });
 
-  // Attach quick report handlers
-  tracksList.querySelectorAll(".flag-track-btn").forEach((btn) => {
+  // Bind drawer toggle buttons
+  tracksList.querySelectorAll(".inspect-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-toggle-id");
+      const drawer = document.getElementById(`drawer-${id}`);
+      if (!drawer) return;
+      if (expandedRows.has(id)) {
+        expandedRows.delete(id);
+        drawer.classList.add("hidden");
+        btn.textContent = "METRICS";
+      } else {
+        expandedRows.add(id);
+        drawer.classList.remove("hidden");
+        btn.textContent = "HIDE";
+      }
+    });
+  });
+
+  // Bind flag buttons
+  tracksList.querySelectorAll(".flag-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.getElementById("reportArtist").value = btn.getAttribute("data-artist") || "";
       document.getElementById("reportTitle").value = btn.getAttribute("data-title") || "";
@@ -371,7 +519,6 @@ function renderTracksList() {
   });
 }
 
-// Filter tabs click
 document.querySelectorAll(".filter-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
@@ -381,20 +528,13 @@ document.querySelectorAll(".filter-tab").forEach((tab) => {
   });
 });
 
-trackFilterInput.addEventListener("input", () => {
-  renderTracksList();
-});
+trackFilterInput.addEventListener("input", renderTracksList);
+sortSelect.addEventListener("change", renderTracksList);
 
-// Modals logic
-openReportBtn.addEventListener("click", () => {
-  reportModal.classList.remove("hidden");
-});
-closeReportModal.addEventListener("click", () => {
-  reportModal.classList.add("hidden");
-});
-cancelReportBtn.addEventListener("click", () => {
-  reportModal.classList.add("hidden");
-});
+// Modals
+openReportBtn.addEventListener("click", () => reportModal.classList.remove("hidden"));
+closeReportModal.addEventListener("click", () => reportModal.classList.add("hidden"));
+cancelReportBtn.addEventListener("click", () => reportModal.classList.add("hidden"));
 
 reportForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -428,9 +568,7 @@ openDbBtn.addEventListener("click", async () => {
   dbModal.classList.remove("hidden");
   await loadDatabaseModal();
 });
-closeDbModal.addEventListener("click", () => {
-  dbModal.classList.add("hidden");
-});
+closeDbModal.addEventListener("click", () => dbModal.classList.add("hidden"));
 
 async function refreshDatabaseBadge() {
   try {
@@ -443,7 +581,7 @@ async function refreshDatabaseBadge() {
 }
 
 async function loadDatabaseModal() {
-  dbModalContent.innerHTML = `<p style="color:var(--text-muted)">Loading database...</p>`;
+  dbModalContent.innerHTML = `<p style="font-family:var(--mono);font-size:0.78rem;color:var(--text-muted)">Loading index...</p>`;
   try {
     const res = await fetch("/api/database");
     const db = await res.json();
@@ -455,16 +593,16 @@ async function loadDatabaseModal() {
         (item) => `
         <div class="db-item">
           <div>
-            <div class="db-item-title">🤖 ${escapeHtml(item.name)}</div>
+            <div class="db-item-title">${escapeHtml(item.name)}</div>
             <div class="db-item-reason">${escapeHtml(item.reason)}</div>
           </div>
-          <span class="verdict-badge ai">${escapeHtml(item.platform)}</span>
+          <span class="mono-tag">${escapeHtml(item.platform)}</span>
         </div>
       `
       )
       .join("");
   } catch {
-    dbModalContent.innerHTML = `<p style="color:var(--danger)">Failed to load database.</p>`;
+    dbModalContent.innerHTML = `<p style="color:var(--danger)">Failed to load index.</p>`;
   }
 }
 
