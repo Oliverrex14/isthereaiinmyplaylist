@@ -174,6 +174,15 @@ async function requestHandler(req, res) {
 
   const clientIp = getClientIp(req);
 
+  // Google Search Console HTML file verification
+  if (pathname === "/googlecdef3fd0e19d3000.html" && req.method === "GET") {
+    res.writeHead(200, {
+      ...SECURITY_HEADERS,
+      "Content-Type": "text/html; charset=utf-8",
+    });
+    return res.end("google-site-verification: googlecdef3fd0e19d3000.html");
+  }
+
   // Dynamic robots.txt
   if (pathname === "/robots.txt" && req.method === "GET") {
     const robots = [

@@ -19,6 +19,10 @@
   ],
   "rewrites": [
     {
+      "source": "/googlecdef3fd0e19d3000.html",
+      "destination": "/api/index"
+    },
+    {
       "source": "/robots.txt",
       "destination": "/api/index"
     },
