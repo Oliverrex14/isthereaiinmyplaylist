@@ -68,10 +68,23 @@ async function requestHandler(req, res) {
     return res.end();
   }
 
-  const host = req.headers.host || "isthereaiinmyplaylist.com";
-  const proto = req.headers["x-forwarded-proto"] || "https";
-  const parsedUrl = new URL(req.url, `${proto}://${host}`);
-  const pathname = parsedUrl.pathname;
+  const rawHost = (req.headers["x-forwarded-host"] || req.headers.host || "localhost:3000")
+    .split(",")[0]
+    .trim();
+  const rawProto = (req.headers["x-forwarded-proto"] || "https")
+    .split(",")[0]
+    .trim()
+    .replace(/[^a-zA-Z]/g, "") || "https";
+
+  let pathname = "/";
+  try {
+    const parsedUrl = new URL(req.url || "/", `${rawProto}://${rawHost}`);
+    pathname = parsedUrl.pathname;
+  } catch {
+    pathname = (req.url || "/").split("?")[0] || "/";
+  }
+  const host = rawHost;
+  const proto = rawProto;
 
   // Dynamic robots.txt so it always points to the active domain's sitemap
   if (pathname === "/robots.txt" && req.method === "GET") {

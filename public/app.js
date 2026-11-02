@@ -200,7 +200,15 @@ async function runAnalysis(url, mode = activeMode) {
       body: JSON.stringify({ url, mode }),
     });
 
-    const data = await res.json();
+    const rawText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      throw new Error(
+        `Server returned an unexpected response (HTTP ${res.status}).`
+      );
+    }
     clearInterval(stepTimer);
 
     if (!res.ok || data.error) {
