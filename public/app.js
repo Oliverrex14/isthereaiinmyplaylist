@@ -491,6 +491,20 @@ function renderTracksList() {
             ${signalsHtml}
           </div>
 
+          <div class="mobile-metrics-bar">
+            <span class="mob-pill">DEBUT: <strong>${escapeHtml(debutStr)}</strong></span>
+            <span class="mob-pill">12M: <strong>${escapeHtml(velocityStr)}</strong></span>
+            <span class="mob-pill">SINGLES: <strong>${escapeHtml(
+              f.singleToAlbumRatio !== null && f.singleToAlbumRatio !== undefined
+                ? f.singleToAlbumRatio + "%"
+                : "N/A"
+            )}</strong></span>
+            <span class="mob-pill">FANS: <strong>${escapeHtml(followersStr)}</strong></span>
+            <span class="mob-pill ${f.musicBrainzVerified ? "mob-verified" : ""}">
+              ${f.musicBrainzVerified ? "MB VERIFIED" : "NO MBID"}
+            </span>
+          </div>
+
           <div id="drawer-${escapeHtml(track.id)}" class="forensics-drawer ${isExpanded ? "" : "hidden"}">
             <div class="drawer-col">
               <div class="drawer-heading">SUB-VECTOR RISK SCORES</div>
