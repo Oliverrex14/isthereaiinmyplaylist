@@ -35,8 +35,23 @@ function sendJson(res, statusCode, payload) {
 }
 
 function parseJsonBody(req) {
-  if (req.body && typeof req.body === "object") {
+  if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) {
     return Promise.resolve(req.body);
+  }
+  if (typeof req.body === "string") {
+    try {
+      return Promise.resolve(req.body ? JSON.parse(req.body) : {});
+    } catch {
+      return Promise.reject(new Error("Invalid JSON body"));
+    }
+  }
+  if (Buffer.isBuffer(req.body)) {
+    try {
+      const str = req.body.toString("utf-8");
+      return Promise.resolve(str ? JSON.parse(str) : {});
+    } catch {
+      return Promise.reject(new Error("Invalid JSON body"));
+    }
   }
   return new Promise((resolve, reject) => {
     let body = "";
