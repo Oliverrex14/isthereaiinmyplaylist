@@ -120,10 +120,10 @@ async function runAnalysis(url) {
   activePlayingUrl = null;
 
   const steps = [
-    { pct: 25, text: "Připojuji se k platformě a načítám seznam skladeb..." },
-    { pct: 55, text: "Kontroluji klíčová slova (Suno, Udio, RVC) a databázi AI interpretů..." },
-    { pct: 82, text: "Ověřuji historii interpretů, komunitu a frekvenci vydávání (Deezer & iTunes API)..." },
-    { pct: 94, text: "Vyhodnocuji audio vzorky a počítám výsledné AI skóre..." },
+    { pct: 25, text: "Connecting to platform and fetching playlist tracklist..." },
+    { pct: 55, text: "Scanning titles for AI generator tags (Suno, Udio, RVC) and AI artist database..." },
+    { pct: 82, text: "Verifying artist release history, listener base, and release velocity (Deezer & iTunes API)..." },
+    { pct: 94, text: "Inspecting audio preview streams and computing final AI probability scores..." },
   ];
 
   let stepIdx = 0;
@@ -147,7 +147,7 @@ async function runAnalysis(url) {
     clearInterval(stepTimer);
 
     if (!res.ok || data.error) {
-      throw new Error(data.error || "Nepodařilo se zanalyzovat playlist.");
+      throw new Error(data.error || "Failed to analyze the playlist.");
     }
 
     loadingBar.style.width = "100%";
@@ -176,7 +176,7 @@ function renderResults(data) {
   // Header metadata
   playlistPlatformBadge.textContent = data.platformName || data.platform;
   playlistTitle.textContent = data.title || "Playlist";
-  playlistSubtitle.textContent = `${data.owner || ""} • ${data.summary.totalTracks} skladeb`;
+  playlistSubtitle.textContent = `${data.owner || ""} • ${data.summary.totalTracks} tracks`;
 
   if (data.coverUrl) {
     playlistCoverWrap.innerHTML = `<img src="${escapeHtml(data.coverUrl)}" alt="Cover" />`;
@@ -198,33 +198,35 @@ function renderResults(data) {
 
   // Overall verdict banner
   overallVerdictBanner.className = "verdict-banner";
-  verdictPercent.textContent = `${s.aiPercentage} % AI (${s.aiCount} z ${s.totalTracks})`;
+  verdictPercent.textContent = `${s.aiPercentage}% AI (${s.aiCount} of ${s.totalTracks})`;
   verdictBarFill.style.width = `${Math.max(4, s.aiPercentage)}%`;
 
   if (s.aiCount > 0) {
     overallVerdictBanner.classList.add("verdict-danger");
     verdictEmoji.textContent = "🚨";
-    verdictHeadline.textContent = `Pozor! V playlistu jsme odhalili ${s.aiCount} AI ${
-      s.aiCount === 1 ? "písničku" : s.aiCount < 5 ? "písničky" : "písniček"
-    }.`;
+    verdictHeadline.textContent = `Heads up! We detected ${s.aiCount} AI-generated ${
+      s.aiCount === 1 ? "song" : "songs"
+    } in this playlist.`;
     verdictDescription.textContent =
       s.suspiciousCount > 0
-        ? `Navíc dalších ${s.suspiciousCount} skladeb vykazuje podezřelé znaky (nový katalog bez historie nebo anonymní distribuce).`
-        : "Tyto skladby nesou přímé stopy AI generátorů (Suno/Udio) nebo patří potvrzeným AI projektům.";
+        ? `Additionally, ${s.suspiciousCount} more ${
+            s.suspiciousCount === 1 ? "track shows" : "tracks show"
+          } suspicious signals (new catalog with no prior history or anonymous DIY distribution).`
+        : "These tracks carry direct signatures of AI generators (Suno/Udio) or belong to confirmed AI projects.";
   } else if (s.suspiciousCount > 0) {
     overallVerdictBanner.classList.add("verdict-warn");
     verdictEmoji.textContent = "🧐";
-    verdictHeadline.textContent = `Žádné potvrzené AI, ale ${s.suspiciousCount} ${
-      s.suspiciousCount === 1 ? "skladba je podezřelá" : "skladby jsou podezřelé"
+    verdictHeadline.textContent = `No confirmed AI tracks, but ${s.suspiciousCount} ${
+      s.suspiciousCount === 1 ? "track looks suspicious" : "tracks look suspicious"
     }.`;
     verdictDescription.textContent =
-      "Někteří interpreti v playlistu nemají dohledatelnou historii před rokem 2024 nebo mají velmi nízkou stopu v hudebních databázích.";
+      "Some artists in this playlist have no verifiable history prior to 2024 or have an unusually low footprint in global music databases.";
   } else {
     overallVerdictBanner.classList.add("verdict-clean");
     verdictEmoji.textContent = "✅";
-    verdictHeadline.textContent = "Skvělá zpráva! Playlist vypadá 100% čistě (lidská tvorba).";
+    verdictHeadline.textContent = "Great news! This playlist looks 100% human-made.";
     verdictDescription.textContent =
-      "Všechny skladby prošly kontrolou historie interpretů, databází AI projektů i klíčových slov bez nálezu AI.";
+      "Every track passed artist history verification, known AI database checks, and keyword scans with zero AI flags.";
   }
 
   renderTracksList();
@@ -247,7 +249,7 @@ function renderTracksList() {
   if (filtered.length === 0) {
     tracksList.innerHTML = `
       <div class="track-card" style="text-align:center; padding: 32px; color: var(--text-muted);">
-        Žádné skladby neodpovídají zvolenému filtru.
+        No tracks match the selected filter.
       </div>
     `;
     return;
@@ -271,7 +273,7 @@ function renderTracksList() {
       const previewBtnHtml = track.previewUrl
         ? `<button type="button" class="preview-play-btn" data-preview="${escapeHtml(
             track.previewUrl
-          )}" title="Přehrát audio ukázku">▶</button>`
+          )}" title="Play audio preview">▶</button>`
         : "";
 
       return `
@@ -294,7 +296,7 @@ function renderTracksList() {
                   ${escapeHtml(track.artist)}
                   ${
                     track.artistMeta?.earliestReleaseYear
-                      ? ` • <span style="font-size:0.78rem;">Od r. ${track.artistMeta.earliestReleaseYear}</span>`
+                      ? ` • <span style="font-size:0.78rem;">Active since ${track.artistMeta.earliestReleaseYear}</span>`
                       : ""
                   }
                 </div>
@@ -304,7 +306,7 @@ function renderTracksList() {
             <div class="track-right">
               <div class="score-pill-wrap">
                 <span class="score-number" style="color: ${color}">
-                  ${track.aiProbability}% AI riziko
+                  ${track.aiProbability}% AI Risk
                 </span>
                 <div class="score-mini-bar">
                   <div class="score-mini-fill" style="width: ${track.aiProbability}%; background: ${color}"></div>
@@ -314,10 +316,10 @@ function renderTracksList() {
               <span class="verdict-badge ${escapeHtml(track.verdict)}">
                 ${
                   track.verdict === "ai"
-                    ? "🤖 AI Detekováno"
+                    ? "🤖 AI Detected"
                     : track.verdict === "suspicious"
-                    ? "⚠️ Podezřelá"
-                    : "✅ Člověk"
+                    ? "⚠️ Suspicious"
+                    : "✅ Human"
                 }
               </span>
 
@@ -326,9 +328,9 @@ function renderTracksList() {
                 class="flag-track-btn"
                 data-artist="${escapeHtml(track.artist)}"
                 data-title="${escapeHtml(track.title)}"
-                title="Nahlásit tuto skladbu jako AI"
+                title="Flag this track as AI-generated"
               >
-                🚩 Nahlásit AI
+                🚩 Flag AI
               </button>
             </div>
           </div>
@@ -441,7 +443,7 @@ async function refreshDatabaseBadge() {
 }
 
 async function loadDatabaseModal() {
-  dbModalContent.innerHTML = `<p style="color:var(--text-muted)">Načítám databázi...</p>`;
+  dbModalContent.innerHTML = `<p style="color:var(--text-muted)">Loading database...</p>`;
   try {
     const res = await fetch("/api/database");
     const db = await res.json();
@@ -462,7 +464,7 @@ async function loadDatabaseModal() {
       )
       .join("");
   } catch {
-    dbModalContent.innerHTML = `<p style="color:var(--danger)">Nepodařilo se načíst databázi.</p>`;
+    dbModalContent.innerHTML = `<p style="color:var(--danger)">Failed to load database.</p>`;
   }
 }
 

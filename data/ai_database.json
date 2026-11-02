@@ -3,98 +3,92 @@
     {
       "name": "The Velvet Sundown",
       "platform": "Spotify / Apple Music",
-      "reason": "Potvrzený AI-generovaný projekt (Suno/Udio) s masivní produkcí",
+      "reason": "Confirmed AI-generated music project (Suno/Udio) with mass-produced catalog",
       "confidence": 99
     },
     {
       "name": "Breezeway Cocktail",
       "platform": "Spotify",
-      "reason": "Typický 'Ghost / AI' instrumentální projekt bez reálné identity",
+      "reason": "Typical 'Ghost / AI' instrumental project with no real human artist identity",
       "confidence": 92
     },
     {
       "name": "AIVA",
       "platform": "All",
-      "reason": "Oficiální AI hudební skladatel (Artificial Intelligence Virtual Artist)",
+      "reason": "Official AI music composer (Artificial Intelligence Virtual Artist)",
       "confidence": 99
     },
     {
       "name": "Endel",
       "platform": "All",
-      "reason": "Generativní AI zvukové krajiny a funkční hudba",
+      "reason": "Generative AI soundscapes and functional music engine",
       "confidence": 98
     },
     {
       "name": "Boomy Corporation",
       "platform": "All",
-      "reason": "Skladba vygenerovaná přes platformu Boomy AI",
+      "reason": "Track generated via the Boomy AI music platform",
       "confidence": 99
     },
     {
       "name": "Suno AI",
       "platform": "All",
-      "reason": "Přímo označený generátor Suno AI",
+      "reason": "Directly credited to Suno AI generator",
       "confidence": 100
     },
     {
       "name": "Udio AI",
       "platform": "All",
-      "reason": "Přímo označený generátor Udio AI",
+      "reason": "Directly credited to Udio AI generator",
       "confidence": 100
     },
     {
       "name": "Ghostwriter977",
       "platform": "YouTube / TikTok",
-      "reason": "Známý tvůrce virálních AI vokálních klonů (např. Heart on My Sleeve)",
+      "reason": "Known creator of viral AI vocal clones (e.g. Heart on My Sleeve)",
       "confidence": 99
     },
     {
       "name": "FN Meka",
       "platform": "All",
-      "reason": "Virtuální AI rapper projekt",
+      "reason": "Virtual AI rapper project",
       "confidence": 96
     },
     {
       "name": "Dae Lim",
       "platform": "All",
-      "reason": "K-Pop AI vokální projekt",
+      "reason": "K-Pop AI vocal project",
       "confidence": 94
     },
     {
       "name": "DJischilling",
       "platform": "YouTube",
-      "reason": "Kanál zaměřený na AI covery a generovanou hudbu",
+      "reason": "Channel dedicated to AI covers and AI-generated tracks",
       "confidence": 95
     },
     {
       "name": "Chilled Pig",
       "platform": "Spotify",
-      "reason": "Masově generovaný lo-fi / AI katalog",
+      "reason": "Mass-generated lo-fi / AI stream-farming catalog",
       "confidence": 85
     },
     {
       "name": "Pixelated Dreams",
       "platform": "Spotify",
-      "reason": "Syntetický AI synthwave / lo-fi projekt s desítkami singlů měsíčně",
+      "reason": "Synthetic AI synthwave / lo-fi project releasing dozens of singles monthly",
       "confidence": 90
     },
     {
       "name": "Neon Synth AI",
       "platform": "All",
-      "reason": "AI generovaný synthwave projekt",
+      "reason": "AI-generated synthwave project",
       "confidence": 98
     },
     {
       "name": "AI Music Lab",
       "platform": "YouTube",
-      "reason": "Kanál publikující výhradně AI hudbu",
+      "reason": "Channel publishing exclusively AI-generated music",
       "confidence": 99
-    },
-    {
-      "name": "Christian Viking Music",
-      "platform": "Spotify",
-      "reason": "Komunitní hlášení: Nahlášeno komunitou jako AI generovaná skladba",
-      "confidence": 88
     }
   ],
   "knownAiLabels": [
@@ -122,14 +116,5 @@
     "Ditto Music",
     "Records DK"
   ],
-  "communityReports": [
-    {
-      "id": "rep-1793613320003",
-      "artist": "Christian Viking Music",
-      "title": "Jesus is Coming",
-      "platform": "Spotify",
-      "reason": "Nahlášeno komunitou jako AI generovaná skladba",
-      "createdAt": "2026-11-02T09:55:20.004Z"
-    }
-  ]
+  "communityReports": []
 }

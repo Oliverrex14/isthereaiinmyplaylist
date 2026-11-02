@@ -73,7 +73,7 @@ const server = http.createServer(async (req, res) => {
       const playlistUrl = (body.url || "").trim();
       if (!playlistUrl) {
         return sendJson(res, 400, {
-          error: "Zadej prosím URL adresu playlistu.",
+          error: "Please enter a playlist URL.",
         });
       }
 
@@ -82,7 +82,7 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, analyzed);
     } catch (err) {
       return sendJson(res, 400, {
-        error: err.message || "Nepodařilo se zanalyzovat playlist.",
+        error: err.message || "Failed to analyze the playlist.",
       });
     }
   }
@@ -99,7 +99,7 @@ const server = http.createServer(async (req, res) => {
       const body = await parseJsonBody(req);
       if (!body.artist && !body.title) {
         return sendJson(res, 400, {
-          error: "Vyplň prosím jméno interpreta nebo název skladby.",
+          error: "Please provide an artist name or track title.",
         });
       }
       const saved = saveCommunityReport(body);
@@ -109,7 +109,7 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (err) {
       return sendJson(res, 400, {
-        error: err.message || "Chyba při ukládání hlášení.",
+        error: err.message || "Error saving report.",
       });
     }
   }
@@ -139,6 +139,6 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(
-    `🎵 IsThereAIInMyPlaylist server běží na http://localhost:${PORT}`
+    `🎵 IsThereAIInMyPlaylist server running at http://localhost:${PORT}`
   );
 });
