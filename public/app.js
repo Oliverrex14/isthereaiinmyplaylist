@@ -61,8 +61,50 @@ const dbCountBadge = document.getElementById("dbCountBadge");
 
 let currentTracks = [];
 let activeFilter = "all";
+let activeMode = "auto";
 let activePlayingUrl = null;
 const expandedRows = new Set();
+const queryPrefix = document.getElementById("queryPrefix");
+
+const MODE_CONFIG = {
+  auto: {
+    prefix: "TARGET //",
+    placeholder:
+      "Paste any playlist/track/artist link (Spotify, Apple, YouTube) or type an artist / song name...",
+  },
+  playlist: {
+    prefix: "PLAYLIST //",
+    placeholder:
+      "https://open.spotify.com/playlist/... or music.apple.com/.../playlist/... or youtube.com/playlist?list=...",
+  },
+  track: {
+    prefix: "TRACK //",
+    placeholder:
+      "Paste a Spotify / Apple / YouTube song link OR type 'Artist - Track Title'...",
+  },
+  artist: {
+    prefix: "ARTIST //",
+    placeholder:
+      "Paste a Spotify / Apple / YouTube artist link OR type an artist name (e.g. The Velvet Sundown)...",
+  },
+};
+
+function setInspectionMode(mode) {
+  activeMode = mode || "auto";
+  document.querySelectorAll(".mode-tab").forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("data-mode") === activeMode);
+  });
+  const cfg = MODE_CONFIG[activeMode] || MODE_CONFIG.auto;
+  if (queryPrefix) queryPrefix.textContent = cfg.prefix;
+  playlistUrlInput.placeholder = cfg.placeholder;
+}
+
+document.querySelectorAll(".mode-tab").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    setInspectionMode(btn.getAttribute("data-mode"));
+    playlistUrlInput.focus();
+  });
+});
 
 function escapeHtml(str) {
   return String(str || "")
@@ -110,19 +152,21 @@ clearInputBtn.addEventListener("click", () => {
 document.querySelectorAll(".sample-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const url = btn.getAttribute("data-url");
+    const sampleMode = btn.getAttribute("data-mode") || "auto";
+    setInspectionMode(sampleMode);
     playlistUrlInput.value = url;
     clearInputBtn.classList.remove("hidden");
-    runAnalysis(url);
+    runAnalysis(url, sampleMode);
   });
 });
 
 analyzeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = playlistUrlInput.value.trim();
-  if (url) runAnalysis(url);
+  if (url) runAnalysis(url, activeMode);
 });
 
-async function runAnalysis(url) {
+async function runAnalysis(url, mode = activeMode) {
   errorAlert.classList.add("hidden");
   resultsSection.classList.add("hidden");
   loadingSection.classList.remove("hidden");
@@ -133,7 +177,7 @@ async function runAnalysis(url) {
   expandedRows.clear();
 
   const steps = [
-    { pct: 25, text: "Parsing playlist tracklist and duration markers..." },
+    { pct: 25, text: "Resolving target (playlist, single track, or artist catalog)..." },
     { pct: 52, text: "Cross-referencing MusicBrainz artist registry & known synthetic index..." },
     { pct: 78, text: "Calculating release velocity, single-to-album ratio & copyright strings (iTunes/Deezer)..." },
     { pct: 92, text: "Measuring audio stream byte entropy (H), zero-crossing rate & compiling report..." },
@@ -153,7 +197,7 @@ async function runAnalysis(url) {
     const res = await fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, mode }),
     });
 
     const data = await res.json();
@@ -181,6 +225,11 @@ function renderResults(data) {
   activeFilter = "all";
   trackFilterInput.value = "";
   sortSelect.value = "index";
+
+  // Automatically expand forensics metrics drawer when inspecting a single track!
+  if (currentTracks.length === 1) {
+    expandedRows.add(currentTracks[0].id);
+  }
 
   document.querySelectorAll(".filter-tab").forEach((btn) => {
     btn.classList.toggle("active", btn.getAttribute("data-filter") === "all");

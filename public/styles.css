@@ -232,7 +232,39 @@ body {
   color: var(--text-secondary);
   font-size: 0.92rem;
   max-width: 880px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.mode-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.mode-tab {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.mode-tab:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.mode-tab.active {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .query-bar {

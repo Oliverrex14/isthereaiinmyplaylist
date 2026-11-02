@@ -66,23 +66,29 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const pathname = parsedUrl.pathname;
 
-  // API: Analyze playlist
+  // API: Analyze playlist, single track, or artist
   if (pathname === "/api/analyze" && req.method === "POST") {
     try {
       const body = await parseJsonBody(req);
-      const playlistUrl = (body.url || "").trim();
-      if (!playlistUrl) {
+      const rawInput = (body.url || "").trim();
+      const modeHint = (body.mode || "auto").trim();
+      if (!rawInput) {
         return sendJson(res, 400, {
-          error: "Please enter a playlist URL.",
+          error: "Please enter a playlist URL, track link/title, or artist name.",
         });
       }
 
-      const rawPlaylist = await fetchPlaylist(playlistUrl);
-      const analyzed = await analyzePlaylistTracks(rawPlaylist);
+      const db = loadAiDatabase();
+      const rawTarget = await fetchPlaylist(
+        rawInput,
+        modeHint,
+        db.knownAiArtists || []
+      );
+      const analyzed = await analyzePlaylistTracks(rawTarget);
       return sendJson(res, 200, analyzed);
     } catch (err) {
       return sendJson(res, 400, {
-        error: err.message || "Failed to analyze the playlist.",
+        error: err.message || "Failed to analyze the target.",
       });
     }
   }

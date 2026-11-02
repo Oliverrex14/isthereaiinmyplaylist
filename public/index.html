@@ -38,26 +38,43 @@
       <div class="scanner-header">
         <div>
           <div class="eyebrow">CATALOG &amp; METADATA FORENSICS</div>
-          <h1 class="page-title">Playlist Authenticity Inspector</h1>
+          <h1 class="page-title">Playlist, Track &amp; Artist Inspector</h1>
         </div>
         <div class="supported-sources">
           <span class="source-tag"><i class="dot dot-spotify"></i>SPOTIFY</span>
           <span class="source-tag"><i class="dot dot-apple"></i>APPLE MUSIC</span>
           <span class="source-tag"><i class="dot dot-youtube"></i>YOUTUBE</span>
+          <span class="source-tag">DIRECT SEARCH</span>
         </div>
       </div>
 
       <p class="scanner-lead">
-        Inspect public playlists for synthetic / AI-generated tracks. Cross-references <strong>MusicBrainz</strong>, <strong>Apple iTunes</strong>, and <strong>Deezer</strong> registries to measure release cadence, single-to-album ratios, copyright lines (℗/©), pre-2023 discography history, and audio stream entropy.
+        Inspect an entire <strong>public playlist</strong>, a <strong>single song</strong> (URL or title), or an <strong>artist profile</strong> (URL or name). Cross-references <strong>MusicBrainz</strong>, <strong>Apple iTunes</strong>, and <strong>Deezer</strong> registries to measure release cadence, single-to-album ratios, copyright lines (℗/©), pre-2023 discography history, and audio stream entropy.
       </p>
+
+      <!-- Target Mode Switcher -->
+      <div class="mode-switcher" id="modeSwitcher">
+        <button type="button" class="mode-tab active" data-mode="auto">
+          AUTO-DETECT (ANY URL OR NAME)
+        </button>
+        <button type="button" class="mode-tab" data-mode="playlist">
+          PLAYLIST / ALBUM URL
+        </button>
+        <button type="button" class="mode-tab" data-mode="track">
+          SINGLE TRACK (URL OR TITLE)
+        </button>
+        <button type="button" class="mode-tab" data-mode="artist">
+          ARTIST (URL OR NAME)
+        </button>
+      </div>
 
       <form id="analyzeForm" class="query-bar">
         <div class="query-input-wrap">
-          <span class="query-prefix">URL //</span>
+          <span id="queryPrefix" class="query-prefix">TARGET //</span>
           <input
             type="text"
             id="playlistUrlInput"
-            placeholder="https://open.spotify.com/playlist/... or music.apple.com/... or youtube.com/playlist?list=..."
+            placeholder="Paste a playlist/track/artist link (Spotify, Apple, YouTube) or type an artist / song name..."
             autocomplete="off"
             required
           />
@@ -70,17 +87,20 @@
 
       <div class="sample-bar">
         <span class="sample-label">LOAD TEST VECTOR:</span>
-        <button type="button" class="sample-btn" data-url="demo:mixed">
-          [TEST_MIX: AI + HUMAN]
+        <button type="button" class="sample-btn" data-url="demo:mixed" data-mode="playlist">
+          [PLAYLIST: AI + HUMAN MIX]
         </button>
-        <button type="button" class="sample-btn" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M">
+        <button type="button" class="sample-btn" data-url="https://open.spotify.com/track/7bxaFZ1O3cHkgLKMsdC3xR" data-mode="track">
+          [TRACK: TAME IMPALA - LOSER]
+        </button>
+        <button type="button" class="sample-btn" data-url="The Velvet Sundown" data-mode="artist">
+          [ARTIST: THE VELVET SUNDOWN (AI)]
+        </button>
+        <button type="button" class="sample-btn" data-url="https://open.spotify.com/artist/5INjqkS1o8h1imAzPqGZBb" data-mode="artist">
+          [ARTIST: TAME IMPALA]
+        </button>
+        <button type="button" class="sample-btn" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M" data-mode="playlist">
           [SPOTIFY: TODAYS_TOP_HITS]
-        </button>
-        <button type="button" class="sample-btn" data-url="https://music.apple.com/us/playlist/todays-hits/pl.f4d106fed2bd41149aaacabb233eb5eb">
-          [APPLE_MUSIC: TODAYS_HITS]
-        </button>
-        <button type="button" class="sample-btn" data-url="https://www.youtube.com/playlist?list=PL4fGSI1pDJn6puJdseH2Rt9sMvt9E2M4i">
-          [YOUTUBE: TOP_CHARTS]
         </button>
       </div>
     </section>
