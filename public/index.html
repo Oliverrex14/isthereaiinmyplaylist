@@ -54,13 +54,13 @@
           <img src="/favicon.svg" alt="" width="20" height="20" style="display:block;border-radius:4px" />
           <span class="logo-name">isthereaiinmyplaylist</span>
         </a>
-        <span class="version-tag">ENGINE v2.4 // MULTI-VECTOR</span>
+        <span class="version-tag">ENGINE v3.0 // LIVE ONLINE DB + FULL PLAYLIST</span>
       </div>
 
       <div class="topbar-right">
         <button id="openDbBtn" class="btn btn-outline">
-          <span>KNOWN AI INDEX</span>
-          <span id="dbCountBadge" class="mono-badge">15</span>
+          <span>ONLINE AI INDEX</span>
+          <span id="dbCountBadge" class="mono-badge">9,500+</span>
         </button>
         <button id="openReportBtn" class="btn btn-solid">
           SUBMIT ARTIST / TRACK
@@ -86,7 +86,7 @@
       </div>
 
       <p class="scanner-lead">
-        Inspect an entire <strong>public playlist</strong>, a <strong>single song</strong> (URL or title), or an <strong>artist profile</strong> (URL or name). Cross-references <strong>MusicBrainz</strong>, <strong>Apple iTunes</strong>, and <strong>Deezer</strong> registries to measure release cadence, single-to-album ratios, copyright lines (℗/©), pre-2023 discography history, and audio stream entropy.
+        Inspect an entire <strong>public playlist (no 100-track limit)</strong>, a <strong>single song</strong> (URL or title), or an <strong>artist profile</strong> (URL or name). Cross-references live online AI music directories (<strong>Soul Over AI / Zoundhub</strong>, <strong>Spotify AI Blocker</strong>, <strong>MusicBrainz AI Registry</strong> — 9,500+ indexed AI artists) alongside <strong>Apple iTunes</strong> and <strong>Deezer</strong> catalog forensics.
       </p>
 
       <!-- Target Mode Switcher -->
@@ -377,8 +377,27 @@
   <div id="dbModal" class="modal-backdrop hidden">
     <div class="modal-card modal-lg">
       <div class="modal-header">
-        <h3>INDEXED SYNTHETIC ARTISTS &amp; GENERATORS</h3>
+        <h3>LIVE ONLINE &amp; COMMUNITY SYNTHETIC ARTIST INDEX</h3>
         <button id="closeDbModal" class="modal-close">✕</button>
+      </div>
+      <p id="dbModalSummary" class="modal-desc" style="margin-bottom:10px">
+        Live-synced across Soul Over AI / Zoundhub, Spotify AI Blocker CSV, MusicBrainz AI Tag Registry, and community submissions.
+      </p>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <input
+          type="text"
+          id="dbSearchInput"
+          class="search-filter-input"
+          style="flex:1;min-width:200px"
+          placeholder="Search 9,500+ indexed AI artists by name or Spotify ID..."
+        />
+        <select id="dbSourceSelect" class="sort-select">
+          <option value="all">Source: All Databases</option>
+          <option value="Soul Over AI">Soul Over AI Directory</option>
+          <option value="Spotify AI Blocker">Spotify AI Blocker DB</option>
+          <option value="MusicBrainz">MusicBrainz AI Registry</option>
+          <option value="Local">Local / Community</option>
+        </select>
       </div>
       <div id="dbModalContent" class="db-list"></div>
     </div>

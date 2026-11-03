@@ -4,7 +4,8 @@ const path = require("path");
 const { fetchPlaylist } = require("./lib/playlistFetcher");
 const {
   analyzePlaylistTracks,
-  loadAiDatabase,
+  ensureOnlineAiDatabase,
+  getDatabaseOverview,
   saveCommunityReport,
 } = require("./lib/aiDetector");
 
@@ -238,7 +239,7 @@ async function requestHandler(req, res) {
         });
       }
 
-      const db = loadAiDatabase();
+      const db = await ensureOnlineAiDatabase();
       const rawTarget = await fetchPlaylist(
         rawInput,
         modeHint,
@@ -253,10 +254,24 @@ async function requestHandler(req, res) {
     }
   }
 
-  // API: Get Known AI Database
+  // API: Get Known AI Database (merged local + online Soul Over AI, Spotify AI Blocker, MusicBrainz AI)
   if (pathname.startsWith("/api/database") && req.method === "GET") {
-    const db = loadAiDatabase();
-    return sendJson(res, 200, db);
+    let q = "";
+    let source = "all";
+    let limit = 250;
+    try {
+      const parsedUrl = new URL(req.url || "/", `${rawProto}://${rawHost}`);
+      q = sanitizeInput(parsedUrl.searchParams.get("q") || "", 120);
+      source = sanitizeInput(parsedUrl.searchParams.get("source") || "all", 40);
+      const reqLim = parseInt(parsedUrl.searchParams.get("limit") || "250", 10);
+      if (!isNaN(reqLim) && reqLim > 0 && reqLim <= 1000) {
+        limit = reqLim;
+      }
+    } catch {
+      // ignore
+    }
+    const dbOverview = await getDatabaseOverview(q, source, limit);
+    return sendJson(res, 200, dbOverview);
   }
 
   // API: Submit Community AI Report

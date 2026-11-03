@@ -177,10 +177,10 @@ async function runAnalysis(url, mode = activeMode) {
   expandedRows.clear();
 
   const steps = [
-    { pct: 25, text: "Resolving target (playlist, single track, or artist catalog)..." },
-    { pct: 52, text: "Cross-referencing MusicBrainz artist registry & known synthetic index..." },
-    { pct: 78, text: "Calculating release velocity, single-to-album ratio & copyright strings (iTunes/Deezer)..." },
-    { pct: 92, text: "Measuring audio stream byte entropy (H), zero-crossing rate & compiling report..." },
+    { pct: 25, text: "Paginating full playlist (Spotify Pathfinder / YouTube Continuation / Apple Music)..." },
+    { pct: 52, text: "Cross-referencing 9,500+ artists in Soul Over AI, Spotify AI Blocker & MusicBrainz AI..." },
+    { pct: 78, text: "Analyzing release velocity, single-to-album ratio, ISNI/IPI rights & copyright lines..." },
+    { pct: 92, text: "Measuring stream telemetry, duration windows & compiling full playlist report..." },
   ];
 
   let stepIdx = 0;
@@ -384,13 +384,21 @@ function renderTracksList() {
       const catalogSubStr = `${f.singleCount ?? 0}S / ${f.albumCount ?? 0}A`;
 
       const followersStr = formatCompactNumber(f.deezerFans);
-      const rankStr = f.deezerTrackRank
+      const rankStr = f.spotifyPlaycount
+        ? `${formatCompactNumber(f.spotifyPlaycount)} SP streams`
+        : f.deezerTrackRank
         ? `Rank ${formatCompactNumber(f.deezerTrackRank)}`
         : `${f.deezerAlbums ?? 0} releases`;
 
-      const registryStr = f.musicBrainzVerified ? "MB VERIFIED" : "UNVERIFIED";
-      const registrySubStr = f.musicBrainzVerified
-        ? `${f.mbType || "Artist"}${f.mbCountry ? " · " + f.mbCountry : ""}`
+      const registryStr = f.mbAiFlagged
+        ? "MB AI FLAGGED"
+        : f.musicBrainzVerified
+        ? "MB VERIFIED"
+        : "UNVERIFIED";
+      const registrySubStr = f.mbAiFlagged
+        ? "AI Tag in MB"
+        : f.musicBrainzVerified
+        ? `${f.mbType || "Artist"}${f.mbCountry ? " · " + f.mbCountry : ""}${f.mbHasRightsCodes ? " · IPI" : ""}`
         : "No MBID entry";
 
       const signalsHtml = (track.signals || [])
@@ -455,7 +463,7 @@ function renderTracksList() {
             </div>
 
             <div class="col-registry cell-mono">
-              <span style="color:${f.musicBrainzVerified ? "var(--safe)" : "var(--text-muted)"}">
+              <span style="color:${f.mbAiFlagged ? "var(--danger)" : f.musicBrainzVerified ? "var(--safe)" : "var(--text-muted)"}">
                 ${escapeHtml(registryStr)}
               </span>
               <span class="cell-sub">${escapeHtml(registrySubStr)}</span>
@@ -524,16 +532,16 @@ function renderTracksList() {
 
             <div class="drawer-col">
               <div class="drawer-heading">REGISTRY &amp; LICENSING</div>
-              <div class="drawer-kv"><span>MusicBrainz Match:</span><strong>${f.musicBrainzVerified ? "Yes (" + (f.mbType || "Entity") + ")" : "No"}</strong></div>
-              <div class="drawer-kv"><span>Origin / Area:</span><strong>${escapeHtml(f.mbCountry || "Unlisted")}</strong></div>
+              <div class="drawer-kv"><span>Online AI Index:</span><strong>${escapeHtml(f.matchedDbSource || "Clean (Not Listed)")}</strong></div>
+              <div class="drawer-kv"><span>MusicBrainz Match:</span><strong>${f.mbAiFlagged ? "FLAGGED AI" : f.musicBrainzVerified ? "Yes (" + (f.mbType || "Entity") + (f.mbHasRightsCodes ? ", IPI/ISNI" : "") + ")" : "No"}</strong></div>
               <div class="drawer-kv"><span>Distributor / ℗:</span><strong>${escapeHtml(f.primaryDistributor || "Unlisted")}</strong></div>
-              <div class="drawer-kv"><span>Deezer Followers:</span><strong>${f.deezerFans !== null ? f.deezerFans.toLocaleString("en-US") : "Unlisted"}</strong></div>
+              <div class="drawer-kv"><span>Spotify Streams:</span><strong>${f.spotifyPlaycount ? f.spotifyPlaycount.toLocaleString("en-US") : "N/A"}</strong></div>
             </div>
 
             <div class="drawer-col">
               <div class="drawer-heading">AUDIO STREAM TELEMETRY</div>
-              <div class="drawer-kv"><span>Duration Sec:</span><strong>${f.durationSeconds ? f.durationSeconds + "s" : "N/A"}</strong></div>
-              <div class="drawer-kv"><span>2m/4m AI Window:</span><strong>${f.matchesGeneratorWindow ? "MATCH (Yes)" : "No"}</strong></div>
+              <div class="drawer-kv"><span>Duration / AI Win:</span><strong>${f.durationSeconds ? f.durationSeconds + "s (" + (f.matchesGeneratorWindow ? "MATCH" : "Normal") + ")" : "N/A"}</strong></div>
+              <div class="drawer-kv"><span>BPM / Key:</span><strong>${f.bpm ? f.bpm + " BPM" + (f.musicalKey ? " · " + f.musicalKey : "") : "N/A"}</strong></div>
               <div class="drawer-kv"><span>Shannon Entropy (H):</span><strong>${f.shannonEntropy ? f.shannonEntropy + " b/B" : "No stream"}</strong></div>
               <div class="drawer-kv"><span>Zero-Crossing / σ²:</span><strong>${f.zeroCrossRatio ? f.zeroCrossRatio + " / " + f.byteVariance : "N/A"}</strong></div>
             </div>
@@ -635,39 +643,84 @@ reportForm.addEventListener("submit", async (e) => {
   }
 });
 
+const dbSearchInput = document.getElementById("dbSearchInput");
+const dbSourceSelect = document.getElementById("dbSourceSelect");
+const dbModalSummary = document.getElementById("dbModalSummary");
+let dbSearchTimer = null;
+
 openDbBtn.addEventListener("click", async () => {
   dbModal.classList.remove("hidden");
   await loadDatabaseModal();
 });
 closeDbModal.addEventListener("click", () => dbModal.classList.add("hidden"));
 
+if (dbSearchInput) {
+  dbSearchInput.addEventListener("input", () => {
+    clearTimeout(dbSearchTimer);
+    dbSearchTimer = setTimeout(() => loadDatabaseModal(), 220);
+  });
+}
+if (dbSourceSelect) {
+  dbSourceSelect.addEventListener("change", () => loadDatabaseModal());
+}
+
 async function refreshDatabaseBadge() {
   try {
-    const res = await fetch("/api/database");
+    const res = await fetch("/api/database?limit=1");
     const db = await res.json();
-    dbCountBadge.textContent = (db.knownAiArtists || []).length;
+    const total = db.totalIndexed || (db.knownAiArtists || []).length;
+    dbCountBadge.textContent = total.toLocaleString("en-US");
   } catch {
     // ignore
   }
 }
 
 async function loadDatabaseModal() {
-  dbModalContent.innerHTML = `<p style="font-family:var(--mono);font-size:0.78rem;color:var(--text-muted)">Loading index...</p>`;
+  dbModalContent.innerHTML = `<p style="font-family:var(--mono);font-size:0.78rem;color:var(--text-muted)">Syncing live internet AI music databases...</p>`;
   try {
-    const res = await fetch("/api/database");
+    const q = dbSearchInput ? dbSearchInput.value.trim() : "";
+    const source = dbSourceSelect ? dbSourceSelect.value : "all";
+    const params = new URLSearchParams({ q, source, limit: "200" });
+    const res = await fetch(`/api/database?${params.toString()}`);
     const db = await res.json();
     const list = db.knownAiArtists || [];
-    dbCountBadge.textContent = list.length;
+    const total = db.totalIndexed || list.length;
+    dbCountBadge.textContent = total.toLocaleString("en-US");
+
+    if (dbModalSummary && db.sources) {
+      const s = db.sources;
+      dbModalSummary.innerHTML = `Total Unique Indexed: <strong>${total.toLocaleString(
+        "en-US"
+      )}</strong> artists — Soul Over AI: <strong>${(
+        s.soulOverAi || 0
+      ).toLocaleString("en-US")}</strong> · Spotify AI Blocker: <strong>${(
+        s.spotifyAiBlocker || 0
+      ).toLocaleString("en-US")}</strong> · MusicBrainz AI: <strong>${
+        s.musicBrainzAi || 0
+      }</strong> · Local: <strong>${
+        s.local || 0
+      }</strong> (Showing ${list.length} of ${(
+        db.matchedCount || total
+      ).toLocaleString("en-US")} matches)`;
+    }
+
+    if (list.length === 0) {
+      dbModalContent.innerHTML = `<p style="font-family:var(--mono);font-size:0.78rem;color:var(--text-muted)">No indexed AI artists match your search filter.</p>`;
+      return;
+    }
 
     dbModalContent.innerHTML = list
       .map(
         (item) => `
         <div class="db-item">
-          <div>
+          <div style="min-width:0;padding-right:10px">
             <div class="db-item-title">${escapeHtml(item.name)}</div>
             <div class="db-item-reason">${escapeHtml(item.reason)}</div>
           </div>
-          <span class="mono-tag">${escapeHtml(item.platform)}</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+            <span class="mono-tag">${escapeHtml(item.source || item.platform)}</span>
+            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-muted)">${escapeHtml(item.platform)}</span>
+          </div>
         </div>
       `
       )
