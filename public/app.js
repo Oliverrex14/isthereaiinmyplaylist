@@ -486,11 +486,14 @@ function renderTracksList() {
               <button
                 type="button"
                 class="flag-btn"
+                data-track-id="${escapeHtml(track.id)}"
                 data-artist="${escapeHtml(track.artist)}"
                 data-title="${escapeHtml(track.title)}"
-                title="Submit to synthetic database"
+                data-platform="${escapeHtml(track.platform || "Spotify")}"
+                title="Flag song &amp; add to shared global AI database"
+                ${track.flaggedBySession ? 'disabled style="background:var(--danger);border-color:var(--danger);color:#fff"' : ""}
               >
-                FLAG
+                ${track.flaggedBySession ? "FLAGGED ✓" : "FLAG"}
               </button>
             </div>
           </div>
@@ -588,14 +591,96 @@ function renderTracksList() {
     });
   });
 
-  // Bind flag buttons
+  // Bind 1-click flag buttons: immediately adds song/artist to the shared global database visible to everyone
   tracksList.querySelectorAll(".flag-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.getElementById("reportArtist").value = btn.getAttribute("data-artist") || "";
-      document.getElementById("reportTitle").value = btn.getAttribute("data-title") || "";
-      reportModal.classList.remove("hidden");
+    btn.addEventListener("click", async () => {
+      if (btn.disabled) return;
+      const trackId = btn.getAttribute("data-track-id");
+      const artist = btn.getAttribute("data-artist") || "";
+      const title = btn.getAttribute("data-title") || "";
+      const rawPlat = (btn.getAttribute("data-platform") || "Spotify").toLowerCase();
+      const platform = rawPlat.includes("apple")
+        ? "Apple Music"
+        : rawPlat.includes("youtube")
+        ? "YouTube"
+        : "Spotify";
+
+      btn.disabled = true;
+      btn.textContent = "SAVING...";
+
+      try {
+        const res = await fetch("/api/report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            artist,
+            title,
+            platform,
+            reason: `Flagged during playlist inspection (${platform})`,
+          }),
+        });
+
+        if (res.ok) {
+          // Immediately update track in current view to FLAGGED AI
+          const targetTrack = currentTracks.find((t) => String(t.id) === String(trackId));
+          if (targetTrack) {
+            targetTrack.flaggedBySession = true;
+            targetTrack.aiProbability = 99;
+            targetTrack.verdict = "ai";
+            targetTrack.verdictLabel = "FLAGGED AI";
+            if (targetTrack.forensics) {
+              targetTrack.forensics.matchedDbSource = "Community Flagged";
+            }
+            targetTrack.signals = [
+              {
+                type: "danger",
+                category: "COMMUNITY DB",
+                text: `Added to shared global AI database: "${title}" — ${artist}`,
+              },
+              ...(targetTrack.signals || []).filter((s) => s.category !== "PASS"),
+            ];
+          }
+          updateSummaryCountersFromTracks();
+          renderTracksList();
+          await refreshDatabaseBadge();
+        } else {
+          btn.disabled = false;
+          btn.textContent = "FLAG";
+        }
+      } catch {
+        btn.disabled = false;
+        btn.textContent = "FLAG";
+      }
     });
   });
+}
+
+function updateSummaryCountersFromTracks() {
+  const total = currentTracks.length;
+  if (!total) return;
+  const aiCount = currentTracks.filter((t) => t.verdict === "ai").length;
+  const suspiciousCount = currentTracks.filter((t) => t.verdict === "suspicious").length;
+  const humanCount = currentTracks.filter((t) => t.verdict === "human").length;
+  const aiPercentage = Math.round((aiCount / total) * 100);
+  const avgAiScore = Math.round(
+    currentTracks.reduce((sum, t) => sum + (t.aiProbability || 0), 0) / total
+  );
+
+  statAi.textContent = aiCount;
+  statAiPct.textContent = `${aiPercentage}% of playlist`;
+  statSuspicious.textContent = suspiciousCount;
+  statHuman.textContent = humanCount;
+  statAvgRisk.textContent = `${avgAiScore}%`;
+
+  tabCountAi.textContent = aiCount;
+  tabCountSuspicious.textContent = suspiciousCount;
+  tabCountHuman.textContent = humanCount;
+
+  barSegAi.style.width = `${((aiCount / total) * 100).toFixed(1)}%`;
+  barSegSuspicious.style.width = `${((suspiciousCount / total) * 100).toFixed(1)}%`;
+  barSegHuman.style.width = `${((humanCount / total) * 100).toFixed(1)}%`;
+
+  verdictPercent.textContent = `${aiPercentage}% FLAGGED AI (${aiCount}/${total}) // MEAN RISK: ${avgAiScore}%`;
 }
 
 document.querySelectorAll(".filter-tab").forEach((tab) => {
@@ -689,19 +774,17 @@ async function loadDatabaseModal() {
 
     if (dbModalSummary && db.sources) {
       const s = db.sources;
-      dbModalSummary.innerHTML = `Total Unique Indexed: <strong>${total.toLocaleString(
+      dbModalSummary.innerHTML = `Total Indexed: <strong>${total.toLocaleString(
         "en-US"
-      )}</strong> artists — Soul Over AI: <strong>${(
+      )}</strong> — Community Flagged: <strong style="color:var(--danger)">${(
+        s.community || 0
+      ).toLocaleString("en-US")}</strong> · Soul Over AI: <strong>${(
         s.soulOverAi || 0
       ).toLocaleString("en-US")}</strong> · Spotify AI Blocker: <strong>${(
         s.spotifyAiBlocker || 0
       ).toLocaleString("en-US")}</strong> · MusicBrainz AI: <strong>${
         s.musicBrainzAi || 0
-      }</strong> · Local: <strong>${
-        s.local || 0
-      }</strong> (Showing ${list.length} of ${(
-        db.matchedCount || total
-      ).toLocaleString("en-US")} matches)`;
+      }</strong>`;
     }
 
     if (list.length === 0) {
@@ -710,20 +793,21 @@ async function loadDatabaseModal() {
     }
 
     dbModalContent.innerHTML = list
-      .map(
-        (item) => `
-        <div class="db-item">
+      .map((item) => {
+        const isComm = String(item.source || "").includes("Community");
+        return `
+        <div class="db-item" style="${isComm ? "border-left:4px solid var(--danger);background:#fff8f8" : ""}">
           <div style="min-width:0;padding-right:10px">
             <div class="db-item-title">${escapeHtml(item.name)}</div>
             <div class="db-item-reason">${escapeHtml(item.reason)}</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
-            <span class="mono-tag">${escapeHtml(item.source || item.platform)}</span>
+            <span class="mono-tag" style="${isComm ? "background:var(--danger)" : ""}">${escapeHtml(item.source || item.platform)}</span>
             <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-muted)">${escapeHtml(item.platform)}</span>
           </div>
         </div>
-      `
-      )
+      `;
+      })
       .join("");
   } catch {
     dbModalContent.innerHTML = `<p style="color:var(--danger)">Failed to load index.</p>`;

@@ -116,5 +116,14 @@
     "Ditto Music",
     "Records DK"
   ],
-  "communityReports": []
+  "communityReports": [
+    {
+      "id": "rep-1793698842996",
+      "artist": "The Velvet Sundown",
+      "title": "Dust on the Wind",
+      "platform": "Spotify",
+      "reason": "Confirmed Suno AI generated track",
+      "createdAt": "2026-11-03T09:40:42.996Z"
+    }
+  ]
 }

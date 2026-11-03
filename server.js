@@ -51,7 +51,7 @@ const SECURITY_HEADERS = {
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const MAX_ANALYZE_PER_MIN = 25;
-const MAX_REPORT_PER_MIN = 8;
+const MAX_REPORT_PER_MIN = 20;
 
 function checkRateLimit(ip, key, maxRequests) {
   const now = Date.now();
@@ -295,7 +295,7 @@ async function requestHandler(req, res) {
         });
       }
 
-      const saved = saveCommunityReport({
+      const saved = await saveCommunityReport({
         artist: cleanArtist,
         title: cleanTitle,
         platform: cleanPlatform,
