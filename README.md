@@ -22,3 +22,11 @@ npm start
 ```
 
 Open **[http://localhost:3000](http://localhost:3000)** in your browser.
+
+## ⚖️ Legal, Disclaimers & Licensing
+
+- **Code License:** [MIT License](LICENSES.md) © 2026 Oliver Tobiášek.
+- **Trademarks:** Spotify®, Apple Music®, YouTube™, Deezer®, and MusicBrainz® are trademarks or registered trademarks of their respective owners. Their use on this website is strictly for nominative descriptive fair use to identify public playlist compatibility. This project is an independent research forensics tool not affiliated with or endorsed by any platform.
+- **Forensics Heuristics Disclaimer:** AI risk metrics and anomaly flags are heuristic estimates provided for informational and educational research. They do not constitute a legal certification of non-human authorship or copyright status.
+- **GDPR & Privacy:** 100% cookieless architecture. All web fonts (Inter, JetBrains Mono, Space Grotesk) are self-hosted locally without making external calls to Google Fonts servers.
+- **Full Legal Breakdown:** See **[LICENSES.md](LICENSES.md)** for complete details and artist dispute/takedown processes.

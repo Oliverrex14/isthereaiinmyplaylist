@@ -23,6 +23,8 @@ const MIME_TYPES = {
   ".svg": "image/svg+xml",
   ".png": "image/png",
   ".ico": "image/x-icon",
+  ".woff2": "font/woff2",
+  ".woff": "font/woff",
 };
 
 // Security Headers applied to all responses
@@ -36,8 +38,8 @@ const SECURITY_HEADERS = {
   "Content-Security-Policy": [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
     "img-src 'self' https: data:",
     "media-src 'self' https: data:",
     "connect-src 'self' https://vitals.vercel-insights.com",
@@ -330,7 +332,15 @@ async function requestHandler(req, res) {
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
-    res.writeHead(200, { ...SECURITY_HEADERS, "Content-Type": contentType });
+    const cacheHeader =
+      ext === ".woff2" || ext === ".woff" || ext === ".png" || ext === ".svg" || ext === ".ico"
+        ? "public, max-age=31536000, immutable"
+        : "public, max-age=3600";
+    res.writeHead(200, {
+      ...SECURITY_HEADERS,
+      "Content-Type": contentType,
+      "Cache-Control": cacheHeader,
+    });
     fs.createReadStream(filePath).pipe(res);
   } else {
     const indexFile = path.join(PUBLIC_DIR, "index.html");

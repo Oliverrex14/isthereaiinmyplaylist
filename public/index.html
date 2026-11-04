@@ -41,9 +41,8 @@
     }
   }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Self-hosted fonts (SIL Open Font License 1.1) – GDPR compliant, no Google CDN calls -->
+  <link rel="stylesheet" href="/fonts.css" />
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
@@ -404,12 +403,146 @@
     </div>
   </div>
 
+  <!-- Modal: Legal, Disclaimers, Trademarks & Privacy -->
+  <div id="legalModal" class="modal-backdrop hidden">
+    <div class="modal-card legal-modal-card">
+      <div class="modal-header">
+        <h3>⚖️ LEGAL, DISCLAIMERS &amp; COMPLIANCE</h3>
+        <button id="closeLegalModal" class="modal-close">✕</button>
+      </div>
+
+      <div class="legal-tabs">
+        <button type="button" class="legal-tab-btn active" data-tab="tab-heuristics">Forensics Disclaimer</button>
+        <button type="button" class="legal-tab-btn" data-tab="tab-trademarks">Trademark Fair Use</button>
+        <button type="button" class="legal-tab-btn" data-tab="tab-dispute">Dispute &amp; Takedown</button>
+        <button type="button" class="legal-tab-btn" data-tab="tab-privacy">Privacy &amp; GDPR</button>
+        <button type="button" class="legal-tab-btn" data-tab="tab-licenses">Licenses &amp; Fonts</button>
+      </div>
+
+      <div class="legal-modal-body">
+        <!-- Tab 1: Forensics Disclaimer -->
+        <div id="tab-heuristics" class="legal-section-block active">
+          <div class="legal-notice-box">
+            <h4>Heuristic &amp; Algorithmic Nature of Results</h4>
+            <p>
+              The detection scores, risk classifications, and anomaly flags produced by <strong>isthereaiinmyplaylist</strong> are automated algorithmic estimations. They are computed by evaluating multi-layered forensics vectors:
+            </p>
+            <ul class="legal-list">
+              <li><strong>Catalog Velocity &amp; Release Density:</strong> Statistical frequency of singles/EPs uploaded per week/month.</li>
+              <li><strong>Canonical Registry Presence:</strong> Cross-referencing against MusicBrainz and ISRC records.</li>
+              <li><strong>Acoustic &amp; Spectral Telemetry:</strong> High-frequency spectrogram analysis, cut-off frequency heuristics, and stereo phase artifacts commonly found in latent audio diffusion models (e.g. Suno, Udio).</li>
+              <li><strong>Community &amp; Directory Verification:</strong> Verified synthetic databases including Soul Over AI, Spotify AI Blocker DB, and crowdsourced submissions.</li>
+            </ul>
+            <p>
+              <strong>Important:</strong> These results are provided strictly for research, educational, and informational transparency purposes. They do <em>not</em> constitute a definitive legal certification of synthetic generation, copyright infringement, or non-human authorship. False positives and false negatives may occur.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 2: Trademark Fair Use -->
+        <div id="tab-trademarks" class="legal-section-block">
+          <div class="legal-notice-box">
+            <h4>Nominative Trademark Fair Use Statement</h4>
+            <p>
+              All product and company names, brand names, and logos displayed on this site are trademarks™ or registered® trademarks of their respective owners:
+            </p>
+            <ul class="legal-list">
+              <li><strong>Spotify®</strong> is a registered trademark of Spotify AB.</li>
+              <li><strong>Apple Music®</strong> and <strong>iTunes®</strong> are registered trademarks of Apple Inc.</li>
+              <li><strong>YouTube™</strong> and <strong>YouTube Music™</strong> are trademarks of Google LLC.</li>
+              <li><strong>Deezer®</strong> is a registered trademark of Deezer S.A.</li>
+              <li><strong>MusicBrainz®</strong> is a registered trademark of the MetaBrainz Foundation.</li>
+              <li><strong>Suno™</strong> is a trademark of Suno, Inc. / <strong>Udio™</strong> is a trademark of Uncharted Labs, Inc.</li>
+            </ul>
+            <p>
+              Any use of these marks on <strong>isthereaiinmyplaylist</strong> is strictly for <em>nominative descriptive purposes</em> (to identify compatible playlist URLs, metadata catalogs, and search services). This website is an independent forensics project and is <strong>not affiliated with, endorsed, sponsored, authorized, or certified by</strong> Spotify AB, Apple Inc., Google LLC, Deezer S.A., or any of their affiliates.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 3: Dispute & False Positives -->
+        <div id="tab-dispute" class="legal-section-block">
+          <div class="legal-notice-box">
+            <h4>Artist &amp; Rights Holder Dispute Process</h4>
+            <p>
+              We deeply respect human artists, independent songwriters, and producers. If your music or artist profile has been misclassified as synthetic or AI-generated in error (false positive), you have the full right to prompt correction or removal.
+            </p>
+            <p style="margin-top:8px"><strong>How to request a review:</strong></p>
+            <ul class="legal-list">
+              <li>Send an email to <strong>dispute@isthereaiinmyplaylist.tech</strong> (or <strong>tobiasek.oliver@gmail.com</strong>).</li>
+              <li>Include the Spotify, Apple Music, or YouTube link to the track/artist.</li>
+              <li>Provide brief context or evidence of human production (e.g. DAW project screenshot, studio session photo, raw stems, live performance, or distributor ISRC verification).</li>
+            </ul>
+            <p>
+              Verified human tracks and artists are added to an explicit human whitelist and cleared across all heuristic evaluations.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 4: Privacy & GDPR -->
+        <div id="tab-privacy" class="legal-section-block">
+          <div class="legal-notice-box">
+            <h4>Privacy Policy &amp; Cookieless Architecture (GDPR Compliant)</h4>
+            <p>
+              We are committed to user privacy and strict adherence to European GDPR standards:
+            </p>
+            <ul class="legal-list">
+              <li><strong>100% Cookieless:</strong> We do not set tracking cookies, marketing cookies, or third-party profiling trackers.</li>
+              <li><strong>Zero Account Data:</strong> We never ask for your Spotify, Apple, or Google account credentials, passwords, or personal listening history.</li>
+              <li><strong>Transient Memory Analysis:</strong> When you paste a playlist URL, public track metadata is queried in serverless ephemeral memory and never sold or shared.</li>
+              <li><strong>Self-Hosted Typography:</strong> All fonts are served directly from our domain. No user IP addresses are leaked to Google Fonts CDN servers.</li>
+              <li><strong>Privacy-First Analytics:</strong> Telemetry is powered by Vercel Web Analytics, which uses cookieless, non-identifiable telemetry compliant with EU regulations.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tab 5: Licenses & Fonts -->
+        <div id="tab-licenses" class="legal-section-block">
+          <div class="legal-notice-box">
+            <h4>Open Source Licenses &amp; Attribution</h4>
+            <ul class="legal-list">
+              <li><strong>Source Code:</strong> MIT License © 2026 Oliver Tobiášek.</li>
+              <li><strong>Inter Font:</strong> SIL Open Font License 1.1 (Rasmus Andersson). Self-hosted locally.</li>
+              <li><strong>JetBrains Mono:</strong> SIL Open Font License 1.1 / Apache 2.0 (JetBrains s.r.o.). Self-hosted locally.</li>
+              <li><strong>Space Grotesk:</strong> SIL Open Font License 1.1 (Florian Karsten). Self-hosted locally.</li>
+              <li><strong>@vercel/analytics:</strong> Apache License 2.0 (Vercel Inc.).</li>
+              <li><strong>MusicBrainz Data:</strong> CC0 1.0 Universal / Public Domain (MetaBrainz Foundation).</li>
+            </ul>
+            <p>
+              For complete license texts, see <a href="https://github.com/Oliverrex14/isthereaiinmyplaylist/blob/main/LICENSES.md" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">LICENSES.md</a> in the repository root.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:14px">
+        <button type="button" id="closeLegalModalBtn" class="btn btn-solid">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
   <audio id="previewAudioPlayer"></audio>
 
   <footer class="footer">
-    <div class="container footer-inner">
-      <span><strong>isthereaiinmyplaylist</strong> // Multi-Vector Playlist Forensics</span>
-      <span>Data sources: Spotify Embed • Apple Music • YouTube • MusicBrainz • Deezer • iTunes Search API</span>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <span><strong>isthereaiinmyplaylist</strong> // Multi-Vector Playlist Forensics</span>
+        </div>
+        <div>
+          <span>Data sources: Spotify Embed • Apple Music • YouTube • MusicBrainz • Deezer • iTunes Search API</span>
+        </div>
+      </div>
+      <div class="footer-links-row">
+        <button type="button" class="footer-link" id="openLegalModalBtn">⚖️ Legal &amp; Disclaimers</button>
+        <button type="button" class="footer-link" id="openTrademarkModalBtn">🏷️ Trademark Fair Use</button>
+        <button type="button" class="footer-link" id="openPrivacyModalBtn">🔒 Privacy &amp; GDPR</button>
+        <button type="button" class="footer-link" id="openDisputeModalBtn">📩 Dispute / Removal</button>
+        <a href="https://github.com/Oliverrex14/isthereaiinmyplaylist/blob/main/LICENSES.md" target="_blank" rel="noopener noreferrer" class="footer-link">📄 LICENSES.md ↗</a>
+      </div>
+      <div class="footer-disclaimer-fineprint">
+        Spotify, Apple Music, YouTube and Deezer are trademarks of their respective owners. isthereaiinmyplaylist is an independent research forensics tool not affiliated with or endorsed by Spotify AB, Apple Inc., Google LLC, or Deezer S.A. Detection indicators are heuristic estimations for educational and informational purposes only.
+      </div>
     </div>
   </footer>
 

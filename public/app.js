@@ -815,3 +815,72 @@ async function loadDatabaseModal() {
 }
 
 refreshDatabaseBadge();
+
+// Legal & Compliance Modal Controller
+const legalModal = document.getElementById("legalModal");
+const closeLegalModal = document.getElementById("closeLegalModal");
+const closeLegalModalBtn = document.getElementById("closeLegalModalBtn");
+const openLegalModalBtn = document.getElementById("openLegalModalBtn");
+const openTrademarkModalBtn = document.getElementById("openTrademarkModalBtn");
+const openPrivacyModalBtn = document.getElementById("openPrivacyModalBtn");
+const openDisputeModalBtn = document.getElementById("openDisputeModalBtn");
+const legalTabBtns = document.querySelectorAll(".legal-tab-btn");
+const legalSectionBlocks = document.querySelectorAll(".legal-section-block");
+
+function switchLegalTab(targetTabId) {
+  legalTabBtns.forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("data-tab") === targetTabId);
+  });
+  legalSectionBlocks.forEach((block) => {
+    block.classList.toggle("active", block.id === targetTabId);
+  });
+}
+
+function openLegalModalWithTab(tabId) {
+  if (!legalModal) return;
+  switchLegalTab(tabId);
+  legalModal.classList.remove("hidden");
+}
+
+if (openLegalModalBtn) {
+  openLegalModalBtn.addEventListener("click", () => openLegalModalWithTab("tab-heuristics"));
+}
+if (openTrademarkModalBtn) {
+  openTrademarkModalBtn.addEventListener("click", () => openLegalModalWithTab("tab-trademarks"));
+}
+if (openPrivacyModalBtn) {
+  openPrivacyModalBtn.addEventListener("click", () => openLegalModalWithTab("tab-privacy"));
+}
+if (openDisputeModalBtn) {
+  openDisputeModalBtn.addEventListener("click", () => openLegalModalWithTab("tab-dispute"));
+}
+
+if (closeLegalModal) {
+  closeLegalModal.addEventListener("click", () => legalModal.classList.add("hidden"));
+}
+if (closeLegalModalBtn) {
+  closeLegalModalBtn.addEventListener("click", () => legalModal.classList.add("hidden"));
+}
+
+legalTabBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const tabId = btn.getAttribute("data-tab");
+    if (tabId) switchLegalTab(tabId);
+  });
+});
+
+// Close modals when clicking backdrop or pressing Escape
+[reportModal, dbModal, legalModal].forEach((m) => {
+  if (!m) return;
+  m.addEventListener("click", (e) => {
+    if (e.target === m) m.classList.add("hidden");
+  });
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (reportModal) reportModal.classList.add("hidden");
+    if (dbModal) dbModal.classList.add("hidden");
+    if (legalModal) legalModal.classList.add("hidden");
+  }
+});

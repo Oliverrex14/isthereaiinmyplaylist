@@ -20,5 +20,10 @@
   "license": "MIT",
   "dependencies": {
     "@vercel/analytics": "^2.0.1"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0"
   }
 }
