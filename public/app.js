@@ -61,13 +61,11 @@ const dbCountBadge = document.getElementById("dbCountBadge");
 
 // Theme Toggle
 const themeToggleBtn = document.getElementById("themeToggleBtn");
-const themeToggleIcon = themeToggleBtn?.querySelector(".theme-toggle-icon");
 const themeToggleLabel = themeToggleBtn?.querySelector(".theme-toggle-label");
 
 function updateThemeToggleUI(theme) {
   if (!themeToggleBtn) return;
   const isDark = theme === "dark";
-  if (themeToggleIcon) themeToggleIcon.textContent = isDark ? "☀️" : "🌙";
   if (themeToggleLabel) themeToggleLabel.textContent = isDark ? "LIGHT" : "DARK";
   const label = isDark ? "Přepnout na světlý motiv" : "Přepnout na tmavý motiv";
   themeToggleBtn.setAttribute("aria-label", label);

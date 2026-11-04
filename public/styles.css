@@ -181,16 +181,11 @@ body {
 .theme-toggle-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 12px;
-  min-width: 82px;
+  justify-content: center;
+  padding: 8px 14px;
+  min-width: 64px;
   cursor: pointer;
   user-select: none;
-}
-
-.theme-toggle-icon {
-  font-size: 0.92rem;
-  line-height: 1;
 }
 
 .theme-toggle-label {
@@ -1838,12 +1833,6 @@ body {
   .footer-inner {
     flex-direction: column;
     text-align: center;
-  }
-}
-
-@media (max-width: 440px) {
-  .theme-toggle-label {
-    display: none;
   }
 }
 
