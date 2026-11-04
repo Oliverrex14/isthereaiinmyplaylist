@@ -42,6 +42,16 @@
   }
   </script>
   <!-- Self-hosted fonts (SIL Open Font License 1.1) – GDPR compliant, no Google CDN calls -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem("theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = stored ? stored : (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/fonts.css" />
   <link rel="stylesheet" href="/styles.css" />
 </head>
@@ -57,6 +67,10 @@
       </div>
 
       <div class="topbar-right">
+        <button id="themeToggleBtn" class="btn btn-outline theme-toggle-btn" type="button" aria-label="Přepnout motiv (světlý / tmavý)" title="Přepnout motiv">
+          <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+          <span class="theme-toggle-label">DARK</span>
+        </button>
         <button id="openDbBtn" class="btn btn-outline">
           <span>ONLINE AI INDEX</span>
           <span id="dbCountBadge" class="mono-badge">9,500+</span>

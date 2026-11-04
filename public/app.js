@@ -59,6 +59,52 @@ const closeDbModal = document.getElementById("closeDbModal");
 const dbModalContent = document.getElementById("dbModalContent");
 const dbCountBadge = document.getElementById("dbCountBadge");
 
+// Theme Toggle
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeToggleIcon = themeToggleBtn?.querySelector(".theme-toggle-icon");
+const themeToggleLabel = themeToggleBtn?.querySelector(".theme-toggle-label");
+
+function updateThemeToggleUI(theme) {
+  if (!themeToggleBtn) return;
+  const isDark = theme === "dark";
+  if (themeToggleIcon) themeToggleIcon.textContent = isDark ? "☀️" : "🌙";
+  if (themeToggleLabel) themeToggleLabel.textContent = isDark ? "LIGHT" : "DARK";
+  const label = isDark ? "Přepnout na světlý motiv" : "Přepnout na tmavý motiv";
+  themeToggleBtn.setAttribute("aria-label", label);
+  themeToggleBtn.setAttribute("title", label);
+}
+
+function applyTheme(theme, save = true) {
+  document.documentElement.setAttribute("data-theme", theme);
+  if (save) {
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {}
+  }
+  updateThemeToggleUI(theme);
+}
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next, true);
+  });
+}
+
+try {
+  const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+  updateThemeToggleUI(currentTheme);
+
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+      if (!localStorage.getItem("theme")) {
+        applyTheme(e.matches ? "dark" : "light", false);
+      }
+    });
+  }
+} catch {}
+
 let currentTracks = [];
 let activeFilter = "all";
 let activeMode = "auto";
