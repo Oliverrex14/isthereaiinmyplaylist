@@ -93,37 +93,36 @@
           <span class="source-tag"><i class="dot dot-spotify"></i>SPOTIFY</span>
           <span class="source-tag"><i class="dot dot-apple"></i>APPLE MUSIC</span>
           <span class="source-tag"><i class="dot dot-youtube"></i>YOUTUBE</span>
-          <span class="source-tag">DIRECT SEARCH</span>
         </div>
       </div>
 
       <p class="scanner-lead">
-        Inspect an entire <strong>public playlist</strong>, a <strong>single song</strong> (URL or title), or an <strong>artist profile</strong> (URL or name). Cross-references live online AI music directories (<strong>Soul Over AI / Zoundhub</strong>, <strong>Spotify AI Blocker</strong>, <strong>MusicBrainz AI Registry</strong> — 9,500+ indexed AI artists) alongside <strong>Apple iTunes</strong> and <strong>Deezer</strong> catalog forensics.
+        Inspect an entire <strong>public playlist</strong>, a <strong>single song</strong>, or an <strong>artist profile</strong> by pasting a <strong>Spotify, Apple Music, or YouTube link</strong>. Cross-references live online AI music directories (<strong>Soul Over AI / Zoundhub</strong>, <strong>Spotify AI Blocker</strong>, <strong>MusicBrainz AI Registry</strong> — 9,500+ indexed AI artists) alongside <strong>Apple iTunes</strong> and <strong>Deezer</strong> catalog forensics.
       </p>
 
       <!-- Target Mode Switcher -->
       <div class="mode-switcher" id="modeSwitcher">
         <button type="button" class="mode-tab active" data-mode="auto">
-          AUTO-DETECT (ANY URL OR NAME)
+          AUTO-DETECT (ANY LINK)
         </button>
         <button type="button" class="mode-tab" data-mode="playlist">
           PLAYLIST / ALBUM URL
         </button>
         <button type="button" class="mode-tab" data-mode="track">
-          SINGLE TRACK (URL OR TITLE)
+          SINGLE TRACK URL
         </button>
         <button type="button" class="mode-tab" data-mode="artist">
-          ARTIST (URL OR NAME)
+          ARTIST PROFILE URL
         </button>
       </div>
 
       <form id="analyzeForm" class="query-bar">
         <div class="query-input-wrap">
-          <span id="queryPrefix" class="query-prefix">TARGET //</span>
+          <span id="queryPrefix" class="query-prefix">URL //</span>
           <input
-            type="text"
+            type="url"
             id="playlistUrlInput"
-            placeholder="Paste a playlist/track/artist link (Spotify, Apple, YouTube) or type an artist / song name..."
+            placeholder="Paste any Spotify, Apple Music, or YouTube link..."
             autocomplete="off"
             required
           />
@@ -142,8 +141,8 @@
         <button type="button" class="sample-btn" data-url="https://open.spotify.com/track/7bxaFZ1O3cHkgLKMsdC3xR" data-mode="track">
           [TRACK: TAME IMPALA - LOSER]
         </button>
-        <button type="button" class="sample-btn" data-url="The Velvet Sundown" data-mode="artist">
-          [ARTIST: THE VELVET SUNDOWN (AI)]
+        <button type="button" class="sample-btn" data-url="https://open.spotify.com/artist/3JNr31WfX56vgwBuIcdOt4" data-mode="artist">
+          [ARTIST: ENDEL (AI SOUNDSCAPES)]
         </button>
         <button type="button" class="sample-btn" data-url="https://open.spotify.com/artist/5INjqkS1o8h1imAzPqGZBb" data-mode="artist">
           [ARTIST: TAME IMPALA]

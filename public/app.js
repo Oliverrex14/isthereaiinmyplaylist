@@ -112,9 +112,9 @@ const queryPrefix = document.getElementById("queryPrefix");
 
 const MODE_CONFIG = {
   auto: {
-    prefix: "TARGET //",
+    prefix: "URL //",
     placeholder:
-      "Paste any playlist/track/artist link (Spotify, Apple, YouTube) or type an artist / song name...",
+      "Paste any Spotify, Apple Music, or YouTube link (playlist, album, track, or artist)...",
   },
   playlist: {
     prefix: "PLAYLIST //",
@@ -124,12 +124,12 @@ const MODE_CONFIG = {
   track: {
     prefix: "TRACK //",
     placeholder:
-      "Paste a Spotify / Apple / YouTube song link OR type 'Artist - Track Title'...",
+      "https://open.spotify.com/track/... or music.apple.com/.../album/... or youtube.com/watch?v=...",
   },
   artist: {
     prefix: "ARTIST //",
     placeholder:
-      "Paste a Spotify / Apple / YouTube artist link OR type an artist name (e.g. The Velvet Sundown)...",
+      "https://open.spotify.com/artist/... or music.apple.com/.../artist/... or youtube.com/@...",
   },
 };
 
@@ -204,10 +204,37 @@ document.querySelectorAll(".sample-btn").forEach((btn) => {
   });
 });
 
+function isSupportedLink(input) {
+  const str = (input || "").trim();
+  if (!str) return false;
+  if (str.startsWith("demo:")) return true;
+  if (/^spotify:(playlist|track|artist|album):/i.test(str)) return true;
+  const match = str.match(/https?:\/\/[^\s]+/i);
+  const cand = match ? match[0] : str;
+  return (
+    /^https?:\/\//i.test(cand) ||
+    /^(open\.spotify\.com|spotify\.link|music\.apple\.com|www\.youtube\.com|youtube\.com|youtu\.be|music\.youtube\.com)\//i.test(
+      cand
+    )
+  );
+}
+
 analyzeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = playlistUrlInput.value.trim();
-  if (url) runAnalysis(url, activeMode);
+  if (!url) {
+    errorText.textContent = "Please paste a link to inspect.";
+    errorAlert.classList.remove("hidden");
+    return;
+  }
+  if (!isSupportedLink(url)) {
+    errorText.textContent =
+      "Please enter a valid link. We support Spotify (playlist, track, artist, album), Apple Music, and YouTube links.";
+    errorAlert.classList.remove("hidden");
+    playlistUrlInput.focus();
+    return;
+  }
+  runAnalysis(url, activeMode);
 });
 
 async function runAnalysis(url, mode = activeMode) {

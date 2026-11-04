@@ -237,7 +237,7 @@ async function requestHandler(req, res) {
 
       if (!rawInput) {
         return sendJson(res, 400, {
-          error: "Please enter a playlist URL, track link/title, or artist name.",
+          error: "Please enter a valid link from Spotify, Apple Music, or YouTube.",
         });
       }
 
