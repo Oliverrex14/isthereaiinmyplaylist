@@ -1,288 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <!-- Background Gradient (Rich warm espresso with subtle vignette) -->
-    <radialGradient id="bgVignette" cx="45%" cy="40%" r="85%">
-      <stop offset="0%" stop-color="#191714"/>
-      <stop offset="60%" stop-color="#12110f"/>
-      <stop offset="100%" stop-color="#090807"/>
+    <!-- Clean, warm dark background gradient -->
+    <radialGradient id="cleanBg" cx="50%" cy="46%" r="75%">
+      <stop offset="0%" stop-color="#1e1b17"/>
+      <stop offset="100%" stop-color="#12110f"/>
     </radialGradient>
 
-    <!-- Warm terracotta gradient for headline & accents -->
-    <linearGradient id="terracottaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fb923c"/>
-      <stop offset="60%" stop-color="#ea580c"/>
-      <stop offset="100%" stop-color="#c2410c"/>
+    <!-- Warm terracotta highlight -->
+    <linearGradient id="accentOrange" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ea580c"/>
     </linearGradient>
-
-    <!-- Emerald Human gradient -->
-    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#22c55e"/>
-      <stop offset="100%" stop-color="#16a34a"/>
-    </linearGradient>
-
-    <!-- Crimson Farm gradient -->
-    <linearGradient id="crimsonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ef4444"/>
-      <stop offset="100%" stop-color="#dc2626"/>
-    </linearGradient>
-
-    <!-- Dot Grid Pattern -->
-    <pattern id="archivalDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="12" cy="12" r="1.1" fill="#2d2822" opacity="0.6"/>
-    </pattern>
-
-    <!-- Deep Elevation Shadow for Dossier Card -->
-    <filter id="dossierShadow" x="-20%" y="-15%" width="140%" height="135%">
-      <feDropShadow dx="0" dy="24" stdDeviation="30" flood-color="#000000" flood-opacity="0.75"/>
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.4"/>
-    </filter>
-
-    <!-- Stamp Shadow -->
-    <filter id="stampDistress" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="2" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.45"/>
-    </filter>
   </defs>
 
-  <!-- 1. Background Base -->
-  <rect width="1200" height="630" fill="url(#bgVignette)"/>
-  <rect width="1200" height="630" fill="url(#archivalDots)"/>
+  <!-- Background Base -->
+  <rect width="1200" height="630" fill="url(#cleanBg)"/>
 
-  <!-- Concentric Vinyl Grooves Motif in background (Subtle, elegant) -->
-  <g opacity="0.06" stroke="#faf7f2" fill="none" stroke-width="1.2">
-    <circle cx="1120" cy="315" r="220"/>
-    <circle cx="1120" cy="315" r="280"/>
-    <circle cx="1120" cy="315" r="340"/>
-    <circle cx="1120" cy="315" r="400"/>
-    <circle cx="1120" cy="315" r="460"/>
-    <circle cx="1120" cy="315" r="520"/>
-    <circle cx="1120" cy="315" r="580"/>
-  </g>
+  <!-- Elegant Minimal Border -->
+  <rect x="36" y="36" width="1128" height="558" rx="16" fill="none" stroke="#2c2620" stroke-width="1.5"/>
 
-  <!-- 2. Archival Perimeter Frame & Technical Registration Marks -->
-  <rect x="24" y="24" width="1152" height="582" rx="12" fill="none" stroke="#2c2722" stroke-width="1.5"/>
-  <rect x="32" y="32" width="1136" height="566" rx="8" fill="none" stroke="#221e1a" stroke-width="1" stroke-dasharray="4 6"/>
-
-  <!-- Corner registration crosshairs -->
-  <g stroke="#ea580c" stroke-width="1.5" opacity="0.7">
-    <path d="M18 24 h12 M24 18 v12"/>
-    <path d="M1170 24 h12 M1176 18 v12"/>
-    <path d="M18 606 h12 M24 600 v12"/>
-    <path d="M1170 606 h12 M1176 600 v12"/>
-  </g>
-
-  <!-- 3. Left Column: Editorial & Brand Core (x: 64, y: 58) -->
-  <g transform="translate(64, 58)">
+  <!-- All Content Perfectly Centered & Balanced -->
+  <g text-anchor="middle">
     
-    <!-- Eyebrow Pill Badge -->
-    <g transform="translate(0, 0)">
-      <rect x="0" y="0" width="374" height="34" rx="17" fill="#221d18" stroke="#3d352b" stroke-width="1.2"/>
-      <circle cx="16" cy="17" r="5" fill="#ea580c"/>
-      <text x="30" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="11.5" fill="#faf7f2" letter-spacing="1.2">🌿 INDIE MUSIC ARCHIVE • KEEP MUSIC HUMAN</text>
+    <!-- Top Pill: Eyebrow -->
+    <g transform="translate(600, 142)">
+      <rect x="-155" y="-18" width="310" height="36" rx="18" fill="#201c18" stroke="#3a3229" stroke-width="1.2"/>
+      <circle cx="-130" cy="0" r="4.5" fill="#ea580c"/>
+      <text x="-116" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#faf7f2" letter-spacing="1.5" text-anchor="start">🌿 KEEP MUSIC HUMAN</text>
     </g>
 
-    <!-- Massive Display Headline -->
-    <g transform="translate(0, 94)">
-      <text x="0" y="0" font-family="Georgia, Cambria, 'Times New Roman', serif" font-weight="800" font-size="56" fill="#faf7f2" letter-spacing="-1.5">
-        Is There AI in
-      </text>
-      <text x="0" y="66" font-family="Georgia, Cambria, 'Times New Roman', serif" font-weight="800" font-size="56" fill="url(#terracottaGrad)" letter-spacing="-1.5">
-        Your Playlist?
-      </text>
-    </g>
+    <!-- Main Headline (Huge, crystal clear, serif) -->
+    <text x="600" y="260" font-family="Georgia, Cambria, 'Times New Roman', serif" font-size="66" font-weight="700" fill="#faf7f2" letter-spacing="-1.5">
+      Is There AI in Your Playlist?
+    </text>
 
-    <!-- Subtitle (Clear, punchy, authentic) -->
-    <g transform="translate(0, 206)">
-      <text x="0" y="0" font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif" font-weight="400" font-size="18.5" fill="#c7bfb4" line-height="1.5">
-        Scan public Spotify, Apple Music &amp; YouTube playlists
-      </text>
-      <text x="0" y="28" font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif" font-weight="400" font-size="18.5" fill="#c7bfb4">
-        to detect synthetic ghost artists and protect real musicians.
-      </text>
-    </g>
+    <!-- Subtitle (Clean & readable) -->
+    <text x="600" y="332" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="#b8b0a2">
+      Detect synthetic ghost artists and streaming-farms. Free, open, and transparent.
+    </text>
 
-    <!-- 4 High-Impact Forensics Badges -->
-    <g transform="translate(0, 286)">
-      <!-- Badge 1: Pre-2023 -->
-      <g transform="translate(0, 0)">
-        <rect width="248" height="38" rx="7" fill="#1b1814" stroke="#352e25" stroke-width="1.2"/>
-        <text x="14" y="24" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#22c55e">✓ PRE-2023 CATALOG SHIELD</text>
-      </g>
-      <!-- Badge 2: Velocity Tracking -->
-      <g transform="translate(260, 0)">
-        <rect width="252" height="38" rx="7" fill="#1b1814" stroke="#352e25" stroke-width="1.2"/>
-        <text x="14" y="24" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#22c55e">✓ CATALOG VELOCITY RADAR</text>
-      </g>
-      <!-- Badge 3: MusicBrainz Graph -->
-      <g transform="translate(0, 48)">
-        <rect width="248" height="38" rx="7" fill="#1b1814" stroke="#352e25" stroke-width="1.2"/>
-        <text x="14" y="24" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#22c55e">✓ MUSICBRAINZ HUMAN ID</text>
-      </g>
-      <!-- Badge 4: Transparent Signals -->
-      <g transform="translate(260, 48)">
-        <rect width="252" height="38" rx="7" fill="#1b1814" stroke="#352e25" stroke-width="1.2"/>
-        <text x="14" y="24" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#22c55e">✓ TRANSPARENT EVIDENCE</text>
-      </g>
-    </g>
-
-    <!-- Supported Streaming Platforms Strip -->
-    <g transform="translate(0, 422)">
-      <text x="0" y="15" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#887f73" letter-spacing="1.2">SUPPORTS:</text>
-      
+    <!-- Supported Platforms: Minimal Pill Badges -->
+    <g transform="translate(600, 412)">
       <!-- Spotify -->
-      <g transform="translate(86, -4)">
-        <rect width="102" height="28" rx="5" fill="#191613" stroke="#332c23" stroke-width="1"/>
-        <circle cx="14" cy="14" r="4" fill="#1ed760"/>
-        <text x="26" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#faf7f2">Spotify</text>
+      <g transform="translate(-190, 0)">
+        <rect x="-66" y="-18" width="132" height="36" rx="8" fill="#1b1814" stroke="#332b22" stroke-width="1"/>
+        <circle cx="-42" cy="0" r="4.5" fill="#1ed760"/>
+        <text x="-30" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#faf7f2" text-anchor="start">Spotify</text>
       </g>
 
       <!-- Apple Music -->
-      <g transform="translate(200, -4)">
-        <rect width="124" height="28" rx="5" fill="#191613" stroke="#332c23" stroke-width="1"/>
-        <circle cx="14" cy="14" r="4" fill="#fa2d48"/>
-        <text x="26" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#faf7f2">Apple Music</text>
-      </g>
-
-      <!-- YouTube Music -->
-      <g transform="translate(336, -4)">
-        <rect width="138" height="28" rx="5" fill="#191613" stroke="#332c23" stroke-width="1"/>
-        <circle cx="14" cy="14" r="4" fill="#ff0000"/>
-        <text x="26" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#faf7f2">YouTube Music</text>
-      </g>
-    </g>
-
-    <!-- Bottom Left Signature -->
-    <g transform="translate(0, 488)">
-      <text x="0" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="13" font-weight="800" fill="#ea580c" letter-spacing="1.5">
-        ISTHEREAIINMYPLAYLIST.TECH
-      </text>
-    </g>
-  </g>
-
-  <!-- 4. Right Column: The Forensic Audit Dossier (x: 648, y: 52) -->
-  <g transform="translate(648, 52)" filter="url(#dossierShadow)">
-    
-    <!-- Outer Archival Card Base -->
-    <rect width="490" height="490" rx="14" fill="#1b1814" stroke="#3a3227" stroke-width="2"/>
-
-    <!-- Archival Top Header -->
-    <rect width="490" height="48" rx="14" fill="#24201a"/>
-    <line x1="0" y1="48" x2="490" y2="48" stroke="#3a3227" stroke-width="1.5"/>
-
-    <!-- Card Title & Serial -->
-    <text x="20" y="30" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#d4cdc3" letter-spacing="1">
-      FORENSIC AUDIT // DOSSIER #8492
-    </text>
-
-    <!-- Main Alert Badge -->
-    <g transform="translate(320, 11)">
-      <rect width="150" height="26" rx="5" fill="#dc2626"/>
-      <circle cx="12" cy="13" r="3.5" fill="#ffffff"/>
-      <text x="24" y="18" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10.5" font-weight="900" fill="#ffffff">42% SYNTHETIC</text>
-    </g>
-
-    <!-- Forensic Ratio Meter -->
-    <g transform="translate(20, 68)">
-      <text x="0" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10" font-weight="800" fill="#887f73" letter-spacing="1">PROVENANCE SPECTRUM BREAKDOWN</text>
-      
-      <!-- Multi-tier bar -->
-      <g transform="translate(0, 8)">
-        <rect width="450" height="18" rx="5" fill="#12100d"/>
-        <!-- 58% Human -->
-        <rect x="0" width="258" height="18" rx="5" fill="url(#emeraldGrad)"/>
-        <!-- 14% Inconclusive -->
-        <rect x="261" width="63" height="18" fill="#d97706"/>
-        <!-- 28% AI Farm -->
-        <rect x="326" width="124" height="18" rx="5" fill="url(#crimsonGrad)"/>
-      </g>
-
-      <!-- Meter Legend -->
-      <g transform="translate(0, 42)">
-        <circle cx="4" cy="-3" r="3.5" fill="#22c55e"/>
-        <text x="13" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9.5" font-weight="800" fill="#faf7f2">58% HUMAN</text>
-
-        <circle cx="160" cy="-3" r="3.5" fill="#d97706"/>
-        <text x="169" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9.5" font-weight="800" fill="#faf7f2">14% INCONCLUSIVE</text>
-
-        <circle cx="330" cy="-3" r="3.5" fill="#ef4444"/>
-        <text x="339" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9.5" font-weight="800" fill="#faf7f2">28% AI SLOP</text>
-      </g>
-    </g>
-
-    <!-- Track Inspection Cards (The "Before & After" Evidence) -->
-    <g transform="translate(20, 148)">
-      
-      <!-- Track 1: Flagged Synthetic AI Stream-Farm Track -->
       <g transform="translate(0, 0)">
-        <rect width="450" height="88" rx="8" fill="#221b18" stroke="#522521" stroke-width="1.2"/>
-        <line x1="0" y1="0" x2="4" y2="88" stroke="#ef4444" stroke-width="8"/>
-        
-        <!-- Track details -->
-        <text x="18" y="24" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="800" fill="#faf7f2">
-          "Rain Sleep Resonance" • Ghost Ambient Co.
-        </text>
-        <text x="18" y="44" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#ef4444">
-          ⚠️ 62 releases/month • Missing ISRC • Synthetic distribution hub
-        </text>
-        <text x="18" y="62" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10" font-weight="500" fill="#b0a89c">
-          Audio footprint: Suno/Udio prompt architecture
-        </text>
-
-        <!-- Danger pill -->
-        <rect x="334" y="14" width="102" height="22" rx="4" fill="#dc2626"/>
-        <text x="385" y="29" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9.5" font-weight="900" fill="#ffffff" text-anchor="middle">
-          96% AI FARM
-        </text>
+        <rect x="-76" y="-18" width="152" height="36" rx="8" fill="#1b1814" stroke="#332b22" stroke-width="1"/>
+        <circle cx="-52" cy="0" r="4.5" fill="#fa2d48"/>
+        <text x="-40" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#faf7f2" text-anchor="start">Apple Music</text>
       </g>
 
-      <!-- Track 2: Verified Real Human Artist Track -->
-      <g transform="translate(0, 98)">
-        <rect width="450" height="88" rx="8" fill="#171e17" stroke="#244226" stroke-width="1.2"/>
-        <line x1="0" y1="0" x2="4" y2="88" stroke="#22c55e" stroke-width="8"/>
-
-        <!-- Track details -->
-        <text x="18" y="24" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="800" fill="#faf7f2">
-          "Blood Bank" • Bon Iver
-        </text>
-        <text x="18" y="44" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#22c55e">
-          ✓ Pre-2023 discography anchor • Jagjaguwar imprint
-        </text>
-        <text x="18" y="62" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10" font-weight="500" fill="#b0a89c">
-          MusicBrainz human performer ID verified
-        </text>
-
-        <!-- Safe pill -->
-        <rect x="322" y="14" width="114" height="22" rx="4" fill="#16a34a"/>
-        <text x="379" y="29" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9.5" font-weight="900" fill="#ffffff" text-anchor="middle">
-          0% HUMAN CRAFT
-        </text>
-      </g>
-
-      <!-- Summary Audit Note -->
-      <g transform="translate(0, 196)">
-        <rect width="450" height="52" rx="6" fill="#14120f" stroke="#2d261e" stroke-width="1"/>
-        <text x="16" y="22" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="10" font-weight="800" fill="#d4cdc3">
-          VERDICT: 21 OF 50 TRACKS ARE SYNTHETIC STREAM-FARMS
-        </text>
-        <text x="16" y="38" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9.5" font-weight="600" fill="#887f73">
-          Royalty leakage: ~$340/month estimated siphoned from human artists
-        </text>
+      <!-- YouTube -->
+      <g transform="translate(190, 0)">
+        <rect x="-70" y="-18" width="140" height="36" rx="8" fill="#1b1814" stroke="#332b22" stroke-width="1"/>
+        <circle cx="-46" cy="0" r="4.5" fill="#ff0000"/>
+        <text x="-34" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#faf7f2" text-anchor="start">YouTube</text>
       </g>
     </g>
 
-    <!-- Physical Archival Stamp (Rotated -11deg) -->
-    <g transform="translate(360, 394) rotate(-11)" filter="url(#stampDistress)">
-      <circle cx="50" cy="50" r="48" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="5 3"/>
-      <circle cx="50" cy="50" r="42" fill="#1b1814" stroke="#ea580c" stroke-width="1.2"/>
-      <text x="50" y="36" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#ea580c" text-anchor="middle" letter-spacing="1.5">★ KEEP MUSIC HUMAN ★</text>
-      <text x="50" y="52" font-family="Georgia, serif" font-size="12" font-weight="900" fill="#faf7f2" text-anchor="middle">AUDITED</text>
-      <text x="50" y="67" font-family="ui-monospace, monospace" font-size="8" font-weight="800" fill="#ea580c" text-anchor="middle" letter-spacing="1">ARCHIVE 2026</text>
-    </g>
-  </g>
-
-  <!-- 5. Bottom Right Disclaimer -->
-  <g transform="translate(1128, 592)">
-    <text x="0" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" font-weight="600" fill="#756d61" text-anchor="end">
-      100% FREE &amp; OPEN SOURCE • ZERO LOGIN • PRIVACY-FIRST
+    <!-- Bottom URL Signature -->
+    <text x="600" y="525" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="14.5" font-weight="800" fill="#ea580c" letter-spacing="1.2">
+      isthereaiinmyplaylist.tech
     </text>
   </g>
 </svg>
