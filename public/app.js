@@ -52,6 +52,98 @@ const openReportBtn = document.getElementById("openReportBtn");
 const closeReportModal = document.getElementById("closeReportModal");
 const cancelReportBtn = document.getElementById("cancelReportBtn");
 const reportForm = document.getElementById("reportForm");
+const reportUserBadgeName = document.getElementById("reportUserBadgeName");
+
+const loginModal = document.getElementById("loginModal");
+const closeLoginModal = document.getElementById("closeLoginModal");
+const authLoginBtn = document.getElementById("authLoginBtn");
+const authUserMenu = document.getElementById("authUserMenu");
+const authUserAvatar = document.getElementById("authUserAvatar");
+const authUserName = document.getElementById("authUserName");
+const authLogoutBtn = document.getElementById("authLogoutBtn");
+
+let currentUser = null;
+
+async function checkAuthState() {
+  try {
+    const res = await fetch("/api/auth/me");
+    if (res.ok) {
+      const data = await res.json();
+      currentUser = data.authenticated ? data.user : null;
+      const localSec = document.getElementById("authLocalSection");
+      if (localSec) {
+        if (data.providers?.localDev === false) {
+          localSec.classList.add("hidden");
+        } else {
+          localSec.classList.remove("hidden");
+        }
+      }
+      const googleBtn = document.getElementById("loginGoogleBtn");
+      if (googleBtn) {
+        if (data.providers && data.providers.google === false && !data.providers.localDev) {
+          googleBtn.classList.add("hidden");
+        } else {
+          googleBtn.classList.remove("hidden");
+        }
+      }
+      const spotifyBtn = document.getElementById("loginSpotifyBtn");
+      if (spotifyBtn) {
+        if (data.providers && data.providers.spotify === false && !data.providers.localDev) {
+          spotifyBtn.classList.add("hidden");
+        } else {
+          spotifyBtn.classList.remove("hidden");
+        }
+      }
+      updateAuthUI();
+    }
+  } catch {}
+}
+
+function updateAuthUI() {
+  if (currentUser) {
+    if (authLoginBtn) authLoginBtn.classList.add("hidden");
+    if (authUserMenu) authUserMenu.classList.remove("hidden");
+    if (authUserName) authUserName.textContent = currentUser.name || "Reviewer";
+    if (authUserAvatar) {
+      authUserAvatar.src =
+        currentUser.avatar ||
+        "https://open.spotifycdn.com/cdn/images/favicon32.8e66b099.png";
+    }
+    if (reportUserBadgeName) {
+      reportUserBadgeName.textContent = `${currentUser.name} (${(
+        currentUser.provider || "AUTH"
+      ).toUpperCase()})`;
+    }
+  } else {
+    if (authLoginBtn) authLoginBtn.classList.remove("hidden");
+    if (authUserMenu) authUserMenu.classList.add("hidden");
+    if (reportUserBadgeName) {
+      reportUserBadgeName.textContent = "Anonymous (Sign-in required)";
+    }
+  }
+}
+
+if (authLoginBtn) {
+  authLoginBtn.addEventListener("click", () => {
+    if (loginModal) loginModal.classList.remove("hidden");
+  });
+}
+if (closeLoginModal) {
+  closeLoginModal.addEventListener("click", () => {
+    if (loginModal) loginModal.classList.add("hidden");
+  });
+}
+if (authLogoutBtn) {
+  authLogoutBtn.addEventListener("click", async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {}
+    currentUser = null;
+    updateAuthUI();
+  });
+}
+
+checkAuthState();
 
 const dbModal = document.getElementById("dbModal");
 const openDbBtn = document.getElementById("openDbBtn");
@@ -688,6 +780,19 @@ function renderTracksList() {
       const targetTrack = currentTracks.find((t) => String(t.id) === String(trackId));
       if (!targetTrack) return;
 
+      // Check authentication before allowing flagging
+      if (!currentUser) {
+        if (loginModal) {
+          const desc = document.getElementById("loginModalDesc");
+          if (desc) {
+            desc.textContent =
+              "Sign in required: To report songs and protect artists against false positives, please sign in.";
+          }
+          loginModal.classList.remove("hidden");
+        }
+        return;
+      }
+
       // 1. IF ALREADY FLAGGED IN SESSION: allow immediate unflag / undo
       if (targetTrack.flaggedBySession) {
         const confirmUndo = window.confirm(
@@ -795,6 +900,17 @@ const closeReportModalHandler = () => {
   activeReportingTrack = null;
 };
 openReportBtn.addEventListener("click", () => {
+  if (!currentUser) {
+    if (loginModal) {
+      const desc = document.getElementById("loginModalDesc");
+      if (desc) {
+        desc.textContent =
+          "Sign in required: To submit an AI artist or track to the database, please sign in.";
+      }
+      loginModal.classList.remove("hidden");
+    }
+    return;
+  }
   activeReportingTrack = null;
   reportForm.reset();
   reportModal.classList.remove("hidden");
@@ -828,6 +944,18 @@ reportForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    if (res.status === 401) {
+      reportModal.classList.add("hidden");
+      if (loginModal) {
+        const desc = document.getElementById("loginModalDesc");
+        if (desc) {
+          desc.textContent =
+            "Session required: Please sign in to submit AI reports to the database.";
+        }
+        loginModal.classList.remove("hidden");
+      }
+      return;
+    }
     if (res.ok) {
       if (activeReportingTrack) {
         activeReportingTrack.flaggedBySession = true;
@@ -1012,7 +1140,7 @@ legalTabBtns.forEach((btn) => {
 });
 
 // Close modals when clicking backdrop or pressing Escape
-[reportModal, dbModal, legalModal].forEach((m) => {
+[reportModal, dbModal, legalModal, loginModal].forEach((m) => {
   if (!m) return;
   m.addEventListener("click", (e) => {
     if (e.target === m) m.classList.add("hidden");
@@ -1024,5 +1152,6 @@ window.addEventListener("keydown", (e) => {
     if (reportModal) reportModal.classList.add("hidden");
     if (dbModal) dbModal.classList.add("hidden");
     if (legalModal) legalModal.classList.add("hidden");
+    if (loginModal) loginModal.classList.add("hidden");
   }
 });

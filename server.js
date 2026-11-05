@@ -9,6 +9,14 @@ const {
   saveCommunityReport,
   removeCommunityReport,
 } = require("./lib/aiDetector");
+const {
+  signSession,
+  getUserFromRequest,
+  serializeSessionCookie,
+  createLocalDevUser,
+  getOAuthUrl,
+  exchangeOAuthCode,
+} = require("./lib/auth");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "public");
@@ -169,8 +177,9 @@ async function requestHandler(req, res) {
       .replace(/[^a-zA-Z]/g, "") || "https";
 
   let pathname = "/";
+  let parsedUrl = null;
   try {
-    const parsedUrl = new URL(req.url || "/", `${rawProto}://${rawHost}`);
+    parsedUrl = new URL(req.url || "/", `${rawProto}://${rawHost}`);
     pathname = parsedUrl.pathname;
   } catch {
     pathname = (req.url || "/").split("?")[0] || "/";
@@ -277,8 +286,132 @@ async function requestHandler(req, res) {
     return sendJson(res, 200, dbOverview);
   }
 
-  // API: Submit Community AI Report
+  // API: Get Current Auth State
+  if (pathname === "/api/auth/me" && req.method === "GET") {
+    const user = getUserFromRequest(req);
+    return sendJson(res, 200, {
+      authenticated: Boolean(user),
+      user: user
+        ? {
+            userId: user.userId,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            provider: user.provider,
+            isLocalDev: Boolean(user.isLocalDev),
+          }
+        : null,
+      providers: {
+        spotify: Boolean(process.env.SPOTIFY_CLIENT_ID),
+        google: Boolean(process.env.GOOGLE_CLIENT_ID),
+        localDev: process.env.NODE_ENV !== "production",
+      },
+    });
+  }
+
+  // API: Initiate OAuth Login or Local Dev Sign-In
+  if (pathname === "/api/auth/login" && req.method === "GET") {
+    const provider = parsedUrl?.searchParams?.get("provider") || "spotify";
+    const redirectBack = parsedUrl?.searchParams?.get("redirect") || "/";
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    // Local Dev / Simulator Login (strictly disabled in production)
+    if (!isProd && (provider === "local" || (!process.env.SPOTIFY_CLIENT_ID && provider === "spotify") || (!process.env.GOOGLE_CLIENT_ID && provider === "google"))) {
+      const name =
+        parsedUrl?.searchParams?.get("name") ||
+        (provider === "google"
+          ? "Google Reviewer"
+          : "Spotify Reviewer");
+      const devUser = createLocalDevUser({ provider, name });
+      const cookieHeader = serializeSessionCookie(devUser.token);
+      res.writeHead(302, {
+        ...SECURITY_HEADERS,
+        "Set-Cookie": cookieHeader,
+        Location: redirectBack,
+      });
+      return res.end();
+    }
+
+    if (provider === "local" && isProd) {
+      return sendJson(res, 403, {
+        error: "Local simulator login is disabled in production.",
+      });
+    }
+
+    // Production OAuth 2.0 flow
+    const protocol = req.headers["x-forwarded-proto"] || "http";
+    const host = req.headers.host || `localhost:${PORT}`;
+    const redirectUri = `${protocol}://${host}/api/auth/callback?provider=${provider}`;
+    const oauthUrl = getOAuthUrl(provider, redirectUri, redirectBack);
+
+    if (!oauthUrl) {
+      return sendJson(res, 400, {
+        error: `Provider ${provider} is not configured.`,
+      });
+    }
+
+    res.writeHead(302, {
+      ...SECURITY_HEADERS,
+      Location: oauthUrl,
+    });
+    return res.end();
+  }
+
+  // API: OAuth Callback
+  if (pathname === "/api/auth/callback" && req.method === "GET") {
+    const provider = parsedUrl?.searchParams?.get("provider") || "spotify";
+    const code = parsedUrl?.searchParams?.get("code");
+    const state = parsedUrl?.searchParams?.get("state") || "/";
+
+    if (!code) {
+      res.writeHead(302, { Location: "/?auth_error=no_code" });
+      return res.end();
+    }
+
+    try {
+      const protocol = req.headers["x-forwarded-proto"] || "http";
+      const host = req.headers.host || `localhost:${PORT}`;
+      const redirectUri = `${protocol}://${host}/api/auth/callback?provider=${provider}`;
+      const userProfile = await exchangeOAuthCode(provider, code, redirectUri);
+      const token = signSession(userProfile);
+      const cookieHeader = serializeSessionCookie(token);
+
+      res.writeHead(302, {
+        ...SECURITY_HEADERS,
+        "Set-Cookie": cookieHeader,
+        Location: state,
+      });
+      return res.end();
+    } catch (err) {
+      res.writeHead(302, {
+        Location: `/?auth_error=${encodeURIComponent(err.message)}`,
+      });
+      return res.end();
+    }
+  }
+
+  // API: Logout
+  if (pathname === "/api/auth/logout" && req.method === "POST") {
+    const clearCookie = serializeSessionCookie(null, true);
+    res.writeHead(200, {
+      ...SECURITY_HEADERS,
+      "Set-Cookie": clearCookie,
+      "Content-Type": "application/json",
+    });
+    return res.end(JSON.stringify({ success: true }));
+  }
+
+  // API: Submit Community AI Report (Protected by Authentication)
   if (pathname.startsWith("/api/report") && req.method === "POST") {
+    const authUser = getUserFromRequest(req);
+    if (!authUser) {
+      return sendJson(res, 401, {
+        error: "Authentication required to flag tracks. Please sign in with Spotify or Google.",
+        authRequired: true,
+      });
+    }
+
     if (!checkRateLimit(clientIp, "report", MAX_REPORT_PER_MIN)) {
       return sendJson(res, 429, {
         error: "Too many submissions from your IP. Please try again in a minute.",
@@ -303,6 +436,11 @@ async function requestHandler(req, res) {
         title: cleanTitle,
         platform: cleanPlatform,
         reason: cleanReason,
+        reportedBy: {
+          id: authUser.userId,
+          name: authUser.name,
+          provider: authUser.provider,
+        },
       });
       return sendJson(res, 201, {
         success: true,
@@ -315,11 +453,19 @@ async function requestHandler(req, res) {
     }
   }
 
-  // API: Remove / Revoke Community AI Report (Unflag)
+  // API: Remove / Revoke Community AI Report (Unflag - Protected by Authentication)
   if (
     (pathname.startsWith("/api/unflag") && req.method === "POST") ||
     (pathname.startsWith("/api/report") && req.method === "DELETE")
   ) {
+    const authUser = getUserFromRequest(req);
+    if (!authUser) {
+      return sendJson(res, 401, {
+        error: "Authentication required. Please sign in.",
+        authRequired: true,
+      });
+    }
+
     try {
       const body = await parseJsonBody(req);
       const cleanArtist = sanitizeInput(body.artist, 120);
@@ -393,12 +539,39 @@ async function requestHandler(req, res) {
 }
 
 if (require.main === module) {
-  const server = http.createServer(requestHandler);
-  server.listen(PORT, () => {
-    console.log(
-      `🎵 IsThereAIInMyPlaylist server running at http://localhost:${PORT}`
-    );
-  });
+  let portToTry = parseInt(PORT, 10) || 3000;
+  const maxAttempts = 10;
+  let attempts = 0;
+
+  function startListening(port) {
+    const server = http.createServer(requestHandler);
+
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE" && attempts < maxAttempts) {
+        attempts++;
+        console.warn(
+          `⚠️ Port ${port} is already in use by another process. Trying port ${port + 1}...`
+        );
+        startListening(port + 1);
+      } else {
+        console.error("❌ Failed to start server:", err.message || err);
+        process.exit(1);
+      }
+    });
+
+    server.listen(port, () => {
+      console.log(
+        `🎵 IsThereAIInMyPlaylist server running at http://localhost:${port}`
+      );
+      if (port !== 3000) {
+        console.log(
+          `ℹ️ (Poznámka: Port 3000 byl obsazený, server běží na http://localhost:${port})`
+        );
+      }
+    });
+  }
+
+  startListening(portToTry);
 }
 
 module.exports = requestHandler;
