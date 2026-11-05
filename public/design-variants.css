@@ -1,0 +1,941 @@
+/* ==========================================================================
+   ISTHEREAIINMYPLAYLIST - 3 DISTINCT DESIGN & PERSONA VARIANTS
+   Variant 1: [data-design="cyber"]  -> Humanist Audio Archive (Anti-AI Craft)
+   Variant 2: [data-design="modern"] -> Modern Clean Streaming (Spotify & Apple Music Pro)
+   Variant 3: [data-design="analog"] -> Retro Hi-Fi Studio Console (70s Mastering Deck)
+   Default:   No attribute           -> Classic Neo-Brutalist Technical Forensics
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   FLOATING DESIGN SWITCHER DOCK
+   -------------------------------------------------------------------------- */
+.design-switcher-dock {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(18, 17, 16, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s ease;
+}
+
+.design-switcher-dock:hover {
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.75);
+}
+
+.dock-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #a39c91;
+  padding: 4px 10px 4px 4px;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.dock-title-icon {
+  font-size: 0.95rem;
+}
+
+.dock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #cfc8be;
+  font-family: var(--sans, sans-serif);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dock-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.dock-btn.active {
+  color: #ffffff;
+  font-weight: 800;
+  background: #ea580c;
+  border-color: #f97316;
+  box-shadow: 0 3px 12px rgba(234, 88, 12, 0.4);
+  transform: scale(1.03);
+}
+
+.dock-btn[data-variant="modern"].active {
+  background: #10b981;
+  border-color: #34d399;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.4);
+}
+
+.dock-btn[data-variant="analog"].active {
+  background: #d97706;
+  border-color: #fbbf24;
+  box-shadow: 0 3px 12px rgba(217, 119, 6, 0.4);
+}
+
+.dock-btn[data-variant="classic"].active {
+  background: #27272a;
+  border-color: #52525b;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dock-btn-badge {
+  font-family: var(--mono, monospace);
+  font-size: 0.6rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.dock-showcase-link {
+  display: inline-flex;
+  align-items: center;
+  color: #fed7aa;
+  font-family: var(--mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  margin-left: 6px;
+  border: 1px dashed rgba(254, 215, 170, 0.4);
+  transition: all 0.15s ease;
+}
+
+.dock-showcase-link:hover {
+  background: rgba(254, 215, 170, 0.2);
+  color: #ffffff;
+  border-color: #fed7aa;
+}
+
+@media (max-width: 860px) {
+  .design-switcher-dock {
+    bottom: 12px;
+    width: 95%;
+    max-width: 480px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 6px 8px;
+  }
+}
+
+/* ==========================================================================
+   VARIANT 1: HUMANIST AUDIO ARCHIVE (ANTI-AI CRAFT)
+   [data-design="cyber"], [data-design="humanist"]
+   Aesthetic: Bespoke, warm, human-crafted music archive (Pitchfork / Bandcamp).
+   Deep warm espresso, warm linen cards, terracotta & forest sage, zero AI slop.
+   ========================================================================== */
+html[data-design="cyber"],
+html[data-design="humanist"],
+html[data-design="cyber"] body,
+html[data-design="humanist"] body {
+  --bg-base: #141311;
+  --bg-surface: #1d1a18;
+  --bg-surface-2: #26221f;
+  --bg-elevated: #302c28;
+  --bg-row-hover: #24201d;
+  --ink: #faf7f2;
+  --border: rgba(255, 245, 230, 0.08);
+  --border-strong: rgba(255, 245, 230, 0.2);
+  --text-primary: #faf7f2;
+  --text-secondary: #b8b0a5;
+  --text-muted: #787268;
+  --accent: #ea580c;
+  --accent-dim: rgba(234, 88, 12, 0.12);
+  --danger: #dc2626;
+  --danger-dim: rgba(220, 38, 38, 0.12);
+  --warn: #d97706;
+  --warn-dim: rgba(217, 119, 6, 0.12);
+  --safe: #16a34a;
+  --safe-dim: rgba(22, 163, 74, 0.12);
+  --info: #0284c7;
+  --shadow-hard: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-hard-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  background-color: #141311 !important;
+  background-image: none !important;
+  color: #faf7f2 !important;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -0.015em;
+}
+
+/* Humanist: Topbar */
+html[data-design="cyber"] .topbar,
+html[data-design="humanist"] .topbar {
+  background: #171513 !important;
+  border-bottom: 1px solid rgba(255, 245, 230, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-design="cyber"] .logo-name,
+html[data-design="humanist"] .logo-name {
+  color: #faf7f2 !important;
+  font-weight: 800;
+  font-family: "Space Grotesk", sans-serif !important;
+  letter-spacing: -0.03em;
+  text-shadow: none !important;
+}
+
+html[data-design="cyber"] .version-tag,
+html[data-design="humanist"] .version-tag {
+  background: #24201d !important;
+  border: 1px solid rgba(255, 245, 230, 0.1) !important;
+  color: #d4cdc3 !important;
+  font-family: "Inter", sans-serif !important;
+  border-radius: 9999px !important;
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  padding: 4px 12px !important;
+  box-shadow: none !important;
+}
+
+/* Humanist: Buttons */
+html[data-design="cyber"] .btn,
+html[data-design="humanist"] .btn {
+  border-radius: 8px !important;
+  font-family: "Inter", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.1px;
+  box-shadow: none !important;
+  clip-path: none !important;
+  transition: all 0.18s ease !important;
+}
+
+html[data-design="cyber"] .btn-outline,
+html[data-design="humanist"] .btn-outline {
+  background: #201c19 !important;
+  border: 1px solid rgba(255, 245, 230, 0.12) !important;
+  color: #faf7f2 !important;
+}
+
+html[data-design="cyber"] .btn-outline:hover,
+html[data-design="humanist"] .btn-outline:hover {
+  background: #2d2824 !important;
+  border-color: rgba(255, 245, 230, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+html[data-design="cyber"] .btn-solid,
+html[data-design="humanist"] .btn-solid {
+  background: #faf7f2 !important;
+  color: #141311 !important;
+  border: 1px solid rgba(255, 245, 230, 0.2) !important;
+  font-weight: 700 !important;
+}
+
+html[data-design="cyber"] .btn-solid:hover,
+html[data-design="humanist"] .btn-solid:hover {
+  background: #ede8e0 !important;
+  transform: translateY(-1px);
+}
+
+html[data-design="cyber"] .btn-accent,
+html[data-design="humanist"] .btn-accent {
+  background: #ea580c !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35) !important;
+}
+
+html[data-design="cyber"] .btn-accent:hover,
+html[data-design="humanist"] .btn-accent:hover {
+  background: #c2410c !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45) !important;
+}
+
+/* Humanist: Scanner Panel (Warm Editorial Card) */
+html[data-design="cyber"] .scanner-panel,
+html[data-design="humanist"] .scanner-panel {
+  background: #1d1a18 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  padding: 36px 36px 28px !important;
+  position: relative;
+}
+
+html[data-design="cyber"] .scanner-panel::before,
+html[data-design="humanist"] .scanner-panel::before {
+  display: none !important;
+}
+
+html[data-design="cyber"] .eyebrow,
+html[data-design="humanist"] .eyebrow {
+  background: rgba(234, 88, 12, 0.12) !important;
+  color: #ea580c !important;
+  border: 1px solid rgba(234, 88, 12, 0.25) !important;
+  border-radius: 9999px !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: none !important;
+  padding: 3px 12px !important;
+}
+
+html[data-design="cyber"] .page-title,
+html[data-design="humanist"] .page-title {
+  color: #faf7f2 !important;
+  font-family: "Space Grotesk", sans-serif !important;
+  font-size: 2.35rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  margin-top: 10px;
+}
+
+html[data-design="cyber"] .scanner-lead,
+html[data-design="humanist"] .scanner-lead {
+  color: #b8b0a5 !important;
+  font-size: 0.98rem !important;
+  line-height: 1.6 !important;
+  max-width: 820px !important;
+}
+
+html[data-design="cyber"] .mode-switcher,
+html[data-design="humanist"] .mode-switcher {
+  background: #141311 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 9999px !important;
+  padding: 4px !important;
+  display: inline-flex;
+}
+
+html[data-design="cyber"] .mode-tab,
+html[data-design="humanist"] .mode-tab {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  color: #9c9488 !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  padding: 7px 16px !important;
+  text-transform: none !important;
+}
+
+html[data-design="cyber"] .mode-tab.active,
+html[data-design="humanist"] .mode-tab.active {
+  background: #2a2522 !important;
+  color: #faf7f2 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-design="cyber"] .query-input-wrap,
+html[data-design="humanist"] .query-input-wrap {
+  background: #131211 !important;
+  border: 1.5px solid rgba(255, 245, 230, 0.12) !important;
+  border-radius: 10px !important;
+  height: 54px !important;
+  padding: 4px 8px 4px 18px !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-design="cyber"] .query-input-wrap:focus-within,
+html[data-design="humanist"] .query-input-wrap:focus-within {
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-design="cyber"] .query-prefix,
+html[data-design="humanist"] .query-prefix {
+  color: #ea580c !important;
+  font-family: "Inter", sans-serif !important;
+  font-weight: 700;
+  font-size: 0.85rem !important;
+  text-shadow: none !important;
+}
+
+html[data-design="cyber"] #playlistUrlInput,
+html[data-design="humanist"] #playlistUrlInput {
+  color: #faf7f2 !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.95rem !important;
+}
+
+/* Humanist: Sample Buttons */
+html[data-design="cyber"] .sample-label,
+html[data-design="humanist"] .sample-label {
+  color: #8c857b !important;
+  font-family: "Inter", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.74rem !important;
+  text-transform: none !important;
+}
+
+html[data-design="cyber"] .sample-btn,
+html[data-design="humanist"] .sample-btn {
+  background: #25211e !important;
+  border: 1px solid rgba(255, 245, 230, 0.1) !important;
+  border-radius: 9999px !important;
+  color: #c7bfb4 !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.76rem !important;
+  font-weight: 500 !important;
+  padding: 6px 14px !important;
+}
+
+html[data-design="cyber"] .sample-btn:hover,
+html[data-design="humanist"] .sample-btn:hover {
+  background: #332d29 !important;
+  border-color: #ea580c !important;
+  color: #faf7f2 !important;
+  box-shadow: none !important;
+  transform: translateY(-1px);
+}
+
+/* Humanist: Loading State */
+html[data-design="cyber"] .loading-panel,
+html[data-design="humanist"] .loading-panel {
+  background: #1d1a18 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-design="cyber"] .spinner-square,
+html[data-design="humanist"] .spinner-square {
+  background: #ea580c !important;
+  border: none !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+html[data-design="cyber"] .progress-track,
+html[data-design="humanist"] .progress-track {
+  background: #131211 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 9999px !important;
+}
+
+html[data-design="cyber"] .progress-fill,
+html[data-design="humanist"] .progress-fill {
+  background: #ea580c !important;
+  box-shadow: none !important;
+  border-radius: 9999px !important;
+}
+
+/* Humanist: Target & Verdict */
+html[data-design="cyber"] .report-header-bar,
+html[data-design="humanist"] .report-header-bar {
+  background: #1d1a18 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-design="cyber"] .target-thumb,
+html[data-design="humanist"] .target-thumb {
+  border: 1px solid rgba(255, 245, 230, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-design="cyber"] .verdict-summary-box,
+html[data-design="humanist"] .verdict-summary-box {
+  background: #141311 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-left: 6px solid #b8b0a5 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+html[data-design="cyber"] .verdict-summary-box.status-danger,
+html[data-design="humanist"] .verdict-summary-box.status-danger {
+  border-left-color: #dc2626 !important;
+  background: rgba(220, 38, 38, 0.08) !important;
+}
+
+html[data-design="cyber"] .verdict-summary-box.status-safe,
+html[data-design="humanist"] .verdict-summary-box.status-safe {
+  border-left-color: #16a34a !important;
+  background: rgba(22, 163, 74, 0.08) !important;
+}
+
+html[data-design="cyber"] .status-indicator,
+html[data-design="humanist"] .status-indicator {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Humanist: Telemetry Grid */
+html[data-design="cyber"] .metric-cell,
+html[data-design="humanist"] .metric-cell {
+  background: #1d1a18 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+  position: relative;
+  padding: 18px 20px !important;
+}
+
+html[data-design="cyber"] .metric-cell::after,
+html[data-design="humanist"] .metric-cell::after {
+  display: none !important;
+}
+
+html[data-design="cyber"] .metric-cell .metric-key,
+html[data-design="humanist"] .metric-cell .metric-key {
+  color: #9c9488 !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  text-transform: none !important;
+}
+
+html[data-design="cyber"] .metric-cell .metric-val,
+html[data-design="humanist"] .metric-cell .metric-val {
+  font-family: "Space Grotesk", sans-serif !important;
+  font-size: 2.1rem !important;
+  font-weight: 800 !important;
+  color: #faf7f2 !important;
+  text-shadow: none !important;
+  margin: 4px 0 !important;
+}
+
+html[data-design="cyber"] .metric-cell.cell-danger,
+html[data-design="humanist"] .metric-cell.cell-danger {
+  border-color: rgba(220, 38, 38, 0.25) !important;
+  background: rgba(220, 38, 38, 0.05) !important;
+}
+html[data-design="cyber"] .metric-cell.cell-danger .metric-val,
+html[data-design="humanist"] .metric-cell.cell-danger .metric-val {
+  color: #ef4444 !important;
+}
+
+html[data-design="cyber"] .metric-cell.cell-safe,
+html[data-design="humanist"] .metric-cell.cell-safe {
+  border-color: rgba(22, 163, 74, 0.25) !important;
+  background: rgba(22, 163, 74, 0.05) !important;
+}
+html[data-design="cyber"] .metric-cell.cell-safe .metric-val,
+html[data-design="humanist"] .metric-cell.cell-safe .metric-val {
+  color: #22c55e !important;
+}
+
+/* Humanist: Table & Cards */
+html[data-design="cyber"] .ratio-strip-card,
+html[data-design="humanist"] .ratio-strip-card,
+html[data-design="cyber"] .results-workspace,
+html[data-design="humanist"] .results-workspace,
+html[data-design="cyber"] .modal-card,
+html[data-design="humanist"] .modal-card,
+html[data-design="cyber"] .method-box,
+html[data-design="humanist"] .method-box {
+  background: #1d1a18 !important;
+  border: 1px solid rgba(255, 245, 230, 0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-design="cyber"] .table-head,
+html[data-design="humanist"] .table-head {
+  background: #171513 !important;
+  border-bottom: 1px solid rgba(255, 245, 230, 0.1) !important;
+  color: #9c9488 !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+html[data-design="cyber"] .track-row-wrap,
+html[data-design="humanist"] .track-row-wrap {
+  border-bottom: 1px solid rgba(255, 245, 230, 0.06) !important;
+  transition: background 0.15s ease;
+}
+
+html[data-design="cyber"] .track-row-wrap:hover,
+html[data-design="humanist"] .track-row-wrap:hover {
+  background: #25211e !important;
+}
+
+html[data-design="cyber"] .track-row-wrap.row-ai,
+html[data-design="humanist"] .track-row-wrap.row-ai {
+  background: rgba(220, 38, 38, 0.06) !important;
+  border-left: 3px solid #dc2626 !important;
+}
+
+html[data-design="cyber"] .score-pill.pill-danger,
+html[data-design="humanist"] .score-pill.pill-danger {
+  background: rgba(220, 38, 38, 0.14) !important;
+  border: 1px solid rgba(220, 38, 38, 0.3) !important;
+  color: #ef4444 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+}
+
+html[data-design="cyber"] .score-pill.pill-safe,
+html[data-design="humanist"] .score-pill.pill-safe {
+  background: rgba(22, 163, 74, 0.14) !important;
+  border: 1px solid rgba(22, 163, 74, 0.3) !important;
+  color: #22c55e !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+}
+
+html[data-design="cyber"] .modal-card,
+html[data-design="humanist"] .modal-card {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(255, 245, 230, 0.12) !important;
+  background: #1d1a18 !important;
+  border-radius: 14px !important;
+}
+
+html[data-design="cyber"] .modal-header,
+html[data-design="humanist"] .modal-header {
+  border-bottom: 1px solid rgba(255, 245, 230, 0.08) !important;
+  color: #faf7f2 !important;
+}
+
+html[data-design="cyber"] .modal-close,
+html[data-design="humanist"] .modal-close {
+  background: #25211e !important;
+  border: 1px solid rgba(255, 245, 230, 0.1) !important;
+  color: #b8b0a5 !important;
+  border-radius: 6px !important;
+}
+
+html[data-design="cyber"] .footer,
+html[data-design="humanist"] .footer {
+  border-top: 1px solid rgba(255, 245, 230, 0.06) !important;
+  background: #11100e !important;
+  color: #787268 !important;
+}
+
+/* ==========================================================================
+   VARIANT 2: MODERN CLEAN STREAMING SAAS (SPOTIFY & APPLE PRO)
+   [data-design="modern"]
+   ========================================================================== */
+html[data-design="modern"],
+html[data-design="modern"] body {
+  --bg-base: #0a0d14;
+  --bg-surface: #121722;
+  --bg-surface-2: #192030;
+  --bg-elevated: #222c42;
+  --bg-row-hover: #171e2c;
+  --ink: #ffffff;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #1db954;
+  --accent-dim: rgba(29, 185, 84, 0.15);
+  --danger: #f43f5e;
+  --danger-dim: rgba(244, 63, 94, 0.15);
+  --warn: #f59e0b;
+  --warn-dim: rgba(245, 158, 11, 0.15);
+  --safe: #1db954;
+  --safe-dim: rgba(29, 185, 84, 0.15);
+  --info: #3b82f6;
+  --shadow-hard: 0 14px 36px rgba(0, 0, 0, 0.5);
+  --shadow-hard-sm: 0 4px 16px rgba(0, 0, 0, 0.35);
+
+  background-color: #0a0d14 !important;
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(29, 185, 84, 0.14) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.14) 0%, transparent 40%) !important;
+  background-attachment: fixed !important;
+  color: #f8fafc !important;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html[data-design="modern"] .topbar {
+  background: rgba(10, 13, 20, 0.82) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(20px);
+}
+
+html[data-design="modern"] .logo-name {
+  color: #ffffff !important;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+html[data-design="modern"] .version-tag {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+  border-radius: 9999px !important;
+  padding: 4px 12px !important;
+  font-size: 0.65rem !important;
+}
+
+html[data-design="modern"] .btn {
+  border-radius: 9999px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px;
+  box-shadow: none !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-design="modern"] .btn-outline {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-design="modern"] .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+html[data-design="modern"] .btn-solid {
+  background: #ffffff !important;
+  color: #0a0d14 !important;
+  border: none !important;
+  font-weight: 700 !important;
+}
+
+html[data-design="modern"] .btn-solid:hover {
+  background: #f1f5f9 !important;
+  transform: translateY(-2px);
+}
+
+html[data-design="modern"] .btn-accent {
+  background: #1db954 !important;
+  color: #000000 !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 6px 20px rgba(29, 185, 84, 0.35) !important;
+}
+
+html[data-design="modern"] .btn-accent:hover {
+  background: #1ed760 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(29, 185, 84, 0.45) !important;
+}
+
+html[data-design="modern"] .scanner-panel,
+html[data-design="modern"] .ratio-strip-card,
+html[data-design="modern"] .results-workspace,
+html[data-design="modern"] .modal-card,
+html[data-design="modern"] .method-box {
+  background: rgba(18, 23, 34, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(18px);
+}
+
+html[data-design="modern"] .eyebrow {
+  background: rgba(29, 185, 84, 0.15) !important;
+  color: #1ed760 !important;
+  border: 1px solid rgba(29, 185, 84, 0.25) !important;
+  border-radius: 9999px !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.8px;
+}
+
+html[data-design="modern"] .mode-switcher {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 9999px !important;
+  padding: 4px !important;
+  display: inline-flex;
+}
+
+html[data-design="modern"] .mode-tab {
+  border-radius: 9999px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #94a3b8 !important;
+  font-size: 0.74rem !important;
+  padding: 8px 18px !important;
+  transition: all 0.2s ease;
+}
+
+html[data-design="modern"] .mode-tab.active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-design="modern"] .query-input-wrap {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  padding: 6px 20px !important;
+  height: 54px !important;
+  backdrop-filter: blur(10px);
+}
+
+html[data-design="modern"] .query-input-wrap:focus-within {
+  border-color: #1db954 !important;
+  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.25) !important;
+}
+
+html[data-design="modern"] .query-prefix {
+  color: #94a3b8 !important;
+  font-size: 0.78rem !important;
+}
+
+html[data-design="modern"] .sample-btn {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #94a3b8 !important;
+  padding: 6px 14px !important;
+}
+
+html[data-design="modern"] .sample-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+html[data-design="modern"] .metric-cell {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+html[data-design="modern"] .metric-cell:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+html[data-design="modern"] .metric-cell .metric-val {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+html[data-design="modern"] .metric-cell.cell-danger {
+  border-color: rgba(244, 63, 94, 0.3) !important;
+  background: rgba(244, 63, 94, 0.06) !important;
+}
+html[data-design="modern"] .metric-cell.cell-danger .metric-val {
+  color: #f43f5e !important;
+}
+
+html[data-design="modern"] .metric-cell.cell-safe {
+  border-color: rgba(29, 185, 84, 0.3) !important;
+  background: rgba(29, 185, 84, 0.06) !important;
+}
+html[data-design="modern"] .metric-cell.cell-safe .metric-val {
+  color: #1ed760 !important;
+}
+
+html[data-design="modern"] .filter-tab {
+  border-radius: 9999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #94a3b8 !important;
+}
+
+html[data-design="modern"] .filter-tab.active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+html[data-design="modern"] .score-pill {
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  padding: 4px 12px !important;
+}
+
+/* ==========================================================================
+   VARIANT 3: RETRO HI-FI / ANALOG VINYL STUDIO
+   [data-design="analog"]
+   ========================================================================== */
+html[data-design="analog"],
+html[data-design="analog"] body {
+  --bg-base: #141210;
+  --bg-surface: #1e1b17;
+  --bg-surface-2: #28241f;
+  --bg-elevated: #332d26;
+  --bg-row-hover: #231f1a;
+  --ink: #f5eedf;
+  --border: #443c32;
+  --border-strong: #d97706;
+  --text-primary: #fbf6ec;
+  --text-secondary: #c9bdae;
+  --text-muted: #857868;
+  --accent: #f59e0b;
+  --accent-dim: rgba(245, 158, 11, 0.15);
+  --danger: #dc2626;
+  --danger-dim: rgba(220, 38, 38, 0.16);
+  --warn: #d97706;
+  --warn-dim: rgba(217, 119, 6, 0.16);
+  --safe: #15803d;
+  --safe-dim: rgba(21, 128, 61, 0.16);
+  --info: #0284c7;
+  --shadow-hard: 3px 3px 0px #080706;
+  --shadow-hard-sm: 2px 2px 0px #080706;
+
+  background-color: #141210 !important;
+  background-image: 
+    radial-gradient(#383127 1px, transparent 1px),
+    linear-gradient(180deg, rgba(245, 158, 11, 0.04) 0%, transparent 400px) !important;
+  background-size: 24px 24px, 100% 100% !important;
+  color: #fbf6ec !important;
+  font-family: "Space Grotesk", Georgia, -apple-system, sans-serif;
+}
+
+html[data-design="analog"] .topbar {
+  background: #191613 !important;
+  border-bottom: 2px solid #52473a !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-design="analog"] .logo-name {
+  color: #f59e0b !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+html[data-design="analog"] .btn-accent {
+  background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%) !important;
+  border: 1.5px solid #d97706 !important;
+  color: #141210 !important;
+  font-weight: 800 !important;
+  border-radius: 4px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-design="analog"] .metric-cell .metric-val {
+  font-family: "JetBrains Mono", monospace !important;
+  color: #fbbf24 !important;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}

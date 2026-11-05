@@ -559,9 +559,9 @@ async function requestHandler(req, res) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
     const cacheHeader =
-      ext === ".woff2" || ext === ".woff" || ext === ".png" || ext === ".svg" || ext === ".ico"
+      ext === ".woff2" || ext === ".woff" || ext === ".png" || ext === ".ico"
         ? "public, max-age=31536000, immutable"
-        : "public, max-age=3600";
+        : "no-cache, no-store, must-revalidate";
     res.writeHead(200, {
       ...SECURITY_HEADERS,
       "Content-Type": contentType,

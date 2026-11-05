@@ -60,11 +60,19 @@
         var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
         var theme = stored ? stored : (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("data-theme", theme);
+
+        var params = new URLSearchParams(window.location.search);
+        var urlDesign = params.get("design");
+        var storedDesign = urlDesign || localStorage.getItem("design-variant") || "cyber";
+        if (storedDesign && storedDesign !== "classic") {
+          document.documentElement.setAttribute("data-design", storedDesign);
+        }
       } catch (e) {}
     })();
   </script>
   <link rel="stylesheet" href="/fonts.css" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=2" />
+  <link rel="stylesheet" href="/design-variants.css?v=2" />
 </head>
 <body>
   <header class="topbar">
@@ -74,10 +82,13 @@
           <img src="/favicon.svg" alt="" width="20" height="20" style="display:block;border-radius:4px" />
           <span class="logo-name">isthereaiinmyplaylist</span>
         </a>
-        <span class="version-tag">ENGINE v3.0 // LIVE ONLINE DB + FULL PLAYLIST</span>
+        <span class="version-tag">HUMAN MUSIC ARCHIVE // 9,500+ TRACKED PROFILES</span>
       </div>
 
       <div class="topbar-right">
+        <a href="/design-showcase.html" class="btn btn-outline" title="Zobrazit srovnání 3 nových designových variant" style="border-style:dashed;">
+          <span>🎨 3 DESIGNY</span>
+        </a>
         <button id="themeToggleBtn" class="btn btn-outline theme-toggle-btn" type="button" aria-label="Přepnout motiv (světlý / tmavý)" title="Přepnout motiv">
           <span class="theme-toggle-label">DARK</span>
         </button>
@@ -105,8 +116,8 @@
     <section class="scanner-panel">
       <div class="scanner-header">
         <div>
-          <div class="eyebrow">CATALOG &amp; METADATA FORENSICS</div>
-          <h1 class="page-title">Playlist, Track &amp; Artist Inspector</h1>
+          <div class="eyebrow">🌿 INDIE MUSIC ARCHIVE • KEEP MUSIC HUMAN</div>
+          <h1 class="page-title">Is There AI in Your Playlist?</h1>
         </div>
         <div class="supported-sources">
           <span class="source-tag"><i class="dot dot-spotify"></i>SPOTIFY</span>
@@ -116,28 +127,28 @@
       </div>
 
       <p class="scanner-lead">
-        Inspect an entire <strong>public playlist</strong>, a <strong>single song</strong>, or an <strong>artist profile</strong> by pasting a <strong>Spotify, Apple Music, or YouTube link</strong>. Cross-references live online AI music directories (<strong>Soul Over AI / Zoundhub</strong>, <strong>Spotify AI Blocker</strong>, <strong>MusicBrainz AI Registry</strong> — 9,500+ indexed AI artists) alongside <strong>Apple iTunes</strong> and <strong>Deezer</strong> catalog forensics.
+        A community music archive created to protect authentic musicians from synthetic stream-farms. Paste any public playlist, single song, or artist profile link from <strong>Spotify, Apple Music, or YouTube</strong> to verify real human discographies.
       </p>
 
       <!-- Target Mode Switcher -->
       <div class="mode-switcher" id="modeSwitcher">
         <button type="button" class="mode-tab active" data-mode="auto">
-          AUTO-DETECT (ANY LINK)
+          Auto-Detect (Any Link)
         </button>
         <button type="button" class="mode-tab" data-mode="playlist">
-          PLAYLIST / ALBUM URL
+          Playlist / Album URL
         </button>
         <button type="button" class="mode-tab" data-mode="track">
-          SINGLE TRACK URL
+          Single Track URL
         </button>
         <button type="button" class="mode-tab" data-mode="artist">
-          ARTIST PROFILE URL
+          Artist Profile URL
         </button>
       </div>
 
       <form id="analyzeForm" class="query-bar">
         <div class="query-input-wrap">
-          <span id="queryPrefix" class="query-prefix">URL //</span>
+          <span id="queryPrefix" class="query-prefix">Link →</span>
           <input
             type="url"
             id="playlistUrlInput"
@@ -148,26 +159,26 @@
           <button type="button" id="clearInputBtn" class="clear-btn hidden" title="Clear input">CLEAR</button>
         </div>
         <button type="submit" id="analyzeBtn" class="btn btn-accent">
-          RUN INSPECTION
+          Inspect Playlist →
         </button>
       </form>
 
       <div class="sample-bar">
-        <span class="sample-label">LOAD TEST VECTOR:</span>
+        <span class="sample-label">Try real sample:</span>
         <button type="button" class="sample-btn" data-url="demo:mixed" data-mode="playlist">
-          [PLAYLIST: AI + HUMAN MIX]
+          🎧 Mixed Playlist (Human + AI)
         </button>
         <button type="button" class="sample-btn" data-url="https://open.spotify.com/track/7bxaFZ1O3cHkgLKMsdC3xR" data-mode="track">
-          [TRACK: TAME IMPALA - LOSER]
+          🎸 Tame Impala (Verified Human)
         </button>
         <button type="button" class="sample-btn" data-url="https://open.spotify.com/artist/3JNr31WfX56vgwBuIcdOt4" data-mode="artist">
-          [ARTIST: ENDEL (AI SOUNDSCAPES)]
+          🤖 Endel (AI Generated)
         </button>
         <button type="button" class="sample-btn" data-url="https://open.spotify.com/artist/5INjqkS1o8h1imAzPqGZBb" data-mode="artist">
-          [ARTIST: TAME IMPALA]
+          🎸 Tame Impala Artist
         </button>
         <button type="button" class="sample-btn" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M" data-mode="playlist">
-          [SPOTIFY: TODAYS_TOP_HITS]
+          🔥 Today's Top Hits
         </button>
       </div>
     </section>
@@ -635,6 +646,33 @@
     import { inject } from "@vercel/analytics";
     inject();
   </script>
-  <script src="/app.js"></script>
+  <!-- Floating Design Variant Switcher Dock -->
+  <aside class="design-switcher-dock" id="designSwitcherDock" aria-label="Výběr designové varianty">
+    <div class="dock-title">
+      <span class="dock-title-icon">🎨</span>
+      <span>DESIGN:</span>
+    </div>
+    <button type="button" class="dock-btn" data-variant="classic">
+      <span class="dock-btn-badge">ORIGINAL</span>
+      <span>Classic</span>
+    </button>
+    <button type="button" class="dock-btn" data-variant="cyber">
+      <span class="dock-btn-badge">VAR 1</span>
+      <span>🌿 Humanist (Anti-AI)</span>
+    </button>
+    <button type="button" class="dock-btn" data-variant="modern">
+      <span class="dock-btn-badge">VAR 2</span>
+      <span>✨ Modern SaaS</span>
+    </button>
+    <button type="button" class="dock-btn" data-variant="analog">
+      <span class="dock-btn-badge">VAR 3</span>
+      <span>📻 Retro Hi-Fi</span>
+    </button>
+    <a href="/design-showcase.html" class="dock-showcase-link" title="Zobrazit srovnání všech 3 designů">
+      Srovnání ↗
+    </a>
+  </aside>
+
+  <script src="/app.js?v=2"></script>
 </body>
 </html>

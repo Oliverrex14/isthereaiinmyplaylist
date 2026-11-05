@@ -195,6 +195,128 @@ try {
   }
 } catch {}
 
+// Design Variant Switcher (3 Radically Distinct Visual & Persona Styles)
+const ORIGINAL_COPY = {
+  eyebrow: "CATALOG & METADATA FORENSICS",
+  pageTitle: "Playlist, Track & Artist Inspector",
+  scannerLead: "Inspect an entire <strong>public playlist</strong>, a <strong>single song</strong>, or an <strong>artist profile</strong> by pasting a <strong>Spotify, Apple Music, or YouTube link</strong>. Cross-references live online AI music directories (<strong>Soul Over AI / Zoundhub</strong>, <strong>Spotify AI Blocker</strong>, <strong>MusicBrainz AI Registry</strong> — 9,500+ indexed AI artists) alongside <strong>Apple iTunes</strong> and <strong>Deezer</strong> catalog forensics.",
+  analyzeBtn: "RUN INSPECTION",
+  queryPrefix: "URL //",
+  sampleLabel: "LOAD TEST VECTOR:",
+  samples: [
+    "[PLAYLIST: AI + HUMAN MIX]",
+    "[TRACK: TAME IMPALA - LOSER]",
+    "[ARTIST: ENDEL (AI SOUNDSCAPES)]",
+    "[ARTIST: TAME IMPALA]",
+    "[SPOTIFY: TODAYS_TOP_HITS]"
+  ]
+};
+
+const VARIANT_COPY = {
+  cyber: {
+    eyebrow: "🌿 INDIE MUSIC ARCHIVE • KEEP MUSIC HUMAN",
+    pageTitle: "Is There AI in Your Playlist?",
+    scannerLead: "A community music archive created to protect authentic musicians from synthetic stream-farms. Paste any public playlist, track, or artist link from Spotify, Apple Music, or YouTube to verify real human discographies.",
+    analyzeBtn: "Inspect Playlist →",
+    queryPrefix: "Link →",
+    sampleLabel: "Try real sample:",
+    samples: [
+      "🎧 Mixed Playlist (Human + AI)",
+      "🎸 Tame Impala (Verified Human)",
+      "🤖 Endel (AI Generated)",
+      "🎸 Tame Impala Artist",
+      "🔥 Today's Top Hits"
+    ]
+  },
+  modern: {
+    eyebrow: "STREAMING CATALOG INTELLIGENCE",
+    pageTitle: "Playlist & Track Forensics",
+    scannerLead: "Scan Spotify, Apple Music, and YouTube playlists to detect AI-generated music tracks using release cadence, catalog verification, and audio stream telemetry.",
+    analyzeBtn: "Analyze Playlist",
+    queryPrefix: "URL //",
+    sampleLabel: "Quick presets:",
+    samples: [
+      "Mixed Playlist",
+      "Tame Impala - Loser",
+      "Endel (AI Soundscape)",
+      "Tame Impala",
+      "Today's Top Hits"
+    ]
+  },
+  analog: {
+    eyebrow: "STUDIO CONSOLE // CHANNEL A // 15 IPS",
+    pageTitle: "Mastering Deck & Tape Forensics",
+    scannerLead: "Mastering-grade acoustic forensics cross-referencing pre-2023 discographies, release cadence, and catalog entropy against modern synthetic music generators.",
+    analyzeBtn: "Engage Analysis",
+    queryPrefix: "TAPE //",
+    sampleLabel: "Reference tapes:",
+    samples: [
+      "[TAPE 01: MIXED ARCHIVE]",
+      "[TAPE 02: TAME IMPALA]",
+      "[TAPE 03: SYNTHETIC FARMS]",
+      "[TAPE 04: TAME IMPALA]",
+      "[TAPE 05: BILLBOARD HITS]"
+    ]
+  }
+};
+
+function updateDesignSwitcherUI(variant) {
+  const activeVar = variant || "cyber";
+  document.querySelectorAll(".dock-btn").forEach((btn) => {
+    const isTarget = btn.getAttribute("data-variant") === activeVar;
+    btn.classList.toggle("active", isTarget);
+  });
+}
+
+function applyDesignVariant(variant, save = true) {
+  const effective = (!variant || variant === "classic") ? "classic" : variant;
+  if (effective === "classic") {
+    document.documentElement.removeAttribute("data-design");
+  } else {
+    document.documentElement.setAttribute("data-design", effective);
+  }
+  if (save) {
+    try {
+      localStorage.setItem("design-variant", effective);
+    } catch {}
+  }
+  updateDesignSwitcherUI(effective);
+
+  // Dynamically update copy & tone of voice to match persona
+  const copy = (effective === "classic" || !VARIANT_COPY[effective]) ? ORIGINAL_COPY : VARIANT_COPY[effective];
+  const eyebrowEl = document.querySelector(".scanner-header .eyebrow");
+  const titleEl = document.querySelector(".page-title");
+  const leadEl = document.querySelector(".scanner-lead");
+  const analyzeBtnEl = document.getElementById("analyzeBtn");
+  const queryPrefixEl = document.getElementById("queryPrefix");
+  const sampleLabelEl = document.querySelector(".sample-label");
+  const sampleBtns = document.querySelectorAll(".sample-btn");
+
+  if (eyebrowEl) eyebrowEl.textContent = copy.eyebrow;
+  if (titleEl) titleEl.textContent = copy.pageTitle;
+  if (leadEl) leadEl.innerHTML = copy.scannerLead;
+  if (analyzeBtnEl) analyzeBtnEl.textContent = copy.analyzeBtn;
+  if (queryPrefixEl) queryPrefixEl.textContent = copy.queryPrefix;
+  if (sampleLabelEl) sampleLabelEl.textContent = copy.sampleLabel;
+  sampleBtns.forEach((btn, i) => {
+    if (copy.samples && copy.samples[i]) btn.textContent = copy.samples[i];
+  });
+}
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".dock-btn");
+  if (!btn) return;
+  const variant = btn.getAttribute("data-variant") || "cyber";
+  applyDesignVariant(variant, true);
+});
+
+try {
+  const params = new URLSearchParams(window.location.search);
+  const urlVariant = params.get("design");
+  const initialVariant = urlVariant || localStorage.getItem("design-variant") || "cyber";
+  applyDesignVariant(initialVariant, false);
+} catch {}
+
 let currentTracks = [];
 let activeReportingTrack = null;
 let activeFilter = "all";
