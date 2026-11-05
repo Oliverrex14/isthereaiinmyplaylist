@@ -342,8 +342,14 @@ async function requestHandler(req, res) {
     // Production OAuth 2.0 flow
     const protocol = req.headers["x-forwarded-proto"] || "http";
     const host = req.headers.host || `localhost:${PORT}`;
-    const redirectUri = `${protocol}://${host}/api/auth/callback?provider=${provider}`;
-    const oauthUrl = getOAuthUrl(provider, redirectUri, redirectBack);
+    const baseUrl = process.env.APP_URL
+      ? process.env.APP_URL.replace(/\/+$/, "")
+      : `${protocol}://${host}`;
+
+    // Clean standard OAuth 2.0 redirect URI (no query params in redirect_uri for Spotify compatibility)
+    const redirectUri = `${baseUrl}/api/auth/callback`;
+    const statePayload = JSON.stringify({ p: provider, r: redirectBack });
+    const oauthUrl = getOAuthUrl(provider, redirectUri, statePayload);
 
     if (!oauthUrl) {
       return sendJson(res, 400, {
@@ -360,9 +366,22 @@ async function requestHandler(req, res) {
 
   // API: OAuth Callback
   if (pathname === "/api/auth/callback" && req.method === "GET") {
-    const provider = parsedUrl?.searchParams?.get("provider") || "spotify";
+    let provider = parsedUrl?.searchParams?.get("provider");
     const code = parsedUrl?.searchParams?.get("code");
-    const state = parsedUrl?.searchParams?.get("state") || "/";
+    const rawState = parsedUrl?.searchParams?.get("state") || "";
+    let redirectBack = "/";
+
+    if (rawState) {
+      try {
+        const decoded = decodeURIComponent(rawState);
+        const parsedState = JSON.parse(decoded);
+        if (parsedState.p) provider = provider || parsedState.p;
+        if (parsedState.r) redirectBack = parsedState.r;
+      } catch {
+        if (rawState.startsWith("/")) redirectBack = rawState;
+      }
+    }
+    provider = provider || "spotify";
 
     if (!code) {
       res.writeHead(302, { Location: "/?auth_error=no_code" });
@@ -372,7 +391,15 @@ async function requestHandler(req, res) {
     try {
       const protocol = req.headers["x-forwarded-proto"] || "http";
       const host = req.headers.host || `localhost:${PORT}`;
-      const redirectUri = `${protocol}://${host}/api/auth/callback?provider=${provider}`;
+      const baseUrl = process.env.APP_URL
+        ? process.env.APP_URL.replace(/\/+$/, "")
+        : `${protocol}://${host}`;
+
+      // Match clean redirect URI or fallback to query-based if provider was explicit in callback URL
+      const redirectUri = parsedUrl?.searchParams?.has("provider")
+        ? `${baseUrl}/api/auth/callback?provider=${provider}`
+        : `${baseUrl}/api/auth/callback`;
+
       const userProfile = await exchangeOAuthCode(provider, code, redirectUri);
       const token = signSession(userProfile);
       const cookieHeader = serializeSessionCookie(token);
@@ -380,7 +407,7 @@ async function requestHandler(req, res) {
       res.writeHead(302, {
         ...SECURITY_HEADERS,
         "Set-Cookie": cookieHeader,
-        Location: state,
+        Location: redirectBack,
       });
       return res.end();
     } catch (err) {
