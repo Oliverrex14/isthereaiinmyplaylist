@@ -1160,3 +1160,26 @@ window.addEventListener("keydown", (e) => {
     if (loginModal) loginModal.classList.add("hidden");
   }
 });
+
+// Real-time visitor ping for Vercel Runtime Logs
+(function recordVisitorPing() {
+  try {
+    const payload = JSON.stringify({
+      referrer: document.referrer || "direct",
+      screen: `${window.innerWidth}x${window.innerHeight}`,
+      lang: navigator.language || "unknown",
+      path: window.location.pathname,
+    });
+    if (navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: "application/json" });
+      navigator.sendBeacon("/api/visit", blob);
+    } else {
+      fetch("/api/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true,
+      }).catch(() => {});
+    }
+  } catch (_) {}
+})();

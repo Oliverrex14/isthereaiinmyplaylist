@@ -186,6 +186,30 @@ async function requestHandler(req, res) {
   }
 
   const clientIp = getClientIp(req);
+  const country = (req.headers["x-vercel-ip-country"] || "XX").toUpperCase();
+  const city = req.headers["x-vercel-ip-city"] ? decodeURIComponent(req.headers["x-vercel-ip-city"]) : "";
+  const userAgent = req.headers["user-agent"] || "";
+  const isMobile = /mobile|iphone|android|ipad/i.test(userAgent);
+  const deviceType = isMobile ? "📱 Mobile" : "💻 Desktop";
+
+  // API: Real-time Visitor Heartbeat for Vercel Logs
+  if (pathname === "/api/visit" && (req.method === "POST" || req.method === "GET")) {
+    let body = {};
+    if (req.method === "POST") {
+      try {
+        body = await parseJsonBody(req);
+      } catch (_) {}
+    }
+    const referrer = sanitizeInput(body.referrer || req.headers["referer"] || "direct", 300);
+    const screen = sanitizeInput(body.screen || "", 30);
+    const lang = sanitizeInput(body.lang || req.headers["accept-language"]?.split(",")[0] || "", 20);
+
+    console.log(
+      `[VISITOR] 🟢 New visit | 🌍 ${country}${city ? ` (${city})` : ""} | 🔗 Ref: ${referrer || "direct"} | ${deviceType}${screen ? ` (${screen})` : ""} | 🗣️ ${lang} | IP: ${clientIp}`
+    );
+
+    return sendJson(res, 200, { ok: true });
+  }
 
   // Google Search Console HTML file verification
   if (pathname === "/googlecdef3fd0e19d3000.html" && req.method === "GET") {
@@ -251,6 +275,10 @@ async function requestHandler(req, res) {
         });
       }
 
+      console.log(
+        `[SCAN START] 🔍 ${country}${city ? ` (${city})` : ""} | Target: "${rawInput}" (${modeHint}) | IP: ${clientIp}`
+      );
+      const scanStartTime = Date.now();
       const db = await ensureOnlineAiDatabase();
       const rawTarget = await fetchPlaylist(
         rawInput,
@@ -258,8 +286,16 @@ async function requestHandler(req, res) {
         db.knownAiArtists || []
       );
       const analyzed = await analyzePlaylistTracks(rawTarget);
+      const scanDuration = Date.now() - scanStartTime;
+
+      console.log(
+        `[SCAN DONE] ✅ "${analyzed.playlistName || rawInput}" | 🎵 Tracks: ${analyzed.tracksCount} | 🔴 AI: ${analyzed.syntheticPercentage}% | 🟢 Human: ${analyzed.humanPercentage}% | ⏱️ ${scanDuration}ms`
+      );
       return sendJson(res, 200, analyzed);
     } catch (err) {
+      console.warn(
+        `[SCAN FAILED] ⚠️ Target: "${rawInput}" | Error: ${err.message}`
+      );
       return sendJson(res, 400, {
         error: err.message || "Failed to analyze the target.",
       });
