@@ -7,6 +7,7 @@ const {
   ensureOnlineAiDatabase,
   getDatabaseOverview,
   saveCommunityReport,
+  removeCommunityReport,
 } = require("./lib/aiDetector");
 
 const PORT = process.env.PORT || 3000;
@@ -310,6 +311,37 @@ async function requestHandler(req, res) {
     } catch (err) {
       return sendJson(res, 400, {
         error: err.message || "Error saving report.",
+      });
+    }
+  }
+
+  // API: Remove / Revoke Community AI Report (Unflag)
+  if (
+    (pathname.startsWith("/api/unflag") && req.method === "POST") ||
+    (pathname.startsWith("/api/report") && req.method === "DELETE")
+  ) {
+    try {
+      const body = await parseJsonBody(req);
+      const cleanArtist = sanitizeInput(body.artist, 120);
+      const cleanTitle = sanitizeInput(body.title, 150);
+
+      if (!cleanArtist && !cleanTitle) {
+        return sendJson(res, 400, {
+          error: "Please provide an artist name or track title to unflag.",
+        });
+      }
+
+      const result = await removeCommunityReport({
+        artist: cleanArtist,
+        title: cleanTitle,
+      });
+      return sendJson(res, 200, {
+        success: true,
+        ...result,
+      });
+    } catch (err) {
+      return sendJson(res, 400, {
+        error: err.message || "Error removing report.",
       });
     }
   }

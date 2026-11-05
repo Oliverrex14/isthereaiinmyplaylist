@@ -1096,6 +1096,18 @@ body {
   color: #ffffff;
 }
 
+.flag-btn.flagged {
+  background: var(--danger-dim, rgba(239, 68, 68, 0.15));
+  border-color: var(--danger, #ef4444);
+  color: var(--danger, #ef4444);
+}
+
+.flag-btn.flagged:hover {
+  background: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
+  color: #ffffff;
+}
+
 /* Signals Strip + Expandable Forensics Drawer */
 .signals-strip {
   display: flex;

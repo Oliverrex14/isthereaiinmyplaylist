@@ -104,6 +104,7 @@ try {
 } catch {}
 
 let currentTracks = [];
+let activeReportingTrack = null;
 let activeFilter = "all";
 let activeMode = "auto";
 let activePlayingUrl = null;
@@ -301,6 +302,15 @@ async function runAnalysis(url, mode = activeMode) {
 
 function renderResults(data) {
   currentTracks = data.tracks || [];
+  currentTracks.forEach((t) => {
+    t._originalState = {
+      aiProbability: t.aiProbability,
+      verdict: t.verdict,
+      verdictLabel: t.verdictLabel,
+      signals: Array.isArray(t.signals) ? [...t.signals] : [],
+      forensics: t.forensics ? { ...t.forensics } : {},
+    };
+  });
   activeFilter = "all";
   trackFilterInput.value = "";
   sortSelect.value = "index";
@@ -556,15 +566,14 @@ function renderTracksList() {
               </button>
               <button
                 type="button"
-                class="flag-btn"
+                class="flag-btn ${track.flaggedBySession ? "flagged" : ""}"
                 data-track-id="${escapeHtml(track.id)}"
                 data-artist="${escapeHtml(track.artist)}"
                 data-title="${escapeHtml(track.title)}"
                 data-platform="${escapeHtml(track.platform || "Spotify")}"
-                title="Flag song &amp; add to shared global AI database"
-                ${track.flaggedBySession ? 'disabled style="background:var(--danger);border-color:var(--danger);color:#fff"' : ""}
+                title="${track.flaggedBySession ? "Click to remove AI flag &amp; restore original scan" : "Report this track as suspected AI"}"
               >
-                ${track.flaggedBySession ? "FLAGGED ✓" : "FLAG"}
+                ${track.flaggedBySession ? "UNFLAG ↺" : "FLAG"}
               </button>
             </div>
           </div>
@@ -662,7 +671,7 @@ function renderTracksList() {
     });
   });
 
-  // Bind 1-click flag buttons: immediately adds song/artist to the shared global database visible to everyone
+  // Bind flag / unflag buttons: allows opening report modal to confirm or unflagging existing flags
   tracksList.querySelectorAll(".flag-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       if (btn.disabled) return;
@@ -676,52 +685,66 @@ function renderTracksList() {
         ? "YouTube"
         : "Spotify";
 
-      btn.disabled = true;
-      btn.textContent = "SAVING...";
+      const targetTrack = currentTracks.find((t) => String(t.id) === String(trackId));
+      if (!targetTrack) return;
 
-      try {
-        const res = await fetch("/api/report", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            artist,
-            title,
-            platform,
-            reason: `Flagged during playlist inspection (${platform})`,
-          }),
-        });
+      // 1. IF ALREADY FLAGGED IN SESSION: allow immediate unflag / undo
+      if (targetTrack.flaggedBySession) {
+        const confirmUndo = window.confirm(
+          `Remove your AI flag for "${title || artist}" and restore its original scan score?`
+        );
+        if (!confirmUndo) return;
 
-        if (res.ok) {
-          // Immediately update track in current view to FLAGGED AI
-          const targetTrack = currentTracks.find((t) => String(t.id) === String(trackId));
-          if (targetTrack) {
-            targetTrack.flaggedBySession = true;
-            targetTrack.aiProbability = 99;
-            targetTrack.verdict = "ai";
-            targetTrack.verdictLabel = "FLAGGED AI";
-            if (targetTrack.forensics) {
-              targetTrack.forensics.matchedDbSource = "Community Flagged";
+        btn.disabled = true;
+        btn.textContent = "REMOVING...";
+
+        try {
+          const res = await fetch("/api/unflag", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ artist, title }),
+          });
+
+          if (res.ok) {
+            targetTrack.flaggedBySession = false;
+            if (targetTrack._originalState) {
+              targetTrack.aiProbability = targetTrack._originalState.aiProbability;
+              targetTrack.verdict = targetTrack._originalState.verdict;
+              targetTrack.verdictLabel = targetTrack._originalState.verdictLabel;
+              targetTrack.signals = [...targetTrack._originalState.signals];
+              targetTrack.forensics = { ...targetTrack._originalState.forensics };
             }
-            targetTrack.signals = [
-              {
-                type: "danger",
-                category: "COMMUNITY DB",
-                text: `Added to shared global AI database: "${title}" — ${artist}`,
-              },
-              ...(targetTrack.signals || []).filter((s) => s.category !== "PASS"),
-            ];
+            updateSummaryCountersFromTracks();
+            renderTracksList();
+            await refreshDatabaseBadge();
+          } else {
+            btn.disabled = false;
+            btn.textContent = "UNFLAG ↺";
           }
-          updateSummaryCountersFromTracks();
-          renderTracksList();
-          await refreshDatabaseBadge();
-        } else {
+        } catch {
           btn.disabled = false;
-          btn.textContent = "FLAG";
+          btn.textContent = "UNFLAG ↺";
         }
-      } catch {
-        btn.disabled = false;
-        btn.textContent = "FLAG";
+        return;
       }
+
+      // 2. IF NOT FLAGGED: open report modal pre-filled to prevent accidental 1-click false positives
+      activeReportingTrack = targetTrack;
+      const artistInput = document.getElementById("reportArtist");
+      const titleInput = document.getElementById("reportTitle");
+      const platInput = document.getElementById("reportPlatform");
+      const reasonInput = document.getElementById("reportReason");
+
+      if (artistInput) artistInput.value = artist;
+      if (titleInput) titleInput.value = title;
+      if (platInput) platInput.value = platform;
+      if (reasonInput) {
+        reasonInput.value = "";
+        reasonInput.placeholder = "e.g., Suno/Udio vocal artifacts, mass upload velocity...";
+      }
+
+      reportModal.classList.remove("hidden");
+      if (reasonInput) reasonInput.focus();
     });
   });
 }
@@ -767,18 +790,37 @@ trackFilterInput.addEventListener("input", renderTracksList);
 sortSelect.addEventListener("change", renderTracksList);
 
 // Modals
-openReportBtn.addEventListener("click", () => reportModal.classList.remove("hidden"));
-closeReportModal.addEventListener("click", () => reportModal.classList.add("hidden"));
-cancelReportBtn.addEventListener("click", () => reportModal.classList.add("hidden"));
+const closeReportModalHandler = () => {
+  reportModal.classList.add("hidden");
+  activeReportingTrack = null;
+};
+openReportBtn.addEventListener("click", () => {
+  activeReportingTrack = null;
+  reportForm.reset();
+  reportModal.classList.remove("hidden");
+});
+closeReportModal.addEventListener("click", closeReportModalHandler);
+cancelReportBtn.addEventListener("click", closeReportModalHandler);
 
 reportForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const artist = document.getElementById("reportArtist").value.trim();
+  const title = document.getElementById("reportTitle").value.trim();
+  const platform = document.getElementById("reportPlatform").value;
+  const reason = document.getElementById("reportReason").value.trim();
+
   const payload = {
-    artist: document.getElementById("reportArtist").value.trim(),
-    title: document.getElementById("reportTitle").value.trim(),
-    platform: document.getElementById("reportPlatform").value,
-    reason: document.getElementById("reportReason").value.trim(),
+    artist,
+    title,
+    platform,
+    reason: reason || "Flagged as AI-generated by community user",
   };
+
+  const submitBtn = reportForm.querySelector("button[type='submit']");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "SAVING...";
+  }
 
   try {
     const res = await fetch("/api/report", {
@@ -787,15 +829,44 @@ reportForm.addEventListener("submit", async (e) => {
       body: JSON.stringify(payload),
     });
     if (res.ok) {
+      if (activeReportingTrack) {
+        activeReportingTrack.flaggedBySession = true;
+        activeReportingTrack.aiProbability = Math.max(
+          activeReportingTrack.aiProbability || 0,
+          85
+        );
+        activeReportingTrack.verdict = "ai";
+        activeReportingTrack.verdictLabel = "FLAGGED AI";
+        if (activeReportingTrack.forensics) {
+          activeReportingTrack.forensics.matchedDbSource = "Community Flagged";
+        }
+        activeReportingTrack.signals = [
+          {
+            type: "danger",
+            category: "COMMUNITY REPORT",
+            text: `Flagged by you: "${title || activeReportingTrack.title}" — ${
+              artist || activeReportingTrack.artist
+            } (Pending moderation)`,
+          },
+          ...(activeReportingTrack.signals || []).filter(
+            (s) => s.category !== "PASS"
+          ),
+        ];
+        updateSummaryCountersFromTracks();
+        renderTracksList();
+        activeReportingTrack = null;
+      }
       reportForm.reset();
       reportModal.classList.add("hidden");
       await refreshDatabaseBadge();
-      if (playlistUrlInput.value.trim()) {
-        runAnalysis(playlistUrlInput.value.trim());
-      }
     }
   } catch {
     // ignore
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "SUBMIT REPORT";
+    }
   }
 });
 
