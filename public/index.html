@@ -61,12 +61,7 @@
         var theme = stored ? stored : (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("data-theme", theme);
 
-        var params = new URLSearchParams(window.location.search);
-        var urlDesign = params.get("design");
-        var storedDesign = urlDesign || localStorage.getItem("design-variant") || "cyber";
-        if (storedDesign && storedDesign !== "classic") {
-          document.documentElement.setAttribute("data-design", storedDesign);
-        }
+        document.documentElement.setAttribute("data-design", "cyber");
       } catch (e) {}
     })();
   </script>
@@ -86,9 +81,6 @@
       </div>
 
       <div class="topbar-right">
-        <a href="/design-showcase.html" class="btn btn-outline" title="Zobrazit srovnání 3 nových designových variant" style="border-style:dashed;">
-          <span>🎨 3 DESIGNY</span>
-        </a>
         <button id="themeToggleBtn" class="btn btn-outline theme-toggle-btn" type="button" aria-label="Přepnout motiv (světlý / tmavý)" title="Přepnout motiv">
           <span class="theme-toggle-label">DARK</span>
         </button>
@@ -341,36 +333,6 @@
 
       <!-- Track List -->
       <div id="tracksList" class="tracks-table-body"></div>
-    </section>
-
-    <!-- Technical Methodology -->
-    <section class="methodology-section">
-      <div class="section-head">
-        <span class="eyebrow">MEASUREMENT VECTORS</span>
-        <h2>How the 8-Point Forensics Pipeline Scores Each Track</h2>
-      </div>
-      <div class="method-grid">
-        <div class="method-box">
-          <div class="method-num">VECTOR 01 // TIMELINE</div>
-          <h3>Pre-AI Era Discography</h3>
-          <p>Cross-checks Apple iTunes and Deezer release timestamps. Artists with verifiable catalog entries prior to 2023 pre-date modern commercial music generators (Suno/Udio).</p>
-        </div>
-        <div class="method-box">
-          <div class="method-num">VECTOR 02 // VELOCITY</div>
-          <h3>Release Cadence &amp; Single Ratio</h3>
-          <p>Measures total releases in the trailing 12 months and calculates the Single-to-Album ratio. Synthetic stream farms typically upload 15–50+ single-track releases per year.</p>
-        </div>
-        <div class="method-box">
-          <div class="method-num">VECTOR 03 // REGISTRY</div>
-          <h3>MusicBrainz &amp; Copyright (℗/©)</h3>
-          <p>Verifies whether the artist has a documented entity ID in the MusicBrainz database and inspects ℗/© phonographic copyright strings for anonymous DIY distributors.</p>
-        </div>
-        <div class="method-box">
-          <div class="method-num">VECTOR 04 // TELEMETRY</div>
-          <h3>Audio Stream &amp; Duration Window</h3>
-          <p>Flags track durations clustering around 2:00 (120s) and 4:00 (240s) model context limits, and computes byte-level Shannon entropy (H), zero-crossing rate, and frame variance on preview streams.</p>
-        </div>
-      </div>
     </section>
   </main>
 
@@ -646,33 +608,6 @@
     import { inject } from "@vercel/analytics";
     inject();
   </script>
-  <!-- Floating Design Variant Switcher Dock -->
-  <aside class="design-switcher-dock" id="designSwitcherDock" aria-label="Výběr designové varianty">
-    <div class="dock-title">
-      <span class="dock-title-icon">🎨</span>
-      <span>DESIGN:</span>
-    </div>
-    <button type="button" class="dock-btn" data-variant="classic">
-      <span class="dock-btn-badge">ORIGINAL</span>
-      <span>Classic</span>
-    </button>
-    <button type="button" class="dock-btn" data-variant="cyber">
-      <span class="dock-btn-badge">VAR 1</span>
-      <span>🌿 Humanist (Anti-AI)</span>
-    </button>
-    <button type="button" class="dock-btn" data-variant="modern">
-      <span class="dock-btn-badge">VAR 2</span>
-      <span>✨ Modern SaaS</span>
-    </button>
-    <button type="button" class="dock-btn" data-variant="analog">
-      <span class="dock-btn-badge">VAR 3</span>
-      <span>📻 Retro Hi-Fi</span>
-    </button>
-    <a href="/design-showcase.html" class="dock-showcase-link" title="Zobrazit srovnání všech 3 designů">
-      Srovnání ↗
-    </a>
-  </aside>
-
   <script src="/app.js?v=2"></script>
 </body>
 </html>
