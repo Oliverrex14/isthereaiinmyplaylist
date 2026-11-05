@@ -214,7 +214,7 @@ function isSupportedLink(input) {
   const cand = match ? match[0] : str;
   return (
     /^https?:\/\//i.test(cand) ||
-    /^(open\.spotify\.com|spotify\.link|music\.apple\.com|www\.youtube\.com|youtube\.com|youtu\.be|music\.youtube\.com)\//i.test(
+    /^(open\.spotify\.com|spotify\.link|music\.apple\.com|www\.youtube\.com|m\.youtube\.com|youtube\.com|youtu\.be|music\.youtube\.com)\//i.test(
       cand
     )
   );
