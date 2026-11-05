@@ -477,9 +477,9 @@ function renderResults(data) {
         : "Flagged items match known synthetic generators (Suno/Udio) or confirmed AI artist catalogs.";
   } else if (s.suspiciousCount > 0) {
     overallVerdictBanner.classList.add("status-warn");
-    verdictHeadline.textContent = `0 CONFIRMED AI // ${s.suspiciousCount} UNVERIFIED / SUSPICIOUS`;
+    verdictHeadline.textContent = `0 CONFIRMED AI // ${s.suspiciousCount} INCONCLUSIVE`;
     verdictDescription.textContent =
-      "No explicit AI tags, but several tracks lack pre-2024 history or MusicBrainz records.";
+      "No confirmed synthetic matches; items show conflicting signals or unverified post-2023 catalog entries.";
   } else {
     overallVerdictBanner.classList.add("status-safe");
     verdictHeadline.textContent = "100% VERIFIED HUMAN CATALOG";
