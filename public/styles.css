@@ -1360,12 +1360,24 @@ body {
   background: var(--bg-base);
   border: 1.5px solid var(--ink);
   border-radius: 4px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.db-item.db-item-community {
+  border-left: 4px solid var(--danger);
+  background: var(--danger-dim);
+}
+
+.mono-tag.mono-tag-community {
+  background: var(--danger) !important;
+  color: #ffffff !important;
 }
 
 .db-item-title {
   font-family: var(--mono);
   font-weight: 700;
   font-size: 0.86rem;
+  color: var(--text-primary);
 }
 
 .db-item-reason {
@@ -1971,6 +1983,27 @@ body {
   box-shadow: 8px 8px 0px #000000;
 }
 
+[data-theme="dark"] .db-item {
+  background: var(--bg-surface-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .db-item.db-item-community {
+  border-color: var(--border);
+  border-left: 4px solid var(--danger);
+  background: rgba(255, 71, 71, 0.15);
+}
+
+[data-theme="dark"] .mono-tag.mono-tag-community {
+  background: var(--danger) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .sort-select option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
 [data-theme="dark"] .footer-link:hover {
   background: var(--ink);
   color: #121316;
@@ -2120,8 +2153,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-dim);
-  border: 1px solid var(--ink);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
   padding: 4px 10px;
   border-radius: 4px;
   font-family: var(--mono);

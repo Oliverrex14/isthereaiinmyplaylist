@@ -1066,13 +1066,13 @@ async function loadDatabaseModal() {
       .map((item) => {
         const isComm = String(item.source || "").includes("Community");
         return `
-        <div class="db-item" style="${isComm ? "border-left:4px solid var(--danger);background:#fff8f8" : ""}">
+        <div class="db-item ${isComm ? "db-item-community" : ""}">
           <div style="min-width:0;padding-right:10px">
             <div class="db-item-title">${escapeHtml(item.name)}</div>
             <div class="db-item-reason">${escapeHtml(item.reason)}</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
-            <span class="mono-tag" style="${isComm ? "background:var(--danger)" : ""}">${escapeHtml(item.source || item.platform)}</span>
+            <span class="mono-tag ${isComm ? "mono-tag-community" : ""}">${escapeHtml(item.source || item.platform)}</span>
             <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-muted)">${escapeHtml(item.platform)}</span>
           </div>
         </div>
