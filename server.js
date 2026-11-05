@@ -291,6 +291,23 @@ async function requestHandler(req, res) {
       console.log(
         `[SCAN DONE] ✅ "${analyzed.playlistName || rawInput}" | 🎵 Tracks: ${analyzed.tracksCount} | 🔴 AI: ${analyzed.syntheticPercentage}% | 🟢 Human: ${analyzed.humanPercentage}% | ⏱️ ${scanDuration}ms`
       );
+
+      // Detailed track-level output in Vercel logs so Oliver can see exact songs and diagnostic reasons
+      if (Array.isArray(analyzed.tracks) && analyzed.tracks.length > 0) {
+        const sampleTracks = analyzed.tracks.slice(0, 20);
+        for (const t of sampleTracks) {
+          const icon = t.verdict === "ai" ? "🔴" : t.verdict === "suspicious" ? "❓" : "🟢";
+          const topSignals = Array.isArray(t.signals) && t.signals.length > 0
+            ? t.signals.map((s) => s.category).slice(0, 3).join(", ")
+            : "No specific markers";
+          console.log(
+            `  [TRACK] ${icon} "${t.title}" by ${t.artist} ➔ ${t.aiProbability}% (${t.verdictLabel || t.verdict}) [${topSignals}]`
+          );
+        }
+        if (analyzed.tracks.length > 20) {
+          console.log(`  ... and ${analyzed.tracks.length - 20} more tracks in playlist.`);
+        }
+      }
       return sendJson(res, 200, analyzed);
     } catch (err) {
       console.warn(
