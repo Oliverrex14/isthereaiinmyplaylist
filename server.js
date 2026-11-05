@@ -404,6 +404,10 @@ async function requestHandler(req, res) {
       const token = signSession(userProfile);
       const cookieHeader = serializeSessionCookie(token);
 
+      console.log(
+        `[AUTH LOGIN] User signed in: "${userProfile.name}" <${userProfile.email || "no-email"}> via ${userProfile.provider.toUpperCase()} (ID: ${userProfile.userId}) at ${new Date().toISOString()}`
+      );
+
       res.writeHead(302, {
         ...SECURITY_HEADERS,
         "Set-Cookie": cookieHeader,
@@ -411,6 +415,7 @@ async function requestHandler(req, res) {
       });
       return res.end();
     } catch (err) {
+      console.error("[AUTH ERROR] OAuth callback failed:", err.message);
       res.writeHead(302, {
         Location: `/?auth_error=${encodeURIComponent(err.message)}`,
       });
@@ -420,6 +425,12 @@ async function requestHandler(req, res) {
 
   // API: Logout
   if (pathname === "/api/auth/logout" && req.method === "POST") {
+    const authUser = getUserFromRequest(req);
+    if (authUser) {
+      console.log(
+        `[AUTH LOGOUT] User signed out: "${authUser.name}" <${authUser.email || "no-email"}> via ${authUser.provider.toUpperCase()}`
+      );
+    }
     const clearCookie = serializeSessionCookie(null, true);
     res.writeHead(200, {
       ...SECURITY_HEADERS,
@@ -469,6 +480,11 @@ async function requestHandler(req, res) {
           provider: authUser.provider,
         },
       });
+
+      console.log(
+        `[COMMUNITY REPORT] New AI flag by "${authUser.name}" (${authUser.provider}): "${cleanArtist} - ${cleanTitle}" [Reason: ${cleanReason || "Flagged"}]`
+      );
+
       return sendJson(res, 201, {
         success: true,
         report: saved,
@@ -508,6 +524,11 @@ async function requestHandler(req, res) {
         artist: cleanArtist,
         title: cleanTitle,
       });
+
+      console.log(
+        `[COMMUNITY UNFLAG] Flag removed by "${authUser.name}" (${authUser.provider}): "${cleanArtist} - ${cleanTitle}"`
+      );
+
       return sendJson(res, 200, {
         success: true,
         ...result,
