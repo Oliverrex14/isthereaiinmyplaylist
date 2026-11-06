@@ -810,9 +810,21 @@ function renderResults(data) {
   const avgDurFormatted = s.avgDurationSec
     ? `${Math.floor(s.avgDurationSec / 60)}:${String(s.avgDurationSec % 60).padStart(2, "0")}`
     : "N/A";
-  statExtraTelemetry.textContent = `MEDIAN FOLLOWERS: ${formatCompactNumber(
-    s.medianFollowers
-  )} // MEAN DURATION: ${avgDurFormatted} // POST-2024 DEBUTS: ${s.post2024Count ?? 0}`;
+  const extraBits = [
+    `MEDIAN FOLLOWERS: ${formatCompactNumber(s.medianFollowers)}`,
+    `MEAN DURATION: ${avgDurFormatted}`,
+    `POST-2024 DEBUTS: ${s.post2024Count ?? 0}`,
+  ];
+  if (s.promptLeakCount > 0) {
+    extraBits.push(`PROMPT LEAKS: ${s.promptLeakCount}`);
+  }
+  if (s.ghostNetworkCount > 0) {
+    extraBits.push(`GHOST FARMS: ${s.ghostNetworkCount}`);
+  }
+  if (s.syntheticAudioCount > 0) {
+    extraBits.push(`SYNTHETIC AUDIO: ${s.syntheticAudioCount}`);
+  }
+  statExtraTelemetry.textContent = extraBits.join(" // ");
 
   // Verdict Banner
   overallVerdictBanner.className = "verdict-summary-box";
