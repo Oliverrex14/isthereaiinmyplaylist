@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 420" width="1400" height="420">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgHGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#191612"/>
+      <stop offset="100%" stop-color="#0e0d0b"/>
+    </linearGradient>
+
+    <!-- Spectrum Gradients -->
+    <linearGradient id="hGreen" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+
+    <linearGradient id="hAmber" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+
+    <linearGradient id="hRed" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+
+    <!-- Accent Gradient for Text -->
+    <linearGradient id="textAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1400" height="420" rx="32" fill="url(#bgHGrad)"/>
+  <rect x="8" y="8" width="1384" height="404" rx="26" fill="none" stroke="#2b231a" stroke-width="2"/>
+
+  <!-- Left Icon Mark -->
+  <g transform="translate(64, 46)">
+    <!-- Icon Squircle -->
+    <rect width="328" height="328" rx="80" fill="#14120f" stroke="#332a20" stroke-width="2.5"/>
+    
+    <!-- Grooves -->
+    <circle cx="164" cy="164" r="130" fill="none" stroke="#221b14" stroke-width="1.5"/>
+    <circle cx="164" cy="164" r="105" fill="none" stroke="#221b14" stroke-width="1" stroke-dasharray="6 4"/>
+    
+    <!-- Bars -->
+    <g transform="translate(0, 0)">
+      <rect x="70" y="142" width="12" height="44" rx="6" fill="url(#hGreen)"/>
+      <rect x="92" y="116" width="12" height="96" rx="6" fill="url(#hGreen)"/>
+      <rect x="114" y="88" width="12" height="152" rx="6" fill="url(#hAmber)"/>
+      <rect x="136" y="66" width="12" height="196" rx="6" fill="url(#hAmber)"/>
+      
+      <!-- Core Center Bar -->
+      <rect x="156" y="50" width="16" height="228" rx="8" fill="#ffffff"/>
+      
+      <rect x="180" y="72" width="12" height="184" rx="6" fill="#f97316"/>
+      <rect x="202" y="98" width="12" height="132" rx="6" fill="url(#hRed)"/>
+      <rect x="224" y="126" width="12" height="76" rx="6" fill="url(#hRed)"/>
+      <rect x="246" y="148" width="12" height="32" rx="6" fill="url(#hRed)"/>
+    </g>
+
+    <!-- Scan Line -->
+    <line x1="50" y1="164" x2="278" y2="164" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 4" opacity="0.7"/>
+    <circle cx="164" cy="164" r="6" fill="#14120f" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="164" cy="164" r="2.5" fill="#f59e0b"/>
+  </g>
+
+  <!-- Right Typography Section -->
+  <g transform="translate(440, 110)">
+    <!-- Pill Tagline -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="230" height="32" rx="16" fill="#1f1a14" stroke="#3d3224" stroke-width="1.2"/>
+      <circle cx="18" cy="16" r="4.5" fill="#10b981"/>
+      <text x="32" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#faf7f2" letter-spacing="1.5">KEEP MUSIC HUMAN</text>
+    </g>
+
+    <!-- Main Title -->
+    <text x="0" y="100" font-family="Georgia, Cambria, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#ffffff" letter-spacing="-1">
+      Is There AI In My Playlist?
+    </text>
+
+    <!-- Secondary Line / Domain -->
+    <g transform="translate(0, 150)">
+      <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="500" fill="#a89f91">
+        Authentic Music Verification &amp; AI Forensics
+      </text>
+      <text x="460" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="18" font-weight="700" fill="url(#textAccent)">
+        isthereaiinmyplaylist.tech
+      </text>
+    </g>
+  </g>
+</svg>

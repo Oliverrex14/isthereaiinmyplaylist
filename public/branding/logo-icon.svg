@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background Radial Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#1f1b16"/>
+      <stop offset="60%" stop-color="#12110f"/>
+      <stop offset="100%" stop-color="#0a0908"/>
+    </radialGradient>
+
+    <!-- Warm Glow Filter -->
+    <filter id="glowWarm" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Glow for Scan Line -->
+    <filter id="scanGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Gradients for Spectrum Bars -->
+    <linearGradient id="humanBarGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+
+    <linearGradient id="warmBarGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+
+    <linearGradient id="aiBarGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#2a231b" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0.35"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle App Container -->
+  <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#bgGrad)"/>
+  <rect x="32" y="32" width="960" height="960" rx="224" fill="none" stroke="#2c251d" stroke-width="6"/>
+
+  <!-- Subtle Vinyl Disc Grooves in Background -->
+  <circle cx="512" cy="512" r="380" fill="none" stroke="#1c1813" stroke-width="2"/>
+  <circle cx="512" cy="512" r="330" fill="none" stroke="#221e17" stroke-width="1.5" stroke-dasharray="12 8"/>
+  <circle cx="512" cy="512" r="280" fill="none" stroke="#1c1813" stroke-width="2"/>
+  <circle cx="512" cy="512" r="230" fill="none" stroke="#221e17" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+  <!-- Outer Pulse Ring -->
+  <circle cx="512" cy="512" r="410" fill="none" stroke="url(#ringGrad)" stroke-width="3"/>
+
+  <!-- Equalizer / Forensic Audio Spectrum Bars (Keep Music Human vs AI Detection) -->
+  <g transform="translate(0, 0)">
+    <!-- Bar 1: Green (Human Baseline) -->
+    <rect x="232" y="440" width="34" height="144" rx="17" fill="url(#humanBarGrad)"/>
+    
+    <!-- Bar 2: Green (Human Melodic) -->
+    <rect x="296" y="360" width="34" height="304" rx="17" fill="url(#humanBarGrad)"/>
+
+    <!-- Bar 3: Amber (Acoustic Resonance) -->
+    <rect x="360" y="270" width="34" height="484" rx="17" fill="url(#warmBarGrad)"/>
+
+    <!-- Bar 4: Amber/Orange (Dynamic Peaks) -->
+    <rect x="424" y="200" width="34" height="624" rx="17" fill="url(#warmBarGrad)"/>
+
+    <!-- Bar 5: Center Core (Human Master Bar) -->
+    <rect x="488" y="150" width="48" height="724" rx="24" fill="#ffffff" filter="url(#glowWarm)"/>
+    <rect x="495" y="165" width="34" height="694" rx="17" fill="#faf7f2"/>
+
+    <!-- Bar 6: Orange/Red (Suspicious Velocity) -->
+    <rect x="566" y="220" width="34" height="584" rx="17" fill="#f97316"/>
+
+    <!-- Bar 7: Red (Synthetic Frequency Flag) -->
+    <rect x="630" y="300" width="34" height="424" rx="17" fill="url(#aiBarGrad)"/>
+
+    <!-- Bar 8: Red (Stream Farm Anomaly) -->
+    <rect x="694" y="390" width="34" height="244" rx="17" fill="url(#aiBarGrad)"/>
+
+    <!-- Bar 9: Red (Ghost Audio Pattern) -->
+    <rect x="758" y="460" width="34" height="104" rx="17" fill="url(#aiBarGrad)"/>
+  </g>
+
+  <!-- Horizontal Scanning Laser / Crosshair Grid (Forensic AI Radar) -->
+  <line x1="160" y1="512" x2="864" y2="512" stroke="#f59e0b" stroke-width="4" stroke-dasharray="8 6" opacity="0.6" filter="url(#scanGlow)"/>
+  
+  <!-- Center Target Crosshair Nodes -->
+  <circle cx="512" cy="512" r="14" fill="#12110f" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="512" cy="512" r="5" fill="#f59e0b"/>
+
+  <!-- Left / Right Indicator Badges -->
+  <circle cx="249" cy="512" r="8" fill="#10b981"/>
+  <circle cx="775" cy="512" r="8" fill="#ef4444"/>
+</svg>
