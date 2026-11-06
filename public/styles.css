@@ -2257,6 +2257,43 @@ body {
   font-size: 0.68rem;
 }
 
+/* YouTube Mode for Connected User Bar */
+.spotify-user-bar.youtube-mode {
+  background: rgba(255, 0, 0, 0.08);
+  border-color: rgba(255, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .spotify-user-bar.youtube-mode {
+  background: rgba(255, 0, 0, 0.12);
+  border-color: rgba(255, 0, 0, 0.45);
+}
+
+.spotify-user-bar.youtube-mode .spotify-dot-live {
+  background: #ff0000;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.85);
+}
+
+.spotify-user-bar.youtube-mode .spotify-user-pill {
+  background: #ff0000;
+  color: #ffffff;
+}
+
+.spotify-user-bar.youtube-mode .btn-spotify-bar {
+  background: #ff0000;
+  color: #ffffff;
+  border-color: #cc0000;
+}
+
+.spotify-user-bar.youtube-mode .btn-spotify-bar:hover {
+  background: #ff2222;
+}
+
+.spotify-user-bar.youtube-mode .btn-spotify-bar .mono-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
 .spotify-login-hint {
   display: flex;
   align-items: center;
@@ -2508,6 +2545,12 @@ body {
   background: rgba(255, 179, 0, 0.12);
   border-color: rgba(255, 179, 0, 0.3);
   color: var(--warn, #e69500);
+}
+
+.pl-badge-unlisted {
+  background: rgba(147, 112, 219, 0.15);
+  border-color: rgba(147, 112, 219, 0.35);
+  color: #ba8fff;
 }
 
 .pl-badge-public {

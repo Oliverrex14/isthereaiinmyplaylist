@@ -17,7 +17,9 @@ const {
   getOAuthUrl,
   exchangeOAuthCode,
   getFreshSpotifyToken,
+  getFreshGoogleToken,
   getUserSpotifyPlaylists,
+  getUserYouTubePlaylists,
   createCleanSpotifyPlaylist,
 } = require("./lib/auth");
 
@@ -290,9 +292,14 @@ async function requestHandler(req, res) {
       const scanStartTime = Date.now();
       const authUser = getUserFromRequest(req);
       let spotifyToken = null;
+      let googleToken = null;
       if (authUser?.provider === "spotify") {
         try {
           spotifyToken = await getFreshSpotifyToken(authUser);
+        } catch (_) {}
+      } else if (authUser?.provider === "google") {
+        try {
+          googleToken = await getFreshGoogleToken(authUser);
         } catch (_) {}
       }
 
@@ -301,20 +308,27 @@ async function requestHandler(req, res) {
         rawInput,
         modeHint,
         db.knownAiArtists || [],
-        spotifyToken
+        spotifyToken,
+        googleToken
       );
 
       if (!rawTarget || !Array.isArray(rawTarget.tracks) || rawTarget.tracks.length === 0) {
         return sendJson(res, 400, {
-          error: "No playable tracks found in this playlist. If this is a private playlist, please ensure you are signed in with Spotify, or verify that the playlist contains tracks.",
+          error: "No playable tracks found in this playlist. If this is a private playlist, please ensure you are signed in with Spotify or Google, or verify that the playlist contains tracks.",
         });
       }
 
       const analyzed = await analyzePlaylistTracks(rawTarget);
       const scanDuration = Date.now() - scanStartTime;
+      const totalTracks = analyzed.summary?.totalTracks || analyzed.tracks?.length || 0;
+      const aiPct = analyzed.summary?.aiPercentage ?? 0;
+      const humanPct =
+        totalTracks > 0
+          ? Math.round(((analyzed.summary?.humanCount || 0) / totalTracks) * 100)
+          : 100;
 
       console.log(
-        `[SCAN DONE] ✅ "${analyzed.playlistName || rawInput}" | 🎵 Tracks: ${analyzed.tracksCount} | 🔴 AI: ${analyzed.syntheticPercentage}% | 🟢 Human: ${analyzed.humanPercentage}% | ⏱️ ${scanDuration}ms`
+        `[SCAN DONE] ✅ "${analyzed.title || rawInput}" | 🎵 Tracks: ${totalTracks} | 🔴 AI: ${aiPct}% | 🟢 Human: ${humanPct}% | ⏱️ ${scanDuration}ms`
       );
 
       // Detailed track-level output in Vercel logs so Oliver can see exact songs and diagnostic reasons
@@ -401,6 +415,10 @@ async function requestHandler(req, res) {
                 user.provider === "spotify" &&
                 (user.spotifyAccessToken || user.isLocalDev)
               ),
+              hasYouTubePlaylists: Boolean(
+                user.provider === "google" &&
+                (user.googleAccessToken || user.isLocalDev)
+              ),
             }
           : null,
         providers: {
@@ -445,6 +463,32 @@ async function requestHandler(req, res) {
       console.error("[SPOTIFY PLAYLISTS ERROR]", err.message);
       return sendJson(res, 400, {
         error: err.message || "Failed to fetch Spotify playlists.",
+      }, req);
+    }
+  }
+
+  // API: Get Current User's YouTube / YouTube Music Playlists (supports GET & HEAD)
+  if (pathname === "/api/youtube/playlists" && (req.method === "GET" || req.method === "HEAD")) {
+    const authUser = getUserFromRequest(req);
+    if (!authUser || authUser.provider !== "google") {
+      return sendJson(res, 401, {
+        error: "Google / YouTube sign-in required to view your personal playlists.",
+        authRequired: true,
+        provider: "google",
+      }, req);
+    }
+
+    try {
+      const playlists = await getUserYouTubePlaylists(authUser);
+      return sendJson(res, 200, {
+        success: true,
+        count: playlists.length,
+        playlists,
+      }, req);
+    } catch (err) {
+      console.error("[YOUTUBE PLAYLISTS ERROR]", err.message);
+      return sendJson(res, 400, {
+        error: err.message || "Failed to fetch YouTube playlists.",
       }, req);
     }
   }

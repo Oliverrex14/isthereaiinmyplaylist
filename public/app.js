@@ -63,13 +63,20 @@ const authUserName = document.getElementById("authUserName");
 const authLogoutBtn = document.getElementById("authLogoutBtn");
 
 const spotifyUserBar = document.getElementById("spotifyUserBar");
+const userBarPill = document.getElementById("userBarPill");
 const spotifyLoginHint = document.getElementById("spotifyLoginHint");
 const spotifyUserGreeting = document.getElementById("spotifyUserGreeting");
 const openMyPlaylistsBtn = document.getElementById("openMyPlaylistsBtn");
+const myPlaylistsBtnLabel = document.getElementById("myPlaylistsBtnLabel");
 const myPlaylistsCountBadge = document.getElementById("myPlaylistsCountBadge");
 const spotifyHintLoginBtn = document.getElementById("spotifyHintLoginBtn");
 
 const myPlaylistsModal = document.getElementById("myPlaylistsModal");
+const myPlaylistsProviderBadge = document.getElementById("myPlaylistsProviderBadge");
+const myPlaylistsModalTitle = document.getElementById("myPlaylistsModalTitle");
+const myPlaylistsModalDesc = document.getElementById("myPlaylistsModalDesc");
+const myPlaylistsSpinner = document.getElementById("myPlaylistsSpinner");
+const myPlaylistsLoadingText = document.getElementById("myPlaylistsLoadingText");
 const closeMyPlaylistsModal = document.getElementById("closeMyPlaylistsModal");
 const myPlaylistsSearchInput = document.getElementById("myPlaylistsSearchInput");
 const refreshMyPlaylistsBtn = document.getElementById("refreshMyPlaylistsBtn");
@@ -133,7 +140,9 @@ function updateAuthUI() {
     if (authUserAvatar) {
       authUserAvatar.src =
         currentUser.avatar ||
-        "https://open.spotifycdn.com/cdn/images/favicon32.8e66b099.png";
+        (currentUser.provider === "google"
+          ? "https://www.gstatic.com/images/branding/product/1x/avatar_square_grey_512dp.png"
+          : "https://open.spotifycdn.com/cdn/images/favicon32.8e66b099.png");
     }
     if (reportUserBadgeName) {
       reportUserBadgeName.textContent = `${currentUser.name} (${(
@@ -142,11 +151,28 @@ function updateAuthUI() {
     }
 
     if (currentUser.provider === "spotify") {
-      if (spotifyUserBar) spotifyUserBar.classList.remove("hidden");
+      if (spotifyUserBar) {
+        spotifyUserBar.classList.remove("hidden");
+        spotifyUserBar.classList.remove("youtube-mode");
+      }
+      if (userBarPill) userBarPill.textContent = "SPOTIFY CONNECTED";
+      if (myPlaylistsBtnLabel) myPlaylistsBtnLabel.textContent = "📂 SCAN MY SPOTIFY PLAYLISTS";
       if (spotifyLoginHint) spotifyLoginHint.classList.add("hidden");
       if (spotifyUserGreeting) {
         const prod = currentUser.product ? ` [${currentUser.product.toUpperCase()}]` : "";
         spotifyUserGreeting.innerHTML = `Connected as <strong>${escapeHtml(currentUser.name)}</strong>${prod}`;
+      }
+      fetchMyPlaylistsBadge();
+    } else if (currentUser.provider === "google") {
+      if (spotifyUserBar) {
+        spotifyUserBar.classList.remove("hidden");
+        spotifyUserBar.classList.add("youtube-mode");
+      }
+      if (userBarPill) userBarPill.textContent = "YOUTUBE MUSIC CONNECTED";
+      if (myPlaylistsBtnLabel) myPlaylistsBtnLabel.textContent = "📂 SCAN MY YOUTUBE PLAYLISTS";
+      if (spotifyLoginHint) spotifyLoginHint.classList.add("hidden");
+      if (spotifyUserGreeting) {
+        spotifyUserGreeting.innerHTML = `Connected as <strong>${escapeHtml(currentUser.name)}</strong> [GOOGLE / YTM]`;
       }
       fetchMyPlaylistsBadge();
     } else {
@@ -165,9 +191,14 @@ function updateAuthUI() {
 }
 
 async function fetchMyPlaylistsBadge() {
-  if (!currentUser || currentUser.provider !== "spotify") return;
+  if (!currentUser) return;
+  const isSpotify = currentUser.provider === "spotify";
+  const isGoogle = currentUser.provider === "google";
+  if (!isSpotify && !isGoogle) return;
+
+  const endpoint = isGoogle ? "/api/youtube/playlists" : "/api/spotify/playlists";
   try {
-    const res = await fetch("/api/spotify/playlists");
+    const res = await fetch(endpoint);
     if (res.ok) {
       const data = await res.json();
       userPlaylistsCache = data.playlists || [];
@@ -179,9 +210,46 @@ async function fetchMyPlaylistsBadge() {
 }
 
 async function openMyPlaylistsModalHandler() {
-  if (!currentUser || currentUser.provider !== "spotify") {
+  if (
+    !currentUser ||
+    (currentUser.provider !== "spotify" && currentUser.provider !== "google")
+  ) {
     if (loginModal) loginModal.classList.remove("hidden");
     return;
+  }
+
+  const isGoogle = currentUser.provider === "google";
+
+  if (myPlaylistsProviderBadge) {
+    if (isGoogle) {
+      myPlaylistsProviderBadge.textContent = "YOUTUBE USER LIBRARY";
+      myPlaylistsProviderBadge.style.background = "#ff0000";
+      myPlaylistsProviderBadge.style.color = "#ffffff";
+    } else {
+      myPlaylistsProviderBadge.textContent = "SPOTIFY USER LIBRARY";
+      myPlaylistsProviderBadge.style.background = "#1db954";
+      myPlaylistsProviderBadge.style.color = "#000000";
+    }
+  }
+
+  if (myPlaylistsModalTitle) {
+    myPlaylistsModalTitle.textContent = isGoogle
+      ? "📂 My YouTube Music Playlists"
+      : "📂 My Spotify Playlists";
+  }
+
+  if (myPlaylistsModalDesc) {
+    myPlaylistsModalDesc.textContent = isGoogle
+      ? "Select any personal, unlisted, or private playlist from your YouTube / YouTube Music library to scan for synthetic AI tracks with 1-click."
+      : "Select any personal or followed playlist from your Spotify library to scan for synthetic AI tracks with 1-click. Supports both public and private playlists.";
+  }
+
+  if (myPlaylistsSpinner) {
+    if (isGoogle) {
+      myPlaylistsSpinner.style.borderTopColor = "#ff0000";
+    } else {
+      myPlaylistsSpinner.style.borderTopColor = "#1db954";
+    }
   }
 
   if (myPlaylistsModal) myPlaylistsModal.classList.remove("hidden");
@@ -195,14 +263,25 @@ async function openMyPlaylistsModalHandler() {
 }
 
 async function reloadMyPlaylists() {
+  if (!currentUser) return;
+  const isGoogle = currentUser.provider === "google";
+  const endpoint = isGoogle ? "/api/youtube/playlists" : "/api/spotify/playlists";
+  const providerLabel = isGoogle ? "YouTube" : "Spotify";
+  const loginUrl = isGoogle
+    ? "/api/auth/login?provider=google"
+    : "/api/auth/login?provider=spotify";
+
   if (myPlaylistsLoading) myPlaylistsLoading.classList.remove("hidden");
+  if (myPlaylistsLoadingText) {
+    myPlaylistsLoadingText.textContent = `Loading your ${providerLabel} playlists...`;
+  }
   if (myPlaylistsContainer) myPlaylistsContainer.innerHTML = "";
 
   try {
-    const res = await fetch("/api/spotify/playlists");
+    const res = await fetch(endpoint);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Could not load Spotify playlists.");
+      throw new Error(err.error || `Could not load ${providerLabel} playlists.`);
     }
     const data = await res.json();
     userPlaylistsCache = data.playlists || [];
@@ -215,7 +294,7 @@ async function reloadMyPlaylists() {
       myPlaylistsContainer.innerHTML = `
         <div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--danger)">
           <p style="font-weight:700;margin-bottom:6px">⚠️ ${escapeHtml(err.message)}</p>
-          <a href="/api/auth/login?provider=spotify" class="btn btn-outline" style="font-size:0.75rem">Re-Authenticate Spotify</a>
+          <a href="${loginUrl}" class="btn btn-outline" style="font-size:0.75rem">Re-Authenticate ${providerLabel}</a>
         </div>
       `;
     }
@@ -226,6 +305,7 @@ async function reloadMyPlaylists() {
 
 function renderMyPlaylists(playlists) {
   if (!myPlaylistsContainer) return;
+  const isGoogle = currentUser && currentUser.provider === "google";
   const filterQuery = (myPlaylistsSearchInput?.value || "").trim().toLowerCase();
 
   const filtered = (playlists || []).filter((p) => {
@@ -238,9 +318,10 @@ function renderMyPlaylists(playlists) {
   });
 
   if (filtered.length === 0) {
+    const providerName = isGoogle ? "YouTube Music" : "Spotify";
     myPlaylistsContainer.innerHTML = `
       <div style="grid-column:1/-1;padding:36px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:0.8rem">
-        ${filterQuery ? `No playlists matching "${escapeHtml(filterQuery)}".` : "No playlists found in your Spotify library."}
+        ${filterQuery ? `No playlists matching "${escapeHtml(filterQuery)}".` : `No playlists found in your ${providerName} library.`}
       </div>
     `;
     return;
@@ -250,19 +331,29 @@ function renderMyPlaylists(playlists) {
     .map((p) => {
       const coverHtml = p.imageUrl
         ? `<img class="playlist-thumb" src="${escapeHtml(p.imageUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" />`
-        : `<div class="playlist-thumb-fallback">🎵</div>`;
+        : `<div class="playlist-thumb-fallback">${isGoogle ? "▶️" : "🎵"}</div>`;
 
-      const privacyBadge = p.public
-        ? `<span class="pl-badge pl-badge-public">🌐 Public</span>`
-        : `<span class="pl-badge pl-badge-private">🔒 Private</span>`;
+      let privacyBadge = "";
+      if (p.privacyStatus === "private" || (!p.public && p.privacyStatus !== "unlisted")) {
+        privacyBadge = `<span class="pl-badge pl-badge-private">🔒 Private</span>`;
+      } else if (p.privacyStatus === "unlisted") {
+        privacyBadge = `<span class="pl-badge pl-badge-unlisted">🔗 Unlisted</span>`;
+      } else {
+        privacyBadge = `<span class="pl-badge pl-badge-public">🌐 Public</span>`;
+      }
 
       const collBadge = p.collaborative
         ? `<span class="pl-badge">👥 Collab</span>`
         : "";
 
+      const defaultOwner = isGoogle ? "You" : "Spotify";
       const ownerBadge = p.isOwner
         ? `<span class="pl-badge">👤 By you</span>`
-        : `<span class="pl-badge">By ${escapeHtml(p.owner || "Spotify")}</span>`;
+        : `<span class="pl-badge">By ${escapeHtml(p.owner || defaultOwner)}</span>`;
+
+      const platformBadge = isGoogle
+        ? `<span class="pl-badge" style="color:#ff4e45">YouTube</span>`
+        : `<span class="pl-badge" style="color:#1db954">Spotify</span>`;
 
       return `
         <div class="playlist-card" data-url="${escapeHtml(p.url)}">
@@ -270,11 +361,12 @@ function renderMyPlaylists(playlists) {
             ${coverHtml}
             <div class="playlist-title-wrap">
               <div class="playlist-card-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
-              <div class="playlist-card-owner">${p.trackCount} tracks • ${p.isOwner ? "Created by you" : escapeHtml(p.owner || "Followed")}</div>
+              <div class="playlist-card-owner">${p.trackCount} tracks • ${p.isOwner ? "Created by you" : escapeHtml(p.owner || defaultOwner)}</div>
             </div>
           </div>
           <div class="playlist-card-badges">
             <span class="pl-badge">${p.trackCount} tracks</span>
+            ${platformBadge}
             ${privacyBadge}
             ${collBadge}
             ${ownerBadge}
