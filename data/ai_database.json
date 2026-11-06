@@ -1,6 +1,90 @@
 {
   "knownAiArtists": [
     {
+      "name": "Valhalla Orquestra",
+      "platform": "Spotify",
+      "spotifyId": "1Y31W3a9BO6QyLhEiOILTq",
+      "reason": "Confirmed AI-generated orchestral project with synthetic mass-produced catalog",
+      "confidence": 99
+    },
+    {
+      "name": "Metasymphony",
+      "platform": "Spotify",
+      "spotifyId": "6oJNZ3eGVFKlPY0sRH07d2",
+      "reason": "Confirmed AI-generated symphonic/ambient project with no human presence",
+      "confidence": 99
+    },
+    {
+      "name": "Paolo Millon",
+      "platform": "Spotify",
+      "spotifyId": "0IkGAZOxhTNf6Fjc8mlUqb",
+      "reason": "AI-generated pseudonymous music project with mass synthetic uploads",
+      "confidence": 99
+    },
+    {
+      "name": "Neon Lilith",
+      "platform": "Spotify",
+      "spotifyId": "4TIKOb33GpSmFa0d5BqvbX",
+      "reason": "Confirmed AI-generated electronic/ambient project",
+      "confidence": 99
+    },
+    {
+      "name": "John Chen Fitzgerald",
+      "platform": "Spotify",
+      "spotifyId": "3yByg6Cy5MPrG5gXHeIEDn",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Ernesto Vallini",
+      "platform": "Spotify",
+      "spotifyId": "2XIajljLY6mcqt2Ip9BGHt",
+      "reason": "AI-generated classical/instrumental ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Brittanni Kia",
+      "platform": "Spotify",
+      "spotifyId": "1kYbKoYT9sNbCZicraQqVm",
+      "reason": "AI-generated pseudonymous music project",
+      "confidence": 99
+    },
+    {
+      "name": "Michael Bremen",
+      "platform": "Spotify",
+      "spotifyId": "58hbGNoblk3APs443Yj8U4",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Gabrielle La Ville",
+      "platform": "Spotify",
+      "spotifyId": "15RTpZodsP0aaM5HNPoHQe",
+      "reason": "AI-generated acoustic/instrumental ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Massimo Lisi",
+      "platform": "Spotify",
+      "spotifyId": "7oAJ4oxQD112k96DQhvtjW",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Charles Honeywell",
+      "platform": "Spotify",
+      "spotifyId": "4JlCAnjbzadj7nowiELmZx",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Bobby Gertund",
+      "platform": "Spotify",
+      "spotifyId": "50BO4iIi0Uu52dhC3DJYEp",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
       "name": "The Velvet Sundown",
       "platform": "Spotify / Apple Music",
       "reason": "Confirmed AI-generated music project (Suno/Udio) with mass-produced catalog",
@@ -118,6 +202,62 @@
   ],
   "communityReports": [
     {
+      "id": "rep-1793998195345",
+      "artist": "Bobby Gertund",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:55.345Z"
+    },
+    {
+      "id": "rep-1793998194835",
+      "artist": "Charles Honeywell",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:54.835Z"
+    },
+    {
+      "id": "rep-1793998194308",
+      "artist": "Massimo Lisi",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:54.308Z"
+    },
+    {
+      "id": "rep-1793998193675",
+      "artist": "Gabrielle La Ville",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated acoustic/instrumental ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:53.675Z"
+    },
+    {
       "id": "rep-1793958102394",
       "artist": "Vapad",
       "title": "My Turn",
@@ -140,6 +280,118 @@
       "reason": "Confirmed Suno AI generated track",
       "reportedBy": null,
       "createdAt": "2026-11-03T09:40:42.996Z"
+    },
+    {
+      "id": "rep-1793998193016",
+      "artist": "Michael Bremen",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:53.016Z"
+    },
+    {
+      "id": "rep-1793998192464",
+      "artist": "Brittanni Kia",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous music project",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:52.464Z"
+    },
+    {
+      "id": "rep-1793998191822",
+      "artist": "Ernesto Vallini",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated classical/instrumental ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:51.822Z"
+    },
+    {
+      "id": "rep-1793998191242",
+      "artist": "John Chen Fitzgerald",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:51.242Z"
+    },
+    {
+      "id": "rep-1793998190674",
+      "artist": "Neon Lilith",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "Confirmed AI-generated electronic/ambient project",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:50.674Z"
+    },
+    {
+      "id": "rep-1793998190106",
+      "artist": "Paolo Millon",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "AI-generated pseudonymous music project with mass uploads",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:50.106Z"
+    },
+    {
+      "id": "rep-1793998189531",
+      "artist": "Metasymphony",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "Confirmed AI-generated symphonic/ambient project",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:49.532Z"
+    },
+    {
+      "id": "rep-1793998188757",
+      "artist": "Valhalla Orquestra",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "reason": "Confirmed AI-generated orchestral project (Suno/Udio)",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T20:49:48.758Z"
     }
   ]
 }
