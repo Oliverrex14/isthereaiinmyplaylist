@@ -755,7 +755,22 @@ async function handleCreateCleanPlaylist() {
       cleanSuccessModal.classList.remove("hidden");
     }
   } catch (err) {
-    alert(`Could not create playlist: ${err.message}`);
+    const msg = err.message || "Failed to create clean playlist on Spotify.";
+    if (
+      msg.includes("403") ||
+      msg.includes("permissions") ||
+      msg.includes("sign out and sign in again")
+    ) {
+      if (
+        confirm(
+          `${msg}\n\nDo you want to re-authenticate with Spotify now to grant playlist creation permissions?`
+        )
+      ) {
+        window.location.href = "/api/auth/login?provider=spotify";
+      }
+    } else {
+      alert(`Could not create playlist: ${msg}`);
+    }
   } finally {
     createCleanPlaylistBtn.disabled = false;
     createCleanPlaylistBtn.innerHTML = origHtml;
