@@ -2165,3 +2165,388 @@ body {
 .report-user-badge strong {
   color: var(--ink);
 }
+
+/* ==========================================================================
+   Spotify User Bar & Personal Playlist Quick Access
+   ========================================================================== */
+.spotify-user-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(29, 185, 84, 0.08);
+  border: 1px solid rgba(29, 185, 84, 0.35);
+  border-radius: var(--radius, 6px);
+  padding: 10px 16px;
+  margin: 14px 0 6px 0;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .spotify-user-bar {
+  background: rgba(29, 185, 84, 0.12);
+  border-color: rgba(29, 185, 84, 0.4);
+}
+
+.spotify-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+}
+
+.spotify-dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1db954;
+  box-shadow: 0 0 8px rgba(29, 185, 84, 0.8);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.spotify-user-pill {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  background: #1db954;
+  color: #000;
+  border-radius: 3px;
+}
+
+.spotify-greeting-text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.spotify-greeting-text strong {
+  color: var(--ink);
+}
+
+.btn-spotify-bar {
+  background: #1db954;
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #1aa34a;
+  border-radius: 4px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-spotify-bar:hover {
+  background: #1ed760;
+  transform: translateY(-1px);
+}
+
+.btn-spotify-bar .mono-badge {
+  background: rgba(0, 0, 0, 0.2);
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  font-size: 0.68rem;
+}
+
+.spotify-login-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+
+.spotify-hint-link {
+  background: transparent;
+  border: none;
+  color: #1db954;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.spotify-hint-link:hover {
+  color: #1ed760;
+}
+
+/* ==========================================================================
+   Clean Playlist in Spotify Action Banner
+   ========================================================================== */
+.clean-playlist-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.12) 0%, rgba(29, 185, 84, 0.04) 100%);
+  border: 1.5px solid rgba(29, 185, 84, 0.45);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 18px 0 16px 0;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.08);
+}
+
+[data-theme="dark"] .clean-playlist-card {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.16) 0%, rgba(29, 185, 84, 0.05) 100%);
+  border-color: rgba(29, 185, 84, 0.55);
+}
+
+.clean-card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.clean-shield-icon {
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.clean-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.clean-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.btn-clean-action {
+  background: #1db954;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 10px 18px;
+  border-radius: 5px;
+  border: 1px solid #1aa34a;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.btn-clean-action:hover {
+  background: #1ed760;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.35);
+}
+
+.btn-clean-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   My Spotify Playlists Modal & Grid
+   ========================================================================== */
+.playlists-modal-card {
+  max-width: 860px;
+  width: 95%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.playlists-search-toolbar {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 14px 0;
+}
+
+.playlists-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  gap: 12px;
+}
+
+.playlist-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(29, 185, 84, 0.2);
+  border-top-color: #1db954;
+  border-radius: 50%;
+  animation: pl-spin 0.8s linear infinite;
+}
+
+@keyframes pl-spin {
+  to { transform: rotate(360deg); }
+}
+
+.my-playlists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  overflow-y: auto;
+  max-height: 55vh;
+  padding: 4px;
+}
+
+.playlist-card {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.playlist-card:hover {
+  border-color: #1db954;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .playlist-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.playlist-card-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.playlist-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.playlist-thumb-fallback {
+  width: 54px;
+  height: 54px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.3) 0%, rgba(20, 20, 20, 0.5) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.playlist-title-wrap {
+  overflow: hidden;
+  flex: 1;
+}
+
+.playlist-card-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.playlist-card-owner {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+}
+
+.pl-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.pl-badge-private {
+  background: rgba(255, 179, 0, 0.12);
+  border-color: rgba(255, 179, 0, 0.3);
+  color: var(--warn, #e69500);
+}
+
+.pl-badge-public {
+  background: rgba(29, 185, 84, 0.12);
+  border-color: rgba(29, 185, 84, 0.3);
+  color: #1db954;
+}
+
+.btn-scan-pl {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: auto;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-scan-pl:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.clean-success-celebration {
+  font-size: 2.4rem;
+  margin-bottom: 8px;
+}
+
+.clean-success-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}

@@ -8,7 +8,10 @@ A web application that scans public playlists from **Spotify**, **Apple Music**,
    - **Spotify** (`open.spotify.com/playlist/...`)
    - **Apple Music** (`music.apple.com/.../playlist/...`)
    - **YouTube & YouTube Music** (`youtube.com/playlist?list=...`)
-2. **4-Layer AI Detection Engine:**
+2. **Spotify Personal Library & 1-Click AI-Free Clean Export:**
+   - Sign in with Spotify to browse and scan your personal or private playlists directly without copying links.
+   - When AI tracks are detected, automatically generate an "[AI-Free]" clean version directly in your Spotify account with only the authentic human tracks preserved.
+3. **4-Layer AI Detection Engine:**
    - **Keywords & Generator Signatures:** Detects traces of *Suno, Udio, RVC v2, Kits.ai, Boomy, Riffusion, AIVA*, and tags like *AI Cover / AI Generated*.
    - **Known AI Artists Database & Community Reporting:** Includes confirmed AI and "ghost" projects (e.g. *The Velvet Sundown, Breezeway Cocktail, Endel, AIVA, Ghostwriter977*) with built-in community reporting directly from the UI.
    - **Artist History & Release Velocity Verification (Deezer + Apple iTunes API):** Checks the artist's earliest release year (whether they existed prior to the 2023+ generative AI boom), fanbase size, single/album release cadence, and copyright/distributor records (`℗ / ©`).

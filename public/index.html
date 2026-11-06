@@ -155,6 +155,25 @@
         </button>
       </form>
 
+      <!-- Spotify Personal Playlists Bar (when authenticated) -->
+      <div id="spotifyUserBar" class="spotify-user-bar hidden">
+        <div class="spotify-user-meta">
+          <span class="spotify-dot-live"></span>
+          <span class="spotify-user-pill">SPOTIFY CONNECTED</span>
+          <span id="spotifyUserGreeting" class="spotify-greeting-text">Scan personal or private playlists directly</span>
+        </div>
+        <button type="button" id="openMyPlaylistsBtn" class="btn btn-spotify-bar">
+          <span>📂 SCAN MY SPOTIFY PLAYLISTS</span>
+          <span id="myPlaylistsCountBadge" class="mono-badge">...</span>
+        </button>
+      </div>
+
+      <!-- Hint for non-logged-in visitors -->
+      <div id="spotifyLoginHint" class="spotify-login-hint">
+        <span>💡 Want to inspect your personal or private Spotify playlists?</span>
+        <button type="button" id="spotifyHintLoginBtn" class="spotify-hint-link">Sign in with Spotify →</button>
+      </div>
+
       <div class="sample-bar">
         <span class="sample-label">Try real sample:</span>
         <button type="button" class="sample-btn" data-url="demo:mixed" data-mode="playlist">
@@ -282,6 +301,22 @@
           <span><i class="legend-dot seg-safe"></i>Verified Human (&lt;38%)</span>
           <span id="statExtraTelemetry" class="ratio-right-meta"></span>
         </div>
+      </div>
+
+      <!-- Clean Playlist Action Card (When AI songs detected in a Spotify playlist) -->
+      <div id="cleanPlaylistCard" class="clean-playlist-card hidden">
+        <div class="clean-card-left">
+          <div class="clean-shield-icon">🛡️</div>
+          <div>
+            <div class="clean-card-title">Create an AI-Free Version in Your Spotify</div>
+            <div id="cleanCardDesc" class="clean-card-desc">
+              We detected synthetic AI songs. With 1-click, generate a clean version with only verified human tracks directly in your Spotify account.
+            </div>
+          </div>
+        </div>
+        <button type="button" id="createCleanPlaylistBtn" class="btn btn-clean-action">
+          <span>✨ Create Clean Playlist</span>
+        </button>
       </div>
 
       <!-- Filter & Sort Controls -->
@@ -570,6 +605,61 @@
 
       <div class="modal-actions" style="margin-top:14px">
         <button type="button" id="closeLegalModalBtn" class="btn btn-solid">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: My Spotify Playlists (User Profile Library) -->
+  <div id="myPlaylistsModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-lg playlists-modal-card">
+      <div class="modal-header">
+        <div class="modal-header-title-wrap">
+          <span class="mono-badge" style="background:#1db954;color:#000;font-weight:700">SPOTIFY USER LIBRARY</span>
+          <h3 style="margin-top:6px">📂 My Spotify Playlists</h3>
+        </div>
+        <button id="closeMyPlaylistsModal" class="modal-close" type="button">✕</button>
+      </div>
+
+      <p class="modal-desc">
+        Select any personal or followed playlist from your Spotify library to scan for synthetic AI tracks with 1-click. Supports both public and private playlists.
+      </p>
+
+      <div class="playlists-search-toolbar">
+        <input
+          type="text"
+          id="myPlaylistsSearchInput"
+          class="search-filter-input"
+          style="flex:1"
+          placeholder="Filter your playlists by title or creator..."
+        />
+        <button type="button" id="refreshMyPlaylistsBtn" class="btn btn-outline" style="font-size:0.75rem;padding:6px 12px">
+          🔄 REFRESH
+        </button>
+      </div>
+
+      <div id="myPlaylistsLoading" class="playlists-loading-state hidden">
+        <div class="playlist-spinner"></div>
+        <p>Loading your Spotify playlists...</p>
+      </div>
+
+      <div id="myPlaylistsContainer" class="my-playlists-grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Clean Playlist Created Success -->
+  <div id="cleanSuccessModal" class="modal-backdrop hidden">
+    <div class="modal-card clean-success-modal-card">
+      <div class="clean-success-celebration">🎉 🛡️ 🎵</div>
+      <h3 id="cleanSuccessTitle" style="color:var(--safe);margin-bottom:8px">Clean Playlist Created!</h3>
+      <p id="cleanSuccessDesc" class="modal-desc" style="margin-bottom:20px">
+        Your new AI-free playlist is ready in your Spotify library with all human tracks preserved.
+      </p>
+      <div class="clean-success-actions">
+        <a id="cleanSuccessOpenBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-solid" style="background:#1db954;color:#000;font-weight:700;display:inline-flex;align-items:center;gap:8px">
+          <span>OPEN IN SPOTIFY</span>
+          <span>↗</span>
+        </a>
+        <button type="button" id="closeCleanSuccessModal" class="btn btn-outline">CLOSE</button>
       </div>
     </div>
   </div>

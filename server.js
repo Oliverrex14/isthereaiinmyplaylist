@@ -16,6 +16,9 @@ const {
   createLocalDevUser,
   getOAuthUrl,
   exchangeOAuthCode,
+  getFreshSpotifyToken,
+  getUserSpotifyPlaylists,
+  createCleanSpotifyPlaylist,
 } = require("./lib/auth");
 
 const PORT = process.env.PORT || 3000;
@@ -97,13 +100,16 @@ function sanitizeInput(str, maxLen = 300) {
     .slice(0, maxLen);
 }
 
-function sendJson(res, statusCode, payload) {
+function sendJson(res, statusCode, payload, req = null) {
   const body = JSON.stringify(payload);
   res.writeHead(statusCode, {
     ...SECURITY_HEADERS,
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
   });
+  if (req?.method === "HEAD") {
+    return res.end();
+  }
   res.end(body);
 }
 
@@ -280,11 +286,20 @@ async function requestHandler(req, res) {
         `[SCAN START] 🔍 ${country}${city ? ` (${city})` : ""} | Target: "${rawInput}" (${modeHint}) | IP: ${clientIp}`
       );
       const scanStartTime = Date.now();
+      const authUser = getUserFromRequest(req);
+      let spotifyToken = null;
+      if (authUser?.provider === "spotify") {
+        try {
+          spotifyToken = await getFreshSpotifyToken(authUser);
+        } catch (_) {}
+      }
+
       const db = await ensureOnlineAiDatabase();
       const rawTarget = await fetchPlaylist(
         rawInput,
         modeHint,
-        db.knownAiArtists || []
+        db.knownAiArtists || [],
+        spotifyToken
       );
       const analyzed = await analyzePlaylistTracks(rawTarget);
       const scanDuration = Date.now() - scanStartTime;
@@ -321,7 +336,7 @@ async function requestHandler(req, res) {
   }
 
   // API: Get Known AI Database (merged local + online Soul Over AI, Spotify AI Blocker, MusicBrainz AI)
-  if (pathname.startsWith("/api/database") && req.method === "GET") {
+  if (pathname.startsWith("/api/database") && (req.method === "GET" || req.method === "HEAD")) {
     let q = "";
     let source = "all";
     let limit = 250;
@@ -338,7 +353,7 @@ async function requestHandler(req, res) {
     }
     try {
       const dbOverview = await getDatabaseOverview(q, source, limit);
-      return sendJson(res, 200, dbOverview);
+      return sendJson(res, 200, dbOverview, req);
     } catch (dbErr) {
       console.error("[DATABASE API ERROR] Fallback to local DB:", dbErr.message);
       const localDb = loadAiDatabase();
@@ -352,12 +367,12 @@ async function requestHandler(req, res) {
         knownAiLabels: localDb.knownAiLabels || [],
         suspiciousDiyDistributors: localDb.suspiciousDiyDistributors || [],
         communityReports: localDb.communityReports || [],
-      });
+      }, req);
     }
   }
 
   // API: Get Current Auth State
-  if (pathname === "/api/auth/me" && req.method === "GET") {
+  if (pathname === "/api/auth/me" && (req.method === "GET" || req.method === "HEAD")) {
     try {
       const user = getUserFromRequest(req);
       return sendJson(res, 200, {
@@ -370,6 +385,13 @@ async function requestHandler(req, res) {
               avatar: user.avatar,
               provider: user.provider,
               isLocalDev: Boolean(user.isLocalDev),
+              country: user.country || null,
+              followers: user.followers || 0,
+              product: user.product || null,
+              hasSpotifyPlaylists: Boolean(
+                user.provider === "spotify" &&
+                (user.spotifyAccessToken || user.isLocalDev)
+              ),
             }
           : null,
         providers: {
@@ -377,7 +399,7 @@ async function requestHandler(req, res) {
           google: Boolean(process.env.GOOGLE_CLIENT_ID),
           localDev: process.env.NODE_ENV !== "production",
         },
-      });
+      }, req);
     } catch (authErr) {
       console.warn("[AUTH ME ERROR]", authErr.message);
       return sendJson(res, 200, {
@@ -388,6 +410,74 @@ async function requestHandler(req, res) {
           google: Boolean(process.env.GOOGLE_CLIENT_ID),
           localDev: process.env.NODE_ENV !== "production",
         },
+      }, req);
+    }
+  }
+
+  // API: Get Current User's Spotify Playlists (supports GET & HEAD)
+  if (pathname === "/api/spotify/playlists" && (req.method === "GET" || req.method === "HEAD")) {
+    const authUser = getUserFromRequest(req);
+    if (!authUser || authUser.provider !== "spotify") {
+      return sendJson(res, 401, {
+        error: "Spotify sign-in required to view your personal playlists.",
+        authRequired: true,
+        provider: "spotify",
+      }, req);
+    }
+
+    try {
+      const playlists = await getUserSpotifyPlaylists(authUser);
+      return sendJson(res, 200, {
+        success: true,
+        count: playlists.length,
+        playlists,
+      }, req);
+    } catch (err) {
+      console.error("[SPOTIFY PLAYLISTS ERROR]", err.message);
+      return sendJson(res, 400, {
+        error: err.message || "Failed to fetch Spotify playlists.",
+      }, req);
+    }
+  }
+
+  // API: Create Clean [AI-Free] Playlist in User's Spotify Account
+  if (pathname === "/api/spotify/clean-playlist" && req.method === "POST") {
+    const authUser = getUserFromRequest(req);
+    if (!authUser || authUser.provider !== "spotify") {
+      return sendJson(res, 401, {
+        error: "Spotify sign-in required to create playlists in your account.",
+        authRequired: true,
+        provider: "spotify",
+      });
+    }
+
+    try {
+      const body = await parseJsonBody(req);
+      const name = sanitizeInput(body.name || "Cleaned Playlist", 100);
+      const description = sanitizeInput(body.description || "", 300);
+      const trackUris = Array.isArray(body.trackUris) ? body.trackUris : [];
+
+      if (trackUris.length === 0) {
+        return sendJson(res, 400, {
+          error: "No track URIs provided to create clean playlist.",
+        });
+      }
+
+      const result = await createCleanSpotifyPlaylist(authUser, {
+        name,
+        description,
+        trackUris,
+      });
+
+      console.log(
+        `[SPOTIFY CLEAN PLAYLIST] 🛡️ "${authUser.name}" created "${result.playlistName}" with ${result.tracksAdded} tracks!`
+      );
+
+      return sendJson(res, 201, result);
+    } catch (err) {
+      console.error("[SPOTIFY CLEAN PLAYLIST ERROR]", err.message);
+      return sendJson(res, 400, {
+        error: err.message || "Failed to create clean playlist.",
       });
     }
   }
@@ -406,7 +496,8 @@ async function requestHandler(req, res) {
         (provider === "google"
           ? "Google Reviewer"
           : "Spotify Reviewer");
-      const devUser = createLocalDevUser({ provider, name });
+      const simProvider = provider === "local" ? "spotify" : provider;
+      const devUser = createLocalDevUser({ provider: simProvider, name });
       const cookieHeader = serializeSessionCookie(devUser.token);
       res.writeHead(302, {
         ...SECURITY_HEADERS,

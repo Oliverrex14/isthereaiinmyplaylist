@@ -62,7 +62,33 @@ const authUserAvatar = document.getElementById("authUserAvatar");
 const authUserName = document.getElementById("authUserName");
 const authLogoutBtn = document.getElementById("authLogoutBtn");
 
+const spotifyUserBar = document.getElementById("spotifyUserBar");
+const spotifyLoginHint = document.getElementById("spotifyLoginHint");
+const spotifyUserGreeting = document.getElementById("spotifyUserGreeting");
+const openMyPlaylistsBtn = document.getElementById("openMyPlaylistsBtn");
+const myPlaylistsCountBadge = document.getElementById("myPlaylistsCountBadge");
+const spotifyHintLoginBtn = document.getElementById("spotifyHintLoginBtn");
+
+const myPlaylistsModal = document.getElementById("myPlaylistsModal");
+const closeMyPlaylistsModal = document.getElementById("closeMyPlaylistsModal");
+const myPlaylistsSearchInput = document.getElementById("myPlaylistsSearchInput");
+const refreshMyPlaylistsBtn = document.getElementById("refreshMyPlaylistsBtn");
+const myPlaylistsLoading = document.getElementById("myPlaylistsLoading");
+const myPlaylistsContainer = document.getElementById("myPlaylistsContainer");
+
+const cleanPlaylistCard = document.getElementById("cleanPlaylistCard");
+const cleanCardDesc = document.getElementById("cleanCardDesc");
+const createCleanPlaylistBtn = document.getElementById("createCleanPlaylistBtn");
+
+const cleanSuccessModal = document.getElementById("cleanSuccessModal");
+const cleanSuccessTitle = document.getElementById("cleanSuccessTitle");
+const cleanSuccessDesc = document.getElementById("cleanSuccessDesc");
+const cleanSuccessOpenBtn = document.getElementById("cleanSuccessOpenBtn");
+const closeCleanSuccessModal = document.getElementById("closeCleanSuccessModal");
+
 let currentUser = null;
+let userPlaylistsCache = [];
+let lastScanResult = null;
 
 async function checkAuthState() {
   try {
@@ -114,13 +140,173 @@ function updateAuthUI() {
         currentUser.provider || "AUTH"
       ).toUpperCase()})`;
     }
+
+    if (currentUser.provider === "spotify") {
+      if (spotifyUserBar) spotifyUserBar.classList.remove("hidden");
+      if (spotifyLoginHint) spotifyLoginHint.classList.add("hidden");
+      if (spotifyUserGreeting) {
+        const prod = currentUser.product ? ` [${currentUser.product.toUpperCase()}]` : "";
+        spotifyUserGreeting.innerHTML = `Connected as <strong>${escapeHtml(currentUser.name)}</strong>${prod}`;
+      }
+      fetchMyPlaylistsBadge();
+    } else {
+      if (spotifyUserBar) spotifyUserBar.classList.add("hidden");
+      if (spotifyLoginHint) spotifyLoginHint.classList.add("hidden");
+    }
   } else {
     if (authLoginBtn) authLoginBtn.classList.remove("hidden");
     if (authUserMenu) authUserMenu.classList.add("hidden");
     if (reportUserBadgeName) {
       reportUserBadgeName.textContent = "Anonymous (Sign-in required)";
     }
+    if (spotifyUserBar) spotifyUserBar.classList.add("hidden");
+    if (spotifyLoginHint) spotifyLoginHint.classList.remove("hidden");
   }
+}
+
+async function fetchMyPlaylistsBadge() {
+  if (!currentUser || currentUser.provider !== "spotify") return;
+  try {
+    const res = await fetch("/api/spotify/playlists");
+    if (res.ok) {
+      const data = await res.json();
+      userPlaylistsCache = data.playlists || [];
+      if (myPlaylistsCountBadge) {
+        myPlaylistsCountBadge.textContent = `${userPlaylistsCache.length}`;
+      }
+    }
+  } catch (_) {}
+}
+
+async function openMyPlaylistsModalHandler() {
+  if (!currentUser || currentUser.provider !== "spotify") {
+    if (loginModal) loginModal.classList.remove("hidden");
+    return;
+  }
+
+  if (myPlaylistsModal) myPlaylistsModal.classList.remove("hidden");
+  if (myPlaylistsSearchInput) myPlaylistsSearchInput.value = "";
+
+  if (userPlaylistsCache.length === 0) {
+    await reloadMyPlaylists();
+  } else {
+    renderMyPlaylists(userPlaylistsCache);
+  }
+}
+
+async function reloadMyPlaylists() {
+  if (myPlaylistsLoading) myPlaylistsLoading.classList.remove("hidden");
+  if (myPlaylistsContainer) myPlaylistsContainer.innerHTML = "";
+
+  try {
+    const res = await fetch("/api/spotify/playlists");
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Could not load Spotify playlists.");
+    }
+    const data = await res.json();
+    userPlaylistsCache = data.playlists || [];
+    if (myPlaylistsCountBadge) {
+      myPlaylistsCountBadge.textContent = `${userPlaylistsCache.length}`;
+    }
+    renderMyPlaylists(userPlaylistsCache);
+  } catch (err) {
+    if (myPlaylistsContainer) {
+      myPlaylistsContainer.innerHTML = `
+        <div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--danger)">
+          <p style="font-weight:700;margin-bottom:6px">⚠️ ${escapeHtml(err.message)}</p>
+          <a href="/api/auth/login?provider=spotify" class="btn btn-outline" style="font-size:0.75rem">Re-Authenticate Spotify</a>
+        </div>
+      `;
+    }
+  } finally {
+    if (myPlaylistsLoading) myPlaylistsLoading.classList.add("hidden");
+  }
+}
+
+function renderMyPlaylists(playlists) {
+  if (!myPlaylistsContainer) return;
+  const filterQuery = (myPlaylistsSearchInput?.value || "").trim().toLowerCase();
+
+  const filtered = (playlists || []).filter((p) => {
+    if (!filterQuery) return true;
+    return (
+      (p.name || "").toLowerCase().includes(filterQuery) ||
+      (p.owner || "").toLowerCase().includes(filterQuery) ||
+      (p.description || "").toLowerCase().includes(filterQuery)
+    );
+  });
+
+  if (filtered.length === 0) {
+    myPlaylistsContainer.innerHTML = `
+      <div style="grid-column:1/-1;padding:36px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:0.8rem">
+        ${filterQuery ? `No playlists matching "${escapeHtml(filterQuery)}".` : "No playlists found in your Spotify library."}
+      </div>
+    `;
+    return;
+  }
+
+  myPlaylistsContainer.innerHTML = filtered
+    .map((p) => {
+      const coverHtml = p.imageUrl
+        ? `<img class="playlist-thumb" src="${escapeHtml(p.imageUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" />`
+        : `<div class="playlist-thumb-fallback">🎵</div>`;
+
+      const privacyBadge = p.public
+        ? `<span class="pl-badge pl-badge-public">🌐 Public</span>`
+        : `<span class="pl-badge pl-badge-private">🔒 Private</span>`;
+
+      const collBadge = p.collaborative
+        ? `<span class="pl-badge">👥 Collab</span>`
+        : "";
+
+      const ownerBadge = p.isOwner
+        ? `<span class="pl-badge">👤 By you</span>`
+        : `<span class="pl-badge">By ${escapeHtml(p.owner || "Spotify")}</span>`;
+
+      return `
+        <div class="playlist-card" data-url="${escapeHtml(p.url)}">
+          <div class="playlist-card-top">
+            ${coverHtml}
+            <div class="playlist-title-wrap">
+              <div class="playlist-card-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+              <div class="playlist-card-owner">${p.trackCount} tracks • ${p.isOwner ? "Created by you" : escapeHtml(p.owner || "Followed")}</div>
+            </div>
+          </div>
+          <div class="playlist-card-badges">
+            <span class="pl-badge">${p.trackCount} tracks</span>
+            ${privacyBadge}
+            ${collBadge}
+            ${ownerBadge}
+          </div>
+          <button type="button" class="btn-scan-pl" data-url="${escapeHtml(p.url)}">
+            <span>⚡ SCAN PLAYLIST</span>
+          </button>
+        </div>
+      `;
+    })
+    .join("");
+
+  // Attach click listeners to scan buttons
+  myPlaylistsContainer.querySelectorAll(".btn-scan-pl").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const url = btn.getAttribute("data-url");
+      if (!url) return;
+      if (myPlaylistsModal) myPlaylistsModal.classList.add("hidden");
+      if (playlistUrlInput) {
+        playlistUrlInput.value = url;
+      }
+      // Switch active mode tab to playlist
+      document.querySelectorAll(".mode-tab").forEach((tab) => {
+        tab.classList.toggle("active", tab.getAttribute("data-mode") === "playlist");
+      });
+      // Automatically trigger inspect
+      if (analyzeForm) {
+        analyzeForm.dispatchEvent(new Event("submit"));
+      }
+    });
+  });
 }
 
 if (authLoginBtn) {
@@ -487,9 +673,86 @@ function renderResults(data) {
       "All tracks passed discography timeline, MusicBrainz registry, and release cadence checks.";
   }
 
+  lastScanResult = data;
+
+  // Clean Playlist in Spotify Banner logic
+  if (cleanPlaylistCard) {
+    const isSpotifyTarget =
+      data.platform === "spotify" ||
+      (data.platformName && data.platformName.toLowerCase().includes("spotify"));
+    const hasDetectedAi = s.aiCount > 0 || s.suspiciousCount > 0;
+    const isSpotifyUser = Boolean(currentUser && currentUser.provider === "spotify");
+
+    if (isSpotifyTarget && hasDetectedAi && isSpotifyUser) {
+      cleanPlaylistCard.classList.remove("hidden");
+      if (cleanCardDesc) {
+        cleanCardDesc.textContent = `We detected ${s.aiCount} AI-generated song(s) in "${data.title || "this playlist"}". Create a clean version with ${s.humanCount} verified human tracks directly in your Spotify library with 1-click.`;
+      }
+    } else {
+      cleanPlaylistCard.classList.add("hidden");
+    }
+  }
+
   renderTracksList();
   resultsSection.classList.remove("hidden");
   resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function handleCreateCleanPlaylist() {
+  if (!lastScanResult || !currentUser || currentUser.provider !== "spotify") return;
+  if (!createCleanPlaylistBtn) return;
+
+  const humanTracks = currentTracks.filter(
+    (t) => t.verdict === "human" || (t.verdict !== "ai" && (t.aiProbability || 0) < 60)
+  );
+  const trackUris = humanTracks
+    .map((t) => t.spotifyUri || (t.id ? `spotify:track:${t.id}` : null))
+    .filter(Boolean);
+
+  if (trackUris.length === 0) {
+    alert("No verified human tracks were found to create a clean playlist.");
+    return;
+  }
+
+  createCleanPlaylistBtn.disabled = true;
+  const origHtml = createCleanPlaylistBtn.innerHTML;
+  createCleanPlaylistBtn.innerHTML = `<span>⏳ Creating in Spotify...</span>`;
+
+  try {
+    const res = await fetch("/api/spotify/clean-playlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: lastScanResult.title || "Playlist",
+        description: `Cleaned by isthereaiinmyplaylist.tech — ${humanTracks.length} human verified songs (removed ${lastScanResult.summary.aiCount} AI tracks).`,
+        trackUris,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to create clean playlist on Spotify.");
+    }
+
+    const data = await res.json();
+    if (cleanSuccessTitle) {
+      cleanSuccessTitle.textContent = `Created "${data.playlistName}"!`;
+    }
+    if (cleanSuccessDesc) {
+      cleanSuccessDesc.textContent = `Successfully added ${data.tracksAdded} verified human tracks to your Spotify account. All AI tracks were removed.`;
+    }
+    if (cleanSuccessOpenBtn) {
+      cleanSuccessOpenBtn.href = data.playlistUrl || "#";
+    }
+    if (cleanSuccessModal) {
+      cleanSuccessModal.classList.remove("hidden");
+    }
+  } catch (err) {
+    alert(`Could not create playlist: ${err.message}`);
+  } finally {
+    createCleanPlaylistBtn.disabled = false;
+    createCleanPlaylistBtn.innerHTML = origHtml;
+  }
 }
 
 function getSortedAndFilteredTracks() {
@@ -1144,8 +1407,39 @@ legalTabBtns.forEach((btn) => {
   });
 });
 
+// Spotify User Bar & Personal Playlists Event Listeners
+if (openMyPlaylistsBtn) {
+  openMyPlaylistsBtn.addEventListener("click", openMyPlaylistsModalHandler);
+}
+if (spotifyHintLoginBtn) {
+  spotifyHintLoginBtn.addEventListener("click", () => {
+    if (loginModal) loginModal.classList.remove("hidden");
+  });
+}
+if (closeMyPlaylistsModal) {
+  closeMyPlaylistsModal.addEventListener("click", () => {
+    if (myPlaylistsModal) myPlaylistsModal.classList.add("hidden");
+  });
+}
+if (refreshMyPlaylistsBtn) {
+  refreshMyPlaylistsBtn.addEventListener("click", reloadMyPlaylists);
+}
+if (myPlaylistsSearchInput) {
+  myPlaylistsSearchInput.addEventListener("input", () => {
+    renderMyPlaylists(userPlaylistsCache);
+  });
+}
+if (createCleanPlaylistBtn) {
+  createCleanPlaylistBtn.addEventListener("click", handleCreateCleanPlaylist);
+}
+if (closeCleanSuccessModal) {
+  closeCleanSuccessModal.addEventListener("click", () => {
+    if (cleanSuccessModal) cleanSuccessModal.classList.add("hidden");
+  });
+}
+
 // Close modals when clicking backdrop or pressing Escape
-[reportModal, dbModal, legalModal, loginModal].forEach((m) => {
+[reportModal, dbModal, legalModal, loginModal, myPlaylistsModal, cleanSuccessModal].forEach((m) => {
   if (!m) return;
   m.addEventListener("click", (e) => {
     if (e.target === m) m.classList.add("hidden");
@@ -1158,6 +1452,8 @@ window.addEventListener("keydown", (e) => {
     if (dbModal) dbModal.classList.add("hidden");
     if (legalModal) legalModal.classList.add("hidden");
     if (loginModal) loginModal.classList.add("hidden");
+    if (myPlaylistsModal) myPlaylistsModal.classList.add("hidden");
+    if (cleanSuccessModal) cleanSuccessModal.classList.add("hidden");
   }
 });
 
