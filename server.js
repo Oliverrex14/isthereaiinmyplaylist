@@ -774,6 +774,9 @@ async function requestHandler(req, res) {
 
   // Static files with strict path traversal protection
   let safePath = pathname === "/" ? "/index.html" : pathname;
+  if (safePath === "/privacy") safePath = "/privacy.html";
+  if (safePath === "/terms") safePath = "/terms.html";
+  if (safePath === "/legal") safePath = "/legal.html";
   safePath = path.normalize(safePath).replace(/^(\.\.[/\\])+/, "");
   const filePath = path.resolve(PUBLIC_DIR, "." + safePath);
 

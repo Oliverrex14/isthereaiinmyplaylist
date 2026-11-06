@@ -2593,3 +2593,111 @@ body {
   justify-content: center;
   gap: 12px;
 }
+
+/* ==========================================================================
+   Standalone Legal & Compliance Pages (/privacy, /terms, /legal)
+   ========================================================================== */
+.legal-page-container {
+  max-width: 860px;
+  margin: 32px auto 60px auto;
+  padding: 0 20px;
+}
+
+.legal-page-hero {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+}
+
+.legal-back-nav {
+  margin-bottom: 18px;
+}
+
+.legal-back-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.legal-back-nav a:hover {
+  color: var(--accent);
+}
+
+.legal-page-title {
+  font-family: var(--serif, Georgia, serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.legal-page-meta {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legal-article h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 32px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-article h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 20px 0 8px 0;
+}
+
+.legal-article p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.legal-article ul, .legal-article ol {
+  margin: 10px 0 18px 24px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.legal-article li {
+  margin-bottom: 8px;
+}
+
+.legal-callout {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  padding: 16px 20px;
+  border-radius: 6px;
+  margin: 20px 0;
+}
+
+.legal-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-nav-strip {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}

@@ -1,5 +1,11 @@
 {
   "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/legal", "destination": "/legal.html" }
+  ],
   "functions": {
     "api/**/*.js": {
       "maxDuration": 60

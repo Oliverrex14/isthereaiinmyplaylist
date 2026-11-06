@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-design="cyber">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Is There AI In My Playlist?</title>
+  <meta name="description" content="Privacy Policy for Is There AI In My Playlist. GDPR compliant, zero-password architecture, transparent handling of Spotify and Google OAuth user data." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+  <link rel="stylesheet" href="/fonts.css" />
+  <link rel="stylesheet" href="/styles.css?v=2" />
+  <link rel="stylesheet" href="/design-variants.css?v=2" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="topbar-left">
+        <a href="/" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;">
+          <svg class="brand-logo-svg" viewBox="0 0 64 64" width="28" height="28">
+            <rect width="64" height="64" rx="12" fill="#0c0d0f" />
+            <rect x="3" y="3" width="58" height="58" rx="9" fill="none" stroke="#262932" stroke-width="2" />
+            <rect x="13" y="28" width="6" height="22" rx="1.5" fill="#e5a93c" />
+            <rect x="23" y="16" width="6" height="34" rx="1.5" fill="#e5a93c" />
+            <rect x="33" y="22" width="6" height="28" rx="1.5" fill="#ededef" />
+            <rect x="43" y="12" width="6" height="38" rx="1.5" fill="#e5484d" />
+            <line x1="9" y1="32" x2="55" y2="32" stroke="#e5a93c" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.65" />
+          </svg>
+          <div class="brand-text">
+            <span class="brand-title">isthereaiinmyplaylist</span>
+            <span class="brand-sub">Audio Forensics Archive</span>
+          </div>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <a href="/" class="btn btn-outline" style="font-size:0.75rem;padding:6px 12px">← BACK TO INSPECTOR</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container legal-page-container">
+    <div class="legal-page-hero">
+      <div class="legal-back-nav">
+        <a href="/">← Return to Playlist Scanner</a>
+      </div>
+      <h1 class="legal-page-title">Privacy Policy</h1>
+      <div class="legal-page-meta">
+        <span>Effective Date: November 6, 2026</span>
+        <span>•</span>
+        <span>Version: 2.1 (GDPR, Google API &amp; Spotify Developer Compliant)</span>
+        <span>•</span>
+        <span>Application: isthereaiinmyplaylist.tech</span>
+      </div>
+    </div>
+
+    <article class="legal-article">
+      <div class="legal-callout">
+        <p>
+          <strong>Summary for Users:</strong> <strong>Is There AI In My Playlist</strong> is an independent, non-commercial audio forensics and educational tool. We are committed to transparency, cookieless browsing for visitors, zero credential/password storage, and strict non-monetization of user data. We do not sell your personal data or use it for advertising.
+        </p>
+      </div>
+
+      <h2>1. Data Controller Information</h2>
+      <p>
+        The data controller responsible for your personal data under the EU General Data Protection Regulation (GDPR) and other applicable data protection laws is:
+      </p>
+      <ul class="legal-list">
+        <li><strong>Operator &amp; Maintainer:</strong> Oliver Tobiášek (Independent Developer &amp; Open Source Author)</li>
+        <li><strong>Service Domain:</strong> <a href="https://isthereaiinmyplaylist.tech" style="color:var(--accent)">https://isthereaiinmyplaylist.tech</a></li>
+        <li><strong>Contact &amp; Privacy Officer Email:</strong> <a href="mailto:tobiasek.oliver@gmail.com" style="color:var(--accent)">tobiasek.oliver@gmail.com</a> (or <a href="mailto:dispute@isthereaiinmyplaylist.tech" style="color:var(--accent)">dispute@isthereaiinmyplaylist.tech</a>)</li>
+      </ul>
+
+      <h2>2. Information We Collect and How We Use It</h2>
+      <p>
+        We practice strict data minimization. Depending on how you interact with the service, the following data is processed:
+      </p>
+
+      <h3>A. Public Playlist Inspections (No Account Required)</h3>
+      <p>
+        When you submit a publicly accessible Spotify, Apple Music, or YouTube URL into the inspection field, our serverless backend retrieves publicly available track and artist metadata (artist name, track title, album release year, and duration) strictly in transient serverless memory.
+      </p>
+      <ul>
+        <li>Public metadata is evaluated against our forensic algorithms and returned to your browser.</li>
+        <li>We do not record your IP address alongside your playlists.</li>
+        <li>No cookies are placed on your device for public scans.</li>
+      </ul>
+
+      <h3>B. Spotify OAuth 2.0 Integration (Optional)</h3>
+      <p>
+        If you choose to connect your Spotify account to inspect your private or personal playlists, you authorize our application via Spotify’s official OAuth 2.0 protocol.
+      </p>
+      <ul>
+        <li><strong>Information Accessed:</strong> Display name, profile image, country, product tier (free/premium), and your playlist library (names, cover images, track count, track IDs).</li>
+        <li><strong>Purpose:</strong> To display your personal playlists in the quick-scan modal and, if you request it, create a new clean playlist (<code>[AI-Free]</code>) in your account containing only verified human songs.</li>
+        <li><strong>Storage:</strong> We <strong>never</strong> receive or store your Spotify password. Your temporary access token and refresh token are stored exclusively in an encrypted, HMAC-SHA256 signed HTTP-only cookie on your browser.</li>
+      </ul>
+
+      <h3>C. Google &amp; YouTube Music OAuth 2.0 Integration (Optional)</h3>
+      <p>
+        If you choose to connect with Google / YouTube Music, you authorize our application via Google’s official OAuth 2.0 authorization server.
+      </p>
+      <ul>
+        <li><strong>Scopes Requested:</strong> <code>openid</code>, <code>profile</code>, <code>email</code>, and <code>https://www.googleapis.com/auth/youtube.readonly</code>.</li>
+        <li><strong>Information Accessed:</strong> Your public Google profile name, avatar image, email, and read-only access to your YouTube / YouTube Music playlists (titles, thumbnails, item counts, privacy status).</li>
+        <li><strong>Purpose:</strong> To allow you to select and scan your personal, unlisted, or private YouTube playlists for synthetic AI tracks.</li>
+        <li><strong>Google API Services User Data Policy Compliance:</strong> Our use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
+      </ul>
+
+      <h2>3. What We Never Do (Data Protection Commitments)</h2>
+      <p>
+        To protect human creators and our community, we adhere to strict ethical data practices:
+      </p>
+      <ul>
+        <li><strong>No Selling of Data:</strong> We never sell, rent, trade, lease, or monetize your personal information, playlist contents, or OAuth tokens to any third party, data broker, or commercial entity.</li>
+        <li><strong>No Third-Party Advertising:</strong> We do not run third-party advertising networks, affiliate tracking beacons, or cross-site behavioral retargeting scripts.</li>
+        <li><strong>No AI Model Training on User Data:</strong> We do not use your private playlists, listening habits, or library metadata to train artificial intelligence or machine learning models.</li>
+        <li><strong>No Password Storage:</strong> We do not operate a password database. All authentication is delegated to Spotify AB or Google LLC via industry-standard OAuth 2.0.</li>
+      </ul>
+
+      <h2>4. Cookies and Local Storage</h2>
+      <p>
+        We believe in a cookieless web by default:
+      </p>
+      <ul>
+        <li><strong>Anonymous Visitors:</strong> Zero tracking cookies or profiling cookies are stored on your device.</li>
+        <li><strong>Authenticated Users:</strong> When you deliberately sign in via Spotify or Google, an essential authentication cookie named <code>ai_auth_session</code> is issued. This cookie is encrypted, marked <code>HttpOnly</code>, <code>SameSite=Lax</code>, and <code>Secure</code> in production. It is used solely to maintain your session and is destroyed immediately when you click <strong>Log Out</strong>.</li>
+        <li><strong>Local Storage:</strong> Your browser’s <code>localStorage</code> is used exclusively for non-personal interface preferences (light/dark theme toggle).</li>
+      </ul>
+
+      <h2>5. How to Revoke Access &amp; Delete Data</h2>
+      <p>
+        You retain full control over your connections and data at all times:
+      </p>
+      <ul>
+        <li><strong>Instant Logout:</strong> Clicking the <strong>Log Out</strong> button in the top menu immediately clears your session cookie and severs the local authorization.</li>
+        <li><strong>Revoking Spotify Access:</strong> You can disconnect this application at any time directly in your Spotify account settings: <a href="https://www.spotify.com/account/apps/" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">https://www.spotify.com/account/apps/</a>.</li>
+        <li><strong>Revoking Google Access:</strong> You can remove permissions for this app at any time in your Google Security settings: <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">https://myaccount.google.com/permissions</a>.</li>
+        <li><strong>Community Reports Deletion:</strong> If you submitted a community AI report and wish to have it removed, you can click "Unflag" on the track row or email us directly at <a href="mailto:tobiasek.oliver@gmail.com" style="color:var(--accent)">tobiasek.oliver@gmail.com</a>.</li>
+      </ul>
+
+      <h2>6. Security Measures</h2>
+      <p>
+        All communications between your browser and our servers are encrypted in transit using Transport Layer Security (TLS 1.3 / HTTPS). Our web application employs strict security response headers, including:
+      </p>
+      <ul>
+        <li><code>Content-Security-Policy</code> (mitigating cross-site scripting and unauthorized resource execution)</li>
+        <li><code>Strict-Transport-Security</code> (HSTS enforcement)</li>
+        <li><code>X-Content-Type-Options: nosniff</code> and <code>X-Frame-Options: DENY</code></li>
+        <li>All serverless endpoints run in isolated, stateless ephemeral execution environments on Vercel.</li>
+      </ul>
+
+      <h2>7. Changes to This Privacy Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time to reflect evolving regulatory standards or service enhancements. The revised policy will always be published on this page with an updated "Effective Date."
+      </p>
+
+      <h2>8. Contact Us</h2>
+      <p>
+        If you have questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact:
+      </p>
+      <div class="legal-callout">
+        <p><strong>Oliver Tobiášek</strong><br/>
+        Lead Maintainer, IsThereAIInMyPlaylist<br/>
+        Email: <a href="mailto:tobiasek.oliver@gmail.com" style="color:var(--accent);font-weight:700">tobiasek.oliver@gmail.com</a> / <a href="mailto:dispute@isthereaiinmyplaylist.tech" style="color:var(--accent);font-weight:700">dispute@isthereaiinmyplaylist.tech</a><br/>
+        GitHub: <a href="https://github.com/Oliverrex14/isthereaiinmyplaylist" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">github.com/Oliverrex14/isthereaiinmyplaylist</a>
+        </p>
+      </div>
+
+      <div class="legal-nav-strip">
+        <a href="/terms" class="btn btn-outline" style="font-size:0.75rem">📜 View Terms of Service</a>
+        <a href="/legal" class="btn btn-outline" style="font-size:0.75rem">⚖️ View Legal &amp; Trademarks</a>
+        <a href="/" class="btn btn-solid" style="font-size:0.75rem">← Return to Playlist Scanner</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div><span><strong>isthereaiinmyplaylist</strong> // Keep Music Human</span></div>
+        <div><span>Open source audio forensics research tool</span></div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
