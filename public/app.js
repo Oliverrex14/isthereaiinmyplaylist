@@ -297,10 +297,8 @@ function renderMyPlaylists(playlists) {
       if (playlistUrlInput) {
         playlistUrlInput.value = url;
       }
-      // Switch active mode tab to playlist
-      document.querySelectorAll(".mode-tab").forEach((tab) => {
-        tab.classList.toggle("active", tab.getAttribute("data-mode") === "playlist");
-      });
+      // Switch active inspection mode to playlist
+      setInspectionMode("playlist");
       // Automatically trigger inspect
       if (analyzeForm) {
         analyzeForm.dispatchEvent(new Event("submit"));
@@ -576,7 +574,16 @@ async function runAnalysis(url, mode = activeMode) {
   } catch (err) {
     clearInterval(stepTimer);
     loadingSection.classList.add("hidden");
-    errorText.textContent = err.message;
+    const msg = err.message || "Failed to inspect playlist.";
+    if (
+      msg.includes("sign out and sign in again") ||
+      msg.includes("403") ||
+      msg.includes("permissions")
+    ) {
+      errorText.innerHTML = `${escapeHtml(msg)}<div style="margin-top:10px"><a href="/api/auth/login?provider=spotify" class="btn btn-outline" style="font-size:0.75rem;padding:6px 12px;display:inline-block">🔑 RE-AUTHENTICATE SPOTIFY (NEW PERMISSIONS)</a></div>`;
+    } else {
+      errorText.textContent = msg;
+    }
     errorAlert.classList.remove("hidden");
   } finally {
     analyzeBtn.disabled = false;

@@ -270,11 +270,13 @@ async function requestHandler(req, res) {
       });
     }
 
+    let rawInput = "";
+    let modeHint = "auto";
     try {
       const body = await parseJsonBody(req);
-      const rawInput = sanitizeInput(body.url, 500);
+      rawInput = sanitizeInput(body.url, 500);
       const allowedModes = new Set(["auto", "playlist", "track", "artist"]);
-      const modeHint = allowedModes.has(body.mode) ? body.mode : "auto";
+      modeHint = allowedModes.has(body.mode) ? body.mode : "auto";
 
       if (!rawInput) {
         return sendJson(res, 400, {
@@ -301,6 +303,13 @@ async function requestHandler(req, res) {
         db.knownAiArtists || [],
         spotifyToken
       );
+
+      if (!rawTarget || !Array.isArray(rawTarget.tracks) || rawTarget.tracks.length === 0) {
+        return sendJson(res, 400, {
+          error: "No playable tracks found in this playlist. If this is a private playlist, please ensure you are signed in with Spotify, or verify that the playlist contains tracks.",
+        });
+      }
+
       const analyzed = await analyzePlaylistTracks(rawTarget);
       const scanDuration = Date.now() - scanStartTime;
 
@@ -327,7 +336,7 @@ async function requestHandler(req, res) {
       return sendJson(res, 200, analyzed);
     } catch (err) {
       console.warn(
-        `[SCAN FAILED] ⚠️ Target: "${rawInput}" | Error: ${err.message}`
+        `[SCAN FAILED] ⚠️ Target: "${rawInput || "unknown"}" | Error: ${err.message}`
       );
       return sendJson(res, 400, {
         error: err.message || "Failed to analyze the target.",
