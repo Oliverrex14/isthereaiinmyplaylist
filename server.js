@@ -153,14 +153,15 @@ function parseJsonBody(req) {
 }
 
 async function requestHandler(req, res) {
-  if (req.method === "OPTIONS") {
-    res.writeHead(204, {
-      ...SECURITY_HEADERS,
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    });
-    return res.end();
-  }
+  try {
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, {
+        ...SECURITY_HEADERS,
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      });
+      return res.end();
+    }
 
   const rawHost = (
     req.headers["x-forwarded-host"] ||
@@ -335,31 +336,60 @@ async function requestHandler(req, res) {
     } catch {
       // ignore
     }
-    const dbOverview = await getDatabaseOverview(q, source, limit);
-    return sendJson(res, 200, dbOverview);
+    try {
+      const dbOverview = await getDatabaseOverview(q, source, limit);
+      return sendJson(res, 200, dbOverview);
+    } catch (dbErr) {
+      console.error("[DATABASE API ERROR] Fallback to local DB:", dbErr.message);
+      const localDb = loadAiDatabase();
+      const localList = localDb.knownAiArtists || [];
+      return sendJson(res, 200, {
+        totalIndexed: localList.length,
+        matchedCount: localList.length,
+        lastSyncedAt: new Date().toISOString(),
+        sources: { local: localList.length, totalUnique: localList.length },
+        knownAiArtists: localList.slice(0, limit),
+        knownAiLabels: localDb.knownAiLabels || [],
+        suspiciousDiyDistributors: localDb.suspiciousDiyDistributors || [],
+        communityReports: localDb.communityReports || [],
+      });
+    }
   }
 
   // API: Get Current Auth State
   if (pathname === "/api/auth/me" && req.method === "GET") {
-    const user = getUserFromRequest(req);
-    return sendJson(res, 200, {
-      authenticated: Boolean(user),
-      user: user
-        ? {
-            userId: user.userId,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar,
-            provider: user.provider,
-            isLocalDev: Boolean(user.isLocalDev),
-          }
-        : null,
-      providers: {
-        spotify: Boolean(process.env.SPOTIFY_CLIENT_ID),
-        google: Boolean(process.env.GOOGLE_CLIENT_ID),
-        localDev: process.env.NODE_ENV !== "production",
-      },
-    });
+    try {
+      const user = getUserFromRequest(req);
+      return sendJson(res, 200, {
+        authenticated: Boolean(user),
+        user: user
+          ? {
+              userId: user.userId,
+              name: user.name,
+              email: user.email,
+              avatar: user.avatar,
+              provider: user.provider,
+              isLocalDev: Boolean(user.isLocalDev),
+            }
+          : null,
+        providers: {
+          spotify: Boolean(process.env.SPOTIFY_CLIENT_ID),
+          google: Boolean(process.env.GOOGLE_CLIENT_ID),
+          localDev: process.env.NODE_ENV !== "production",
+        },
+      });
+    } catch (authErr) {
+      console.warn("[AUTH ME ERROR]", authErr.message);
+      return sendJson(res, 200, {
+        authenticated: false,
+        user: null,
+        providers: {
+          spotify: Boolean(process.env.SPOTIFY_CLIENT_ID),
+          google: Boolean(process.env.GOOGLE_CLIENT_ID),
+          localDev: process.env.NODE_ENV !== "production",
+        },
+      });
+    }
   }
 
   // API: Initiate OAuth Login or Local Dev Sign-In
@@ -635,6 +665,14 @@ async function requestHandler(req, res) {
         "Content-Type": "text/plain; charset=utf-8",
       });
       res.end("Not found");
+    }
+  }
+  } catch (fatalErr) {
+    console.error("[FATAL SERVER ERROR]", fatalErr);
+    if (!res.headersSent) {
+      sendJson(res, 500, {
+        error: "An unexpected internal server error occurred.",
+      });
     }
   }
 }
