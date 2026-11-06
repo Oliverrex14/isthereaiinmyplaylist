@@ -667,15 +667,9 @@ async function requestHandler(req, res) {
     return res.end(JSON.stringify({ success: true }));
   }
 
-  // API: Submit Community AI Report (Protected by Authentication)
+  // API: Submit Community AI Report
   if (pathname.startsWith("/api/report") && req.method === "POST") {
     const authUser = getUserFromRequest(req);
-    if (!authUser) {
-      return sendJson(res, 401, {
-        error: "Authentication required to flag tracks. Please sign in with Spotify or Google.",
-        authRequired: true,
-      });
-    }
 
     if (!checkRateLimit(clientIp, "report", MAX_REPORT_PER_MIN)) {
       return sendJson(res, 429, {
@@ -697,21 +691,29 @@ async function requestHandler(req, res) {
         });
       }
 
+      const reporter = authUser
+        ? {
+            id: authUser.userId,
+            name: authUser.name,
+            provider: authUser.provider,
+          }
+        : {
+            id: `anon_${clientIp.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}`,
+            name: "Community Contributor",
+            provider: "community",
+          };
+
       const saved = await saveCommunityReport({
         artist: cleanArtist,
         title: isArtistFlag ? "" : cleanTitle,
         isArtistFlag,
         platform: cleanPlatform,
         reason: cleanReason,
-        reportedBy: {
-          id: authUser.userId,
-          name: authUser.name,
-          provider: authUser.provider,
-        },
+        reportedBy: reporter,
       });
 
       console.log(
-        `[COMMUNITY REPORT] New AI flag by "${authUser.name}" (${authUser.provider}): "${cleanArtist}${isArtistFlag ? " (ENTIRE ARTIST)" : ` - ${cleanTitle}`}" [Reason: ${cleanReason || "Flagged"}]`
+        `[COMMUNITY REPORT] New AI flag by "${reporter.name}" (${reporter.provider}): "${cleanArtist}${isArtistFlag ? " (ENTIRE ARTIST)" : ` - ${cleanTitle}`}" [Reason: ${cleanReason || "Flagged"}]`
       );
 
       return sendJson(res, 201, {
@@ -725,18 +727,12 @@ async function requestHandler(req, res) {
     }
   }
 
-  // API: Remove / Revoke Community AI Report (Unflag - Protected by Authentication)
+  // API: Remove / Revoke Community AI Report (Unflag)
   if (
     (pathname.startsWith("/api/unflag") && req.method === "POST") ||
     (pathname.startsWith("/api/report") && req.method === "DELETE")
   ) {
     const authUser = getUserFromRequest(req);
-    if (!authUser) {
-      return sendJson(res, 401, {
-        error: "Authentication required. Please sign in.",
-        authRequired: true,
-      });
-    }
 
     try {
       const body = await parseJsonBody(req);
@@ -757,7 +753,7 @@ async function requestHandler(req, res) {
       });
 
       console.log(
-        `[COMMUNITY UNFLAG] Flag removed by "${authUser.name}" (${authUser.provider}): "${cleanArtist}${isArtistFlag ? " (ENTIRE ARTIST)" : ` - ${cleanTitle}`}"`
+        `[COMMUNITY UNFLAG] Flag removed by "${authUser?.name || "Community User"}" (${authUser?.provider || "community"}): "${cleanArtist}${isArtistFlag ? " (ENTIRE ARTIST)" : ` - ${cleanTitle}`}"`
       );
 
       return sendJson(res, 200, {

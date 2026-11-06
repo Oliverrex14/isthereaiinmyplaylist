@@ -183,7 +183,7 @@ function updateAuthUI() {
     if (authLoginBtn) authLoginBtn.classList.remove("hidden");
     if (authUserMenu) authUserMenu.classList.add("hidden");
     if (reportUserBadgeName) {
-      reportUserBadgeName.textContent = "Anonymous (Sign-in required)";
+      reportUserBadgeName.textContent = "Community Contributor";
     }
     if (spotifyUserBar) spotifyUserBar.classList.add("hidden");
     if (spotifyLoginHint) spotifyLoginHint.classList.remove("hidden");
@@ -1254,19 +1254,6 @@ function renderTracksList() {
       const targetTrack = currentTracks.find((t) => String(t.id) === String(trackId));
       if (!targetTrack) return;
 
-      // Check authentication before allowing flagging
-      if (!currentUser) {
-        if (loginModal) {
-          const desc = document.getElementById("loginModalDesc");
-          if (desc) {
-            desc.textContent =
-              "Sign in required: To report songs and protect artists against false positives, please sign in.";
-          }
-          loginModal.classList.remove("hidden");
-        }
-        return;
-      }
-
       // 1. IF ALREADY FLAGGED IN SESSION: allow immediate unflag / undo
       if (targetTrack.flaggedBySession) {
         const confirmUndo = window.confirm(
@@ -1352,19 +1339,6 @@ function renderTracksList() {
       if (!artist) return;
       const matchingTracks = getTracksByArtist(artist);
       const isAlreadyFlagged = isArtistFlaggedInSession(artist);
-
-      // Check authentication before allowing flagging
-      if (!currentUser) {
-        if (loginModal) {
-          const desc = document.getElementById("loginModalDesc");
-          if (desc) {
-            desc.textContent =
-              "Sign in required: To flag artists and protect against false positives, please sign in.";
-          }
-          loginModal.classList.remove("hidden");
-        }
-        return;
-      }
 
       // 1. IF ALREADY FLAGGED IN SESSION: allow immediate unflag / undo for the whole artist
       if (isAlreadyFlagged) {
@@ -1536,17 +1510,6 @@ const closeReportModalHandler = () => {
 };
 
 openReportBtn.addEventListener("click", () => {
-  if (!currentUser) {
-    if (loginModal) {
-      const desc = document.getElementById("loginModalDesc");
-      if (desc) {
-        desc.textContent =
-          "Sign in required: To submit an AI artist or track to the database, please sign in.";
-      }
-      loginModal.classList.remove("hidden");
-    }
-    return;
-  }
   activeReportingTrack = null;
   activeReportingArtist = null;
   reportForm.reset();
@@ -1633,16 +1596,12 @@ reportForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (res.status === 401) {
-      reportModal.classList.add("hidden");
-      if (loginModal) {
-        const desc = document.getElementById("loginModalDesc");
-        if (desc) {
-          desc.textContent =
-            "Session required: Please sign in to submit AI reports to the database.";
-        }
-        loginModal.classList.remove("hidden");
-      }
+    if (!res.ok) {
+      let errData = {};
+      try {
+        errData = await res.json();
+      } catch (_) {}
+      alert(errData.error || `Could not save report (status ${res.status}). Please try again.`);
       return;
     }
     if (res.ok) {
@@ -1722,9 +1681,12 @@ reportForm.addEventListener("submit", async (e) => {
       reportForm.reset();
       reportModal.classList.add("hidden");
       await refreshDatabaseBadge();
+      if (dbModal && !dbModal.classList.contains("hidden")) {
+        loadDatabaseModal();
+      }
     }
-  } catch {
-    // ignore
+  } catch (err) {
+    alert("Network error: Could not reach the server to submit report.");
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
