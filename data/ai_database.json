@@ -1,6 +1,55 @@
 {
   "knownAiArtists": [
     {
+      "name": "Mason Ortiz",
+      "platform": "Spotify",
+      "spotifyId": "4oIEx8v9pqxEnTWm5nbfu1",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Ann Moncrief",
+      "platform": "Spotify",
+      "spotifyId": "3bVlgBqr34Bf6oO3qBIs2b",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Geraldine Starling",
+      "platform": "Spotify",
+      "spotifyId": "0zh6lszXxeyjlQYZspiNY3",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Dark Earth",
+      "platform": "Spotify",
+      "spotifyId": "7HPoqGQDGdjZ415rQ4b6Z3",
+      "reason": "AI-generated ambient/atmospheric ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Diana Lustend",
+      "platform": "Spotify",
+      "spotifyId": "15RJnELAEvqcu6B51FXpoM",
+      "reason": "AI-generated pseudonymous music project",
+      "confidence": 99
+    },
+    {
+      "name": "Willy Da Marcher",
+      "platform": "Spotify",
+      "spotifyId": "6EVwf02VcDEho4nMoL0sgc",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "confidence": 99
+    },
+    {
+      "name": "Leonard The Van Giand",
+      "platform": "Spotify",
+      "spotifyId": "65a3azuOQm6u7MM3JiuD5l",
+      "reason": "AI-generated pseudonymous music project",
+      "confidence": 99
+    },
+    {
       "name": "Valhalla Orquestra",
       "platform": "Spotify",
       "spotifyId": "1Y31W3a9BO6QyLhEiOILTq",
@@ -201,6 +250,111 @@
     "Records DK"
   ],
   "communityReports": [
+    {
+      "id": "rep-1794001190828-e1xavd",
+      "artist": "Mason Ortiz",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "4oIEx8v9pqxEnTWm5nbfu1",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.828Z"
+    },
+    {
+      "id": "rep-1794001190828-yx75dr",
+      "artist": "Ann Moncrief",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "3bVlgBqr34Bf6oO3qBIs2b",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.828Z"
+    },
+    {
+      "id": "rep-1794001190828-chjny3",
+      "artist": "Geraldine Starling",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "0zh6lszXxeyjlQYZspiNY3",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.828Z"
+    },
+    {
+      "id": "rep-1794001190828-vz0gxv",
+      "artist": "Dark Earth",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "7HPoqGQDGdjZ415rQ4b6Z3",
+      "reason": "AI-generated ambient/atmospheric ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.828Z"
+    },
+    {
+      "id": "rep-1794001190828-e55q9a",
+      "artist": "Diana Lustend",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "15RJnELAEvqcu6B51FXpoM",
+      "reason": "AI-generated pseudonymous music project",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.828Z"
+    },
+    {
+      "id": "rep-1794001190827-x8n1aw",
+      "artist": "Willy Da Marcher",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "6EVwf02VcDEho4nMoL0sgc",
+      "reason": "AI-generated pseudonymous ghost artist",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.828Z"
+    },
+    {
+      "id": "rep-1794001190821-fxrnv2",
+      "artist": "Leonard The Van Giand",
+      "title": "",
+      "isArtistFlag": true,
+      "platform": "Spotify",
+      "spotifyArtistId": "65a3azuOQm6u7MM3JiuD5l",
+      "reason": "AI-generated pseudonymous music project",
+      "reportedBy": {
+        "id": "oliver",
+        "name": "Oliver Tobiášek",
+        "provider": "spotify"
+      },
+      "createdAt": "2026-11-06T21:39:50.821Z"
+    },
     {
       "id": "rep-1793998195345",
       "artist": "Bobby Gertund",
