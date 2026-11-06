@@ -363,7 +363,7 @@
         <div class="col-audience">FOLLOWERS</div>
         <div class="col-registry">REGISTRY</div>
         <div class="col-risk">AI PROBABILITY</div>
-        <div class="col-actions">INSPECT</div>
+        <div class="col-actions">ACTIONS</div>
       </div>
 
       <!-- Track List -->
@@ -430,7 +430,13 @@
           <label for="reportArtist">ARTIST OR CHANNEL NAME *</label>
           <input type="text" id="reportArtist" placeholder="e.g. The Velvet Sundown" required />
         </div>
-        <div class="form-group">
+        <div class="form-group form-checkbox-group">
+          <label class="checkbox-label" for="reportFlagEntireArtist">
+            <input type="checkbox" id="reportFlagEntireArtist" />
+            <span><strong>Flag entire artist catalog</strong> (marks all tracks by this artist as synthetic AI)</span>
+          </label>
+        </div>
+        <div class="form-group" id="reportTitleGroup">
           <label for="reportTitle">TRACK TITLE (OPTIONAL)</label>
           <input type="text" id="reportTitle" placeholder="e.g. Dust on the Wind" />
         </div>

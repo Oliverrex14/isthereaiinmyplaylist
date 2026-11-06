@@ -689,6 +689,7 @@ async function requestHandler(req, res) {
       const cleanTitle = sanitizeInput(body.title, 150);
       const cleanPlatform = sanitizeInput(body.platform, 40) || "Other";
       const cleanReason = sanitizeInput(body.reason, 280);
+      const isArtistFlag = Boolean(body.isArtistFlag || !cleanTitle);
 
       if (!cleanArtist && !cleanTitle) {
         return sendJson(res, 400, {
@@ -698,7 +699,8 @@ async function requestHandler(req, res) {
 
       const saved = await saveCommunityReport({
         artist: cleanArtist,
-        title: cleanTitle,
+        title: isArtistFlag ? "" : cleanTitle,
+        isArtistFlag,
         platform: cleanPlatform,
         reason: cleanReason,
         reportedBy: {
@@ -709,7 +711,7 @@ async function requestHandler(req, res) {
       });
 
       console.log(
-        `[COMMUNITY REPORT] New AI flag by "${authUser.name}" (${authUser.provider}): "${cleanArtist} - ${cleanTitle}" [Reason: ${cleanReason || "Flagged"}]`
+        `[COMMUNITY REPORT] New AI flag by "${authUser.name}" (${authUser.provider}): "${cleanArtist}${isArtistFlag ? " (ENTIRE ARTIST)" : ` - ${cleanTitle}`}" [Reason: ${cleanReason || "Flagged"}]`
       );
 
       return sendJson(res, 201, {
@@ -740,6 +742,7 @@ async function requestHandler(req, res) {
       const body = await parseJsonBody(req);
       const cleanArtist = sanitizeInput(body.artist, 120);
       const cleanTitle = sanitizeInput(body.title, 150);
+      const isArtistFlag = Boolean(body.isArtistFlag || !cleanTitle);
 
       if (!cleanArtist && !cleanTitle) {
         return sendJson(res, 400, {
@@ -749,11 +752,12 @@ async function requestHandler(req, res) {
 
       const result = await removeCommunityReport({
         artist: cleanArtist,
-        title: cleanTitle,
+        title: isArtistFlag ? "" : cleanTitle,
+        isArtistFlag,
       });
 
       console.log(
-        `[COMMUNITY UNFLAG] Flag removed by "${authUser.name}" (${authUser.provider}): "${cleanArtist} - ${cleanTitle}"`
+        `[COMMUNITY UNFLAG] Flag removed by "${authUser.name}" (${authUser.provider}): "${cleanArtist}${isArtistFlag ? " (ENTIRE ARTIST)" : ` - ${cleanTitle}`}"`
       );
 
       return sendJson(res, 200, {

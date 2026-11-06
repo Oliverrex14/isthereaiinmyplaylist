@@ -919,7 +919,7 @@ body {
 /* Dense Forensics Table */
 .table-head {
   display: grid;
-  grid-template-columns: 44px 2.4fr 1fr 1fr 1fr 1fr 0.9fr 1.2fr 105px;
+  grid-template-columns: 40px 2.2fr 0.95fr 0.95fr 0.95fr 0.95fr 0.9fr 1.15fr 215px;
   gap: 12px;
   padding: 12px 18px;
   background: var(--ink);
@@ -951,7 +951,7 @@ body {
 
 .track-row {
   display: grid;
-  grid-template-columns: 44px 2.4fr 1fr 1fr 1fr 1fr 0.9fr 1.2fr 105px;
+  grid-template-columns: 40px 2.2fr 0.95fr 0.95fr 0.95fr 0.95fr 0.9fr 1.15fr 215px;
   gap: 12px;
   align-items: center;
   padding: 14px 18px;
@@ -1074,10 +1074,12 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .inspect-btn,
-.flag-btn {
+.flag-btn,
+.flag-artist-btn {
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 700;
@@ -1087,6 +1089,8 @@ body {
   padding: 5px 8px;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .inspect-btn:hover {
@@ -1110,6 +1114,80 @@ body {
   background: var(--danger, #ef4444);
   border-color: var(--danger, #ef4444);
   color: #ffffff;
+}
+
+.flag-artist-btn {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: var(--danger, #ef4444);
+}
+
+.flag-artist-btn:hover {
+  background: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
+  color: #ffffff;
+}
+
+.flag-artist-btn.flagged {
+  background: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
+  color: #ffffff;
+}
+
+.flag-artist-btn.flagged:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+.artist-flag-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: var(--danger, #ef4444);
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.btn-drawer-artist-flag {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.72rem;
+}
+
+.form-checkbox-group {
+  margin: 10px 0 16px;
+  background: var(--bg-base);
+  border: 1.5px dashed var(--ink);
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--display) !important;
+  font-size: 0.84rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4;
+  margin-bottom: 0 !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 2px 0 0 0;
+  accent-color: var(--danger, #ef4444);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 /* Signals Strip + Expandable Forensics Drawer */
@@ -1964,6 +2042,22 @@ body {
 [data-theme="dark"] .inspect-btn:hover {
   background: var(--ink);
   color: #121316;
+}
+
+[data-theme="dark"] .flag-artist-btn {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .flag-artist-btn:hover {
+  background: var(--danger, #ef4444);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .form-checkbox-group {
+  background: var(--bg-surface-2);
+  border-color: var(--border);
 }
 
 [data-theme="dark"] .sig-tag.warning {
